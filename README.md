@@ -5,7 +5,7 @@ Kusama utility library providing functionality for multi-signature trading
 
  - Python 3.8.1 (preferred)
 
-It is suggested to use a [`pyenv`](https://github.com/pyenv/pyenv-virtualenv) to easily manage python versions. Some of the following commands use `pyenv`.
+We suggest using [`pyenv`](https://github.com/pyenv/pyenv-virtualenv) to easily manage python versions. Some of the following commands use `pyenv`.
 Use [pyenv-installer](https://github.com/pyenv/pyenv-installer) for easy installation. Then add pyenv-virtualenv plugin to it.
 
 ### Configure local development setup
