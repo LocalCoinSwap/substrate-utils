@@ -34,3 +34,6 @@ class Kusama:
             "state_getRuntimeVersion", [], loop_limit=1
         )
         return version[0]["result"]["specVersion"]
+
+    def unsigned_transction(self):
+        pass
