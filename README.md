@@ -11,13 +11,16 @@ Use [pyenv-installer](https://github.com/pyenv/pyenv-installer) for easy install
 ### Configure local development setup
 
  - Install and activate python 3.8.1 in the root directory
-   - `pyenv install 3.8.1`
-   - `pyenv virtualenv 3.8.1 ksmutils`
-   - `pyenv local ksmutils`
+    - `pyenv install 3.8.1`
+    - `pyenv virtualenv 3.8.1 ksmutils`
+    - `pyenv local ksmutils`
+
  - Install project requirements
-   - `pip install -r requirements.txt`
+    - `pip install -r requirements.txt`
+
  - Install precommit hook
-   - `pre-commit install`
+    - `pre-commit install`
+
 You're all set to hack!
 
 Before making changes, let's ensure tests run successfully on local.
@@ -25,6 +28,6 @@ Before making changes, let's ensure tests run successfully on local.
 ### Running Tests
 
  - Run all tests with coverage
-   - `coverage run -m pytest -v`
+    - `coverage run -m pytest -v`
  - Show report in terminal
-   - `coverage report -m`
+    - `coverage report -m`
