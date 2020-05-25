@@ -1,0 +1,8 @@
+[run]
+source =
+  ksmutils
+
+omit =
+  *settings*,
+  *tests/*,
+  venv/*
