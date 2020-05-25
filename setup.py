@@ -23,6 +23,8 @@ VERSION = "0.0.1"
 
 REQUIRED = [
     "websockets==8.1",
+    "scalecodec==0.9.42",
+    "base58==2.0.0",
 ]
 
 # What packages are optional?
