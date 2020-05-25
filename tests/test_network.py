@@ -1,34 +1,11 @@
-import asyncio
-import unittest
-
-from ksmutils.network import Network
-
-
-class Logger:
-    def __init__(self):
-        self.LAST_MESSAGE = None
-
-    def info(self, message):
-        self.LAST_MESSAGE = message
-
-    def error(self, message):
-        self.LAST_MESSAGE = message
-
-    def debug(self, message):
-        self.LAST_MESSAGE = message
-
-
-network = Network(logger=Logger)
-
-
-class TestBasicConnection(unittest.TestCase):
-    def test_starting_class(self):
+class TestBasicConnection:
+    def test_starting_class(self, network):
         assert (
             network.logger.LAST_MESSAGE
             == "Instantiating network connection to wss://kusama-rpc.polkadot.io/"
         )
 
-    def test_basic_connection(self):
+    def test_basic_connection(self, network):
         storage_key = (
             "0x26aa394eea5630e07c48ae0c9558cef780d41e5e16056765bc8461851072c9d7"
         )
@@ -36,10 +13,8 @@ class TestBasicConnection(unittest.TestCase):
         test_block = (
             "0x9371a6742726810f20ef7e26c53a141270d76e50b2c636baa4a0a1f5961f33ef"
         )
-        result = asyncio.run(
-            network.node_rpc_call(
-                "state_getStorage", [storage_key, test_block], loop_limit=1
-            )
+        result = network.node_rpc_call(
+            "state_getStorage", [storage_key, test_block], loop_limit=1
         )[0]["result"]
 
         expected_result = (
@@ -52,4 +27,4 @@ class TestBasicConnection(unittest.TestCase):
             "250a00000000000000"
         )
 
-        self.assertEqual(result, expected_result)
+        assert result == expected_result

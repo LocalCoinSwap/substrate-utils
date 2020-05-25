@@ -16,3 +16,21 @@ class Logger:
 
     def debug(self, message):
         self.logger.debug(message)
+
+
+class PyTestLogger:
+    """
+    Used for verifying logs output in tests
+    """
+
+    def __init__(self):
+        self.LAST_MESSAGE = None
+
+    def info(self, message):
+        self.LAST_MESSAGE = message
+
+    def error(self, message):
+        self.LAST_MESSAGE = message
+
+    def debug(self, message):
+        self.LAST_MESSAGE = message
