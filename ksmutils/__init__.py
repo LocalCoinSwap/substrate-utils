@@ -1,3 +1,3 @@
-from core import Kusama
+from .core import Kusama
 
 __all__ = [Kusama]
