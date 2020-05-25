@@ -56,7 +56,7 @@ class Network:
                     if loop_limit and loop_limit <= loops:
                         looping = False
 
-                    # This is nasty but nested ifs are worse
+                    # End transactions when they are finalised
                     if (
                         "params" in result
                         and type(result["params"]["result"]) is dict
