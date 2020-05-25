@@ -27,7 +27,13 @@ REQUIRED = [
 
 # What packages are optional?
 EXTRAS = {
-    "dev": ["coverage==5.1", "ipython==7.14.0", "pre-commit==2.3.0", "pytest==5.4.1"],
+    "dev": [
+        "coverage==5.1",
+        "ipython==7.14.0",
+        "portray==1.3.1",
+        "pre-commit==2.3.0",
+        "pytest==5.4.1",
+    ],
 }
 
 
