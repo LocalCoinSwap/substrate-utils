@@ -1,6 +1,4 @@
 coverage==5.1
 ipython==7.14.0
-pdoc3==0.8.1
 pre-commit==2.3.0
 pytest==5.4.1
-substrate-interface==0.9.11
