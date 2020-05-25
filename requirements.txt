@@ -1,5 +1,4 @@
-pdoc3==0.8.1
+coverage==5.1
+ipython==7.14.0
 pre-commit==2.3.0
 pytest==5.4.1
-python-dotenv==0.13.0
-substrate-interface==0.9.11
