@@ -52,7 +52,6 @@ class Network:
                 looping = True
                 while looping:
                     result = json.loads(await websocket.recv())
-                    print("Received from server", result)
                     if debug:
                         self.logger.debug("Received from server", result)
                     ws_results.update({event_number: result})

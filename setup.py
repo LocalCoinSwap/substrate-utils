@@ -23,7 +23,7 @@ VERSION = "0.0.1"
 
 REQUIRED = [
     "websockets==8.1",
-    "scalecodec==0.9.42",
+    "scalecodec==0.9.43",
     "base58==2.0.0",
 ]
 
