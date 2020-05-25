@@ -1,15 +1,6 @@
+from logging import Logger
+
 _INSTANCE = None
-
-
-class Logger:
-    def info(self, message):
-        print(message)
-
-    def error(self, message):
-        print(message)
-
-    def debug(self, message):
-        print(message)
 
 
 class Network:
