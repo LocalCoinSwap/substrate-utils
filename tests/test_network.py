@@ -53,4 +53,3 @@ class TestBasicConnection(unittest.TestCase):
         )
 
         self.assertEqual(result, expected_result)
-        print("result", result)
