@@ -1,5 +1,5 @@
-from ksmutils.core import Kusama
-from ksmutils.logging import PyTestLogger
+from ksmutils import Kusama
+from ksmutils import PyTestLogger
 
 
 class TestVersionEndpoint:

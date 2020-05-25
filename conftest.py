@@ -1,7 +1,7 @@
 import pytest
 
-from ksmutils.logging import PyTestLogger
-from ksmutils.network import Network
+from ksmutils import Network
+from ksmutils import PyTestLogger
 
 
 @pytest.fixture(scope="session", autouse=True)
