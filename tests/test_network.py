@@ -1,6 +1,3 @@
-import asyncio
-
-
 class TestBasicConnection:
     def test_starting_class(self, network):
         assert (
@@ -16,10 +13,8 @@ class TestBasicConnection:
         test_block = (
             "0x9371a6742726810f20ef7e26c53a141270d76e50b2c636baa4a0a1f5961f33ef"
         )
-        result = asyncio.run(
-            network.node_rpc_call(
-                "state_getStorage", [storage_key, test_block], loop_limit=1
-            )
+        result = network.node_rpc_call(
+            "state_getStorage", [storage_key, test_block], loop_limit=1
         )[0]["result"]
 
         expected_result = (

@@ -1,5 +1,3 @@
-import asyncio
-
 from .logging import Logger
 from .network import Network
 
@@ -32,7 +30,7 @@ class Kusama:
         Make sure the versioning of the Kusama blockchain has not been
         updated since the last developer verification of the codebase
         """
-        version = asyncio.run(
-            self.network.node_rpc_call("state_getRuntimeVersion", [], loop_limit=1)
+        version = self.network.node_rpc_call(
+            "state_getRuntimeVersion", [], loop_limit=1
         )
         return version[0]["result"]["specVersion"]

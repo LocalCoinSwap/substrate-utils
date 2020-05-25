@@ -1,3 +1,4 @@
+import asyncio
 import json
 from logging import Logger
 
@@ -25,7 +26,12 @@ class Network:
         self.logger.info(f"Instantiating network connection to {address}")
         self.address = address
 
-    async def node_rpc_call(self, method, params, loop_limit=False, *, debug=False):
+    def node_rpc_call(self, method, params, loop_limit=False, *, debug=False):
+        return asyncio.run(
+            self._node_rpc_call(method, params, loop_limit=loop_limit, debug=debug)
+        )
+
+    async def _node_rpc_call(self, method, params, loop_limit=False, *, debug=False):
         """
         Generic method for node RPC calls. It's important to set loop_limit to 1 if
         you are not pushing transactions or you will get an infinite loop
