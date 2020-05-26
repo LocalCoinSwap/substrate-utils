@@ -1,3 +1,4 @@
+import logging
 from hashlib import blake2b
 
 from scalecodec import ScaleBytes
@@ -7,30 +8,22 @@ from scalecodec.metadata import MetadataDecoder
 from scalecodec.type_registry import load_type_registry_preset
 from scalecodec.utils.ss58 import ss58_decode
 
-from .logging import Logger
 from .network import Network
 
 # Hardcode this because we WANT things to break if it changes
 BLOCKCHAIN_VERSION = 1062
 
+logger = logging.getLogger(__name__)
+
 
 class Kusama:
-    def __init__(
-        self,
-        *,
-        address: str = "wss://kusama-rpc.polkadot.io/",
-        logger: "Logger" = Logger,
-    ):
+    def __init__(self, *, address: str = "wss://kusama-rpc.polkadot.io/"):
         self.address = address
-        self.logger = logger
 
-    def connect(
-        self, *, logger: "Logger" = None, address: str = "", network: "Network" = None
-    ):
-        logger = self.logger if not logger else logger
+    def connect(self, *, address: str = "", network: "Network" = None):
         address = self.address if not address else address
         if not network:
-            network = Network(logger=logger, address=address)
+            network = Network(address=address)
 
         self.network = network
         assert self.check_version() == BLOCKCHAIN_VERSION

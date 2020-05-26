@@ -1,10 +1,13 @@
 import asyncio
 import json
-from logging import Logger
+import logging
 
 import websockets
 
+
 _INSTANCE = None
+
+logger = logging.getLogger(__name__)
 
 
 class Network:
@@ -12,26 +15,18 @@ class Network:
     The Network class manages a connection to local/remote Kusama node
     """
 
-    def __init__(
-        self,
-        *,
-        logger: "Logger" = Logger,
-        address: str = "wss://kusama-rpc.polkadot.io/",
-    ):
+    def __init__(self, *, address: str = "wss://kusama-rpc.polkadot.io/"):
         global _INSTANCE
         assert _INSTANCE is None, "Network is a singleton!"
         _INSTANCE = self
 
-        self.logger = logger()
-        self.logger.info(f"Instantiating network connection to {address}")
+        logger.info(f"Instantiating network connection to {address}")
         self.address = address
 
-    def node_rpc_call(self, method, params, loop_limit=False, *, debug=False):
-        return asyncio.run(
-            self._node_rpc_call(method, params, loop_limit=loop_limit, debug=debug)
-        )
+    def node_rpc_call(self, method, params, *, loop_limit=False):
+        return asyncio.run(self._node_rpc_call(method, params, loop_limit=loop_limit))
 
-    async def _node_rpc_call(self, method, params, loop_limit=False, *, debug=False):
+    async def _node_rpc_call(self, method, params, *, loop_limit=False):
         """
         Generic method for node RPC calls. It's important to set loop_limit to 1 if
         you are not pushing transactions or you will get an infinite loop
@@ -52,8 +47,7 @@ class Network:
                 looping = True
                 while looping:
                     result = json.loads(await websocket.recv())
-                    if debug:
-                        self.logger.debug("Received from server", result)
+                    logger.debug("Received from server", result)
                     ws_results.update({event_number: result})
 
                     # Kill things immediately for simple requests

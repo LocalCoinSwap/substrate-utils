@@ -1,10 +1,4 @@
 class TestBasicConnection:
-    def test_starting_class(self, network):
-        assert (
-            network.logger.LAST_MESSAGE
-            == "Instantiating network connection to wss://kusama-rpc.polkadot.io/"
-        )
-
     def test_basic_connection(self, network):
         storage_key = (
             "0x26aa394eea5630e07c48ae0c9558cef780d41e5e16056765bc8461851072c9d7"
