@@ -1,12 +1,13 @@
 from .fixtures import genesis_hash
 from .fixtures import metadata
 from .fixtures import spec_version
+from ksmutils.helper import approve_as_multi_signature_payload
 from ksmutils.helper import transfer_signature_payload
+from ksmutils.helper import unsigned_approve_as_multi_construction
 from ksmutils.helper import unsigned_transfer_construction
 
-# from ksmutils.helper import approve_as_multi_signature_payload
 # from ksmutils.helper import as_multi_signature_payload
-# from ksmutils.helper import unsigned_approve_as_multi_construction
+
 # from ksmutils.helper import unsigned_as_multi_construction
 
 
@@ -34,7 +35,32 @@ class TestSignaturePayloads:
         metadata, spec_version, genesis_hash, nonce, to_address, amount,
         other_signatories, threshold=2, tip=0
         """
-        pass
+        nonce = 4
+        to_address = "CofvaLbP3m8PLeNRQmLVPWmTT7jGgAXTwyT69k2wkfPxJ9V"
+        amount = 9900000000
+        other_signatories = [
+            "EifTqgEMBpjRD3WnV9jmdN3ArMj1JGKXAKw2eeHCSLw1Bkg",
+            "CofvaLbP3m8PLeNRQmLVPWmTT7jGgAXTwyT69k2wkfPxJ9V",
+        ]
+
+        expected_signature_payload = (
+            "0x18030200080a2ee2acc37fa96e818e2817afc104ce55770bcccb7333bbf848"
+            "1d5bc3c6fa465ed592d82e3711f9b0655ed39aa591a008c04d1aada60dbb5413"
+            "75250dc2ff4e004fb795510de9b60a094066dbfa0dc1283371735779dda481ea"
+            "5d7ad7725a00f600100026040000b0a8d493285c2df73290dfb7e61f870f17b4"
+            "1801197a149ca93654499ea3dafeb0a8d493285c2df73290dfb7e61f870f17b4"
+            "1801197a149ca93654499ea3dafe"
+        )
+        result = approve_as_multi_signature_payload(
+            metadata,
+            spec_version,
+            genesis_hash,
+            nonce,
+            to_address,
+            amount,
+            other_signatories,
+        )
+        assert result == expected_signature_payload
 
     def test_as_multi_payload(self):
         """
@@ -75,7 +101,38 @@ class TestPayloadConstruction:
         metadata, account_id, signature, nonce, to_address, amount,
         other_signatories
         """
-        pass
+        account_id = (
+            "0x14097421065c7bb0efc6770ffc5d604654159d45910cc7a3cb602be16acc5528"
+        )
+        signature = (
+            "0x26ef62025f86b150442d1e1f2996dce635b591250f60a532dc32f8cf319c6515eea9bb7"
+            "60e442b6a816aef9fdbc535eca0d663e9b9d783a0616153df2ac0fd87"
+        )
+        expected_final_extrinsic = (
+            "0x2d038414097421065c7bb0efc6770ffc5d604654159d45910cc7a3cb602be16acc55280"
+            "126ef62025f86b150442d1e1f2996dce635b591250f60a532dc32f8cf319c6515eea9bb76"
+            "0e442b6a816aef9fdbc535eca0d663e9b9d783a0616153df2ac0fd8700100018030200080"
+            "a2ee2acc37fa96e818e2817afc104ce55770bcccb7333bbf8481d5bc3c6fa465ed592d82e"
+            "3711f9b0655ed39aa591a008c04d1aada60dbb541375250dc2ff4e004fb795510de9b60a0"
+            "94066dbfa0dc1283371735779dda481ea5d7ad7725a00f6"
+        )
+        amount = 9900000000
+        to_address = "CofvaLbP3m8PLeNRQmLVPWmTT7jGgAXTwyT69k2wkfPxJ9V"
+        nonce = 4
+        other_signatories = [
+            "EifTqgEMBpjRD3WnV9jmdN3ArMj1JGKXAKw2eeHCSLw1Bkg",
+            "CofvaLbP3m8PLeNRQmLVPWmTT7jGgAXTwyT69k2wkfPxJ9V",
+        ]
+        result = unsigned_approve_as_multi_construction(
+            metadata,
+            account_id,
+            signature,
+            nonce,
+            to_address,
+            amount,
+            other_signatories,
+        )
+        assert result == expected_final_extrinsic
 
     def test_as_multi_construction(self):
         """
