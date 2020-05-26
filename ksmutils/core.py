@@ -1,6 +1,5 @@
 from hashlib import blake2b
 
-import xxhash
 from scalecodec import ScaleBytes
 from scalecodec.base import RuntimeConfiguration
 from scalecodec.base import ScaleDecoder
@@ -73,18 +72,12 @@ class Kusama:
         ]
 
     def _get_address_info(self, address):
+        # xxHash128(System) + xxHash128(Account)
+        storage_key = (
+            "0x26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da9"
+        )
+
         account_id = ss58_decode(address, 2)
-
-        a = bytearray(xxhash.xxh64("System", seed=0).digest())
-        b = bytearray(xxhash.xxh64("System", seed=1).digest())
-        c = bytearray(xxhash.xxh64("Account", seed=0).digest())
-        d = bytearray(xxhash.xxh64("Account", seed=1).digest())
-        a.reverse()
-        b.reverse()
-        c.reverse()
-        d.reverse()
-
-        storage_key = f"0x{a.hex()}{b.hex()}{c.hex()}{d.hex()}"
         hashed_address = f"{blake2b(bytes.fromhex(account_id), digest_size=16).digest().hex()}{account_id}"
         storage_hash = storage_key + hashed_address
 
