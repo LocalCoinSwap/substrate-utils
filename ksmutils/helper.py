@@ -112,7 +112,7 @@ def as_multi_signature_payload(
     as_multi.encode(
         {
             "call_module": "Utility",
-            "call_function": "approve_as_multi",
+            "call_function": "as_multi",
             "call_args": {
                 "call": transfer.serialize(),
                 "maybe_timepoint": {"height": timepoint[0], "index": timepoint[1]},

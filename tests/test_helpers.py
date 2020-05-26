@@ -2,13 +2,11 @@ from .fixtures import genesis_hash
 from .fixtures import metadata
 from .fixtures import spec_version
 from ksmutils.helper import approve_as_multi_signature_payload
+from ksmutils.helper import as_multi_signature_payload
 from ksmutils.helper import transfer_signature_payload
 from ksmutils.helper import unsigned_approve_as_multi_construction
+from ksmutils.helper import unsigned_as_multi_construction
 from ksmutils.helper import unsigned_transfer_construction
-
-# from ksmutils.helper import as_multi_signature_payload
-
-# from ksmutils.helper import unsigned_as_multi_construction
 
 
 class TestSignaturePayloads:
@@ -67,7 +65,34 @@ class TestSignaturePayloads:
         metadata, spec_version, genesis_hash, nonce, to_address, amount,
         other_signatories, timepoint, threshold=2, tip=0,
         """
-        pass
+        nonce = 5
+        to_address = "CofvaLbP3m8PLeNRQmLVPWmTT7jGgAXTwyT69k2wkfPxJ9V"
+        amount = 9900000000
+        other_signatories = [
+            "CofvaLbP3m8PLeNRQmLVPWmTT7jGgAXTwyT69k2wkfPxJ9V",
+            "D2bHQwFcQj11SvtkjULEdKhK4WAeP6MThXgosMHjW9DrmbE",
+        ]
+        timepoint = (9000, 1)
+        expected_signature_payload = (
+            "0x18020200080a2ee2acc37fa96e818e2817afc104ce55770bcccb7333b"
+            "bf8481d5bc3c6fa4614097421065c7bb0efc6770ffc5d604654159d4591"
+            "0cc7a3cb602be16acc552801282300000100000004000a2ee2acc37fa96"
+            "e818e2817afc104ce55770bcccb7333bbf8481d5bc3c6fa46070003164e"
+            "0200140026040000b0a8d493285c2df73290dfb7e61f870f17b41801197"
+            "a149ca93654499ea3dafeb0a8d493285c2df73290dfb7e61f870f17b418"
+            "01197a149ca93654499ea3dafe"
+        )
+        result = as_multi_signature_payload(
+            metadata,
+            spec_version,
+            genesis_hash,
+            nonce,
+            to_address,
+            amount,
+            other_signatories,
+            timepoint,
+        )
+        assert result == expected_signature_payload
 
 
 class TestPayloadConstruction:
@@ -139,4 +164,37 @@ class TestPayloadConstruction:
         metadata, account_id, signature, nonce, to_address, amount, timepoint,
         other_signatories
         """
-        pass
+        account_id = (
+            "0x5ed592d82e3711f9b0655ed39aa591a008c04d1aada60dbb541375250dc2ff4e"
+        )
+        signature = (
+            "0x7cfbed1268b30829ab48dee7ba97c12b7c7e0c299539eb7f64a8fc69995f9d2e5f4a63f63"
+            "3b9e78021d30393afe085ab8f1f8479ec471a85a5ec142723b9e58e"
+        )
+        expected_final_extrinsic = (
+            "0x6d03845ed592d82e3711f9b0655ed39aa591a008c04d1aada60dbb541375250dc2ff4e017"
+            "cfbed1268b30829ab48dee7ba97c12b7c7e0c299539eb7f64a8fc69995f9d2e5f4a63f633b9"
+            "e78021d30393afe085ab8f1f8479ec471a85a5ec142723b9e58e00140018020200080a2ee2a"
+            "cc37fa96e818e2817afc104ce55770bcccb7333bbf8481d5bc3c6fa4614097421065c7bb0ef"
+            "c6770ffc5d604654159d45910cc7a3cb602be16acc552801282300000100000004000a2ee2a"
+            "cc37fa96e818e2817afc104ce55770bcccb7333bbf8481d5bc3c6fa46070003164e02"
+        )
+        amount = 9900000000
+        timepoint = (9000, 1)
+        to_address = "CofvaLbP3m8PLeNRQmLVPWmTT7jGgAXTwyT69k2wkfPxJ9V"
+        nonce = 5
+        other_signatories = [
+            "CofvaLbP3m8PLeNRQmLVPWmTT7jGgAXTwyT69k2wkfPxJ9V",
+            "D2bHQwFcQj11SvtkjULEdKhK4WAeP6MThXgosMHjW9DrmbE",
+        ]
+        result = unsigned_as_multi_construction(
+            metadata,
+            account_id,
+            signature,
+            nonce,
+            to_address,
+            amount,
+            timepoint,
+            other_signatories,
+        )
+        assert result == expected_final_extrinsic
