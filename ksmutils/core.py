@@ -99,3 +99,6 @@ class Kusama:
     def get_nonce(self, address):
         result = self._get_address_info(address)
         return result["nonce"]
+
+    def transfer_signature_payload(sender, receiver, amount):
+        pass
