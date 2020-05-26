@@ -6,3 +6,4 @@ pre-commit==2.3.0
 pytest==5.4.1
 scalecodec==0.9.42
 websockets==8.1
+xxhash==1.4.3
