@@ -1,11 +1,10 @@
 import logging
 
-kusama_logger = logging.getLogger("kusama")
-kusama_logger.setLevel(logging.DEBUG)
-
 
 class Logger:
     def __init__(self):
+        kusama_logger = logging.getLogger("kusama")
+        kusama_logger.setLevel(logging.DEBUG)
         self.logger = kusama_logger
 
     def info(self, message):
