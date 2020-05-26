@@ -100,5 +100,26 @@ class Kusama:
         result = self._get_address_info(address)
         return result["nonce"]
 
-    def transfer_signature_payload(sender, receiver, amount):
+    def broadcast_extrinsic(self):
+        """
+        Raw extrinsic broadcast
+        """
+        pass
+
+    def broadcast(self):
+        """
+        Handles final transaction construction according to transaction type
+        """
+        pass
+
+    def unsigned_transfer(self):
+        """
+        Unsigned transfer endpoint
+        """
+        pass
+
+    def create_escrow(self):
+        """
+        Get unsigned escrow transactions
+        """
         pass
