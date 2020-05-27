@@ -24,14 +24,17 @@ class TestBalanceEndpoint:
 
         assert result == 0
 
-class TestGetEscrowAddressEndpoint():
+
+class TestGetEscrowAddressEndpoint:
     def test_get_escrow_address(self, network):
-        kusama = Kusama(admin_addr="HvqnQxDQbi3LL2URh7WQfcmi8b2ZWfBhu7TEDmyyn5VK8e2")
+        kusama = Kusama(
+            admin_key="5c65b9f9f75f95d70b84577ab07e22f7400d394ca3c8bcb227fb6d42920d9b50"
+        )
         kusama.connect(network=network)
 
-        buyer_addr = "CdVuGwX71W4oRbXHsLuLQxNPns23rnSSiZwZPN4etWf6XYo"
-        seller_addr = "J9aQobenjZjwWtU2MsnYdGomvcYbgauCnBeb8xGrcqznvJc"
+        buyer_addr = "DwRh5ShcnuPzgyhW6J6m4mw1y63hUy1ctR3RSWRSgLg1HQ5"
+        seller_addr = "CrjrfWVeFM7CFc3fvhwA7etuTdGirnSqBBNBzTiyTcRrPsP"
 
         result = kusama.get_escrow_address(buyer_addr, seller_addr)
 
-        assert result == "HFXXfXavDuKhLLBhFQTat2aaRQ5CMMw9mwswHzWi76m6iLt"
+        assert result == "Fgh5GQ1guNxvurv71cmHm8H5Eo8Ywrdz1mZemffAP2UrrH2"
