@@ -28,7 +28,9 @@ kusama = Kusama(
 )
 ```
 
-## Connecting to the Kusama node
-```
+### Connecting to the Kusama blockchain
+```python
+
 kusama.connect()
+assert kusama.check_version() == 1062 
 ```
