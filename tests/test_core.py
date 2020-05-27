@@ -32,9 +32,9 @@ class TestGetEscrowAddressEndpoint:
         )
         kusama.connect(network=network)
 
-        buyer_addr = "DwRh5ShcnuPzgyhW6J6m4mw1y63hUy1ctR3RSWRSgLg1HQ5"
-        seller_addr = "CrjrfWVeFM7CFc3fvhwA7etuTdGirnSqBBNBzTiyTcRrPsP"
+        buyer_address = "DwRh5ShcnuPzgyhW6J6m4mw1y63hUy1ctR3RSWRSgLg1HQ5"
+        seller_address = "CrjrfWVeFM7CFc3fvhwA7etuTdGirnSqBBNBzTiyTcRrPsP"
 
-        result = kusama.get_escrow_address(buyer_addr, seller_addr)
+        result = kusama.get_escrow_address(buyer_address, seller_address)
 
         assert result == "Fgh5GQ1guNxvurv71cmHm8H5Eo8Ywrdz1mZemffAP2UrrH2"

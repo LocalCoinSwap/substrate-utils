@@ -24,7 +24,7 @@ arbitrator_key = 'b5643fe4084cae15ffbbc5c1cbe734bec5da9c351f4aa4d44f2897efeb8375
 node_provider = 'wss://kusama-rpc.polkadot.io/'
 kusama = Kusama(
     arbitrator_key=arbitrator_key,
-    address=node_provider
+    node_url=node_provider
 )
 ```
 

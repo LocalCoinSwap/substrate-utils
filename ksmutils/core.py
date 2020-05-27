@@ -156,7 +156,7 @@ class Kusama:
             self.genesis_hash,
             self.spec_version,
         )
-        return {"escrow_payload": escrow_payload, "fee_payload": fee_payload}
+        return escrow_payload, fee_payload
 
     def cancellation(self, seller_address, trade_value, fee_value, other_signatories):
         """
