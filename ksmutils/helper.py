@@ -4,7 +4,7 @@ Helper functions - all functions in this file are pure with no side effects
 from hashlib import blake2b
 
 from scalecodec.base import ScaleDecoder
-
+from scalecodec.utils.ss58 import ss58_decode, ss58_encode
 
 def hash_call(call):
     call = bytes.fromhex(str(call.data)[2:])
@@ -260,3 +260,34 @@ def unsigned_as_multi_construction(
         nonce,
         tip,
     )
+
+
+def kusama_addr_to_id(addr):
+    """
+    Gets account ID from a Substrate address
+
+    Parameters
+    ----------
+    address
+
+    Returns
+    -------
+    AccountId - str
+    """
+    decoded_addr = ss58_decode(addr)
+    return decoded_addr
+
+def id_to_kusama_addr(addr):
+    """
+    Gets an address from a Substrate account ID
+
+    Parameters
+    ----------
+    AccountId - str
+
+    Returns
+    -------
+    address - str
+    """
+    encoded_id = ss58_encode(addr, 2)
+    return encoded_id
