@@ -47,7 +47,7 @@ class Network:
                 looping = True
                 while looping:
                     result = json.loads(await websocket.recv())
-                    logger.debug("Received from server", result)
+                    # logger.info(f"Received from server {result}")
                     ws_results.update({event_number: result})
 
                     # Kill things immediately for simple requests

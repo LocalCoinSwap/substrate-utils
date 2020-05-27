@@ -5,6 +5,7 @@ import sr25519
 from scalecodec import ScaleBytes
 from scalecodec.base import RuntimeConfiguration
 from scalecodec.base import ScaleDecoder
+from scalecodec.block import ExtrinsicsDecoder
 from scalecodec.metadata import MetadataDecoder
 from scalecodec.type_registry import load_type_registry_preset
 from scalecodec.utils.ss58 import ss58_decode
@@ -104,6 +105,56 @@ class Kusama:
     def get_nonce(self, address):
         result = self._get_address_info(address)
         return result["nonce"]
+
+    def get_block(self, block_hash):
+        logger.warning("get_block was called")
+
+        # FIXME: Modify node_rpc_call to return single item when there's only one
+        response = self.network.node_rpc_call(
+            "chain_getBlock", [block_hash], loop_limit=1
+        )[0]["result"]
+
+        response["block"]["header"]["number"] = int(
+            response["block"]["header"]["number"], 16
+        )
+
+        for idx, data in enumerate(response["block"]["extrinsics"]):
+            extrinsic_decoder = ExtrinsicsDecoder(
+                data=ScaleBytes(data), metadata=self.metadata
+            )
+            extrinsic_decoder.decode()
+            response["block"]["extrinsics"][idx] = extrinsic_decoder.value
+
+        return response
+
+    def _get_extrinsix_index(self, block_extrinsics, extrinsic_hash):
+        for idx, extrinsics in enumerate(block_extrinsics):
+            ehash = extrinsics.get("extrinsic_hash")
+            if ehash == extrinsic_hash:
+                return idx
+        return 0
+
+    def get_extrinsic_timepoint(self, node_response, extrinsic_data):
+        if not node_response:
+            raise Exception("node_response is empty")
+
+        last_item = node_response[len(node_response) - 1]
+        finalized_hash = last_item.get("params", {}).get("result", {}).get("finalized")
+
+        if not finalized_hash:
+            raise Exception("Last item in the node_response is not finalized hash")
+
+        extrinsic_hash = (
+            blake2b(bytes.fromhex(extrinsic_data[2:]), digest_size=32).digest().hex()
+        )
+
+        block = self.get_block(finalized_hash)
+        block_number = block.get("block").get("header").get("number")
+        extrinsic_index = self._get_extrinsix_index(
+            block.get("block").get("extrinsics"), extrinsic_hash
+        )
+
+        return (block_number, extrinsic_index)
 
     def broadcast_extrinsic(self):
         """
