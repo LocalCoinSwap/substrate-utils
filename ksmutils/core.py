@@ -8,7 +8,6 @@ from scalecodec.metadata import MetadataDecoder
 from scalecodec.type_registry import load_type_registry_preset
 from scalecodec.utils.ss58 import ss58_decode
 
-from .helper import kusama_addr_to_id
 from .helper import id_to_kusama_addr
 from .network import Network
 
@@ -19,7 +18,9 @@ logger = logging.getLogger(__name__)
 
 
 class Kusama:
-    def __init__(self, *, address: str = "wss://kusama-rpc.polkadot.io/", admin_addr: str = ""):
+    def __init__(
+        self, *, address: str = "wss://kusama-rpc.polkadot.io/", admin_addr: str = ""
+    ):
         self.address = address
         self.admin_addr = admin_addr
 
@@ -138,8 +139,8 @@ class Kusama:
         MultiAccountId = RuntimeConfiguration().get_decoder_class("MultiAccountId")
 
         multi_sig_account = MultiAccountId.create_from_account_list(
-            [buyer_addr, seller_addr, self.admin_addr], 2)
+            [buyer_addr, seller_addr, self.admin_addr], 2
+        )
 
-        multi_sig_address = id_to_kusama_addr(multi_sig_account.value.replace('0x', ''))
+        multi_sig_address = id_to_kusama_addr(multi_sig_account.value.replace("0x", ""))
         return multi_sig_address
-

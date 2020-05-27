@@ -24,7 +24,8 @@ class TestBalanceEndpoint:
 
         assert result == 0
 
-class TestGetEscrowAddressEndpoint():
+
+class TestGetEscrowAddressEndpoint:
     def test_get_escrow_address(self, network):
         kusama = Kusama(admin_addr="HvqnQxDQbi3LL2URh7WQfcmi8b2ZWfBhu7TEDmyyn5VK8e2")
         kusama.connect(network=network)
