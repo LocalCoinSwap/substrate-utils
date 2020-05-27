@@ -3,6 +3,7 @@ Helper functions - all functions in this file are pure with no side effects
 """
 from hashlib import blake2b
 
+import sr25519
 from scalecodec.base import ScaleDecoder
 
 
@@ -260,3 +261,15 @@ def unsigned_as_multi_construction(
         nonce,
         tip,
     )
+
+
+def sign_payload(payload, signer_public_key, signer_private_key):
+    """
+    TODO: Either validate that 0x is not prefixed or handle both in this function
+    """
+    signature = sr25519.sign(
+        (bytes.fromhex(signer_public_key), bytes.fromhex(signer_private_key)),
+        bytes.fromhex(payload),
+    )
+
+    return f"0x{signature.hex()}"

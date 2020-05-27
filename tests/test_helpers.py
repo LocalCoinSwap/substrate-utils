@@ -3,6 +3,7 @@ from .fixtures import metadata
 from .fixtures import spec_version
 from ksmutils.helper import approve_as_multi_signature_payload
 from ksmutils.helper import as_multi_signature_payload
+from ksmutils.helper import sign_payload
 from ksmutils.helper import transfer_signature_payload
 from ksmutils.helper import unsigned_approve_as_multi_construction
 from ksmutils.helper import unsigned_as_multi_construction
@@ -198,3 +199,21 @@ class TestPayloadConstruction:
             other_signatories,
         )
         assert result == expected_final_extrinsic
+
+    def test_sign_payload(self):
+        payload = (
+            "04005a989f0526b8a619b90205b6c3bef293f7b0c38fae7353afe10feae4c4712"
+            "55b0700e40b540200100026040000b0a8d493285c2df73290dfb7e61f870f17b418"
+            "01197a149ca93654499ea3dafeb0a8d493285c2df73290dfb7e61f870f17b418011"
+            "97a149ca93654499ea3dafe"
+        )
+        signer_public_key = (
+            "b66b2bf14a50b06eb9cecf2a45fe10c953bb2c16f93cac735f7020634069a424"
+        )
+        signer_private_key = (
+            "202321b47a37e74b600683746f268ec03053a59fa228c492f042224ccf005f0dde1"
+            "df1a95d4afd7d9b55ad1855f10da5e9633c8837a9a3d2bc95a1c1ff00a4a9"
+        )
+
+        result = sign_payload(payload, signer_public_key, signer_private_key)
+        assert len(result) == 130
