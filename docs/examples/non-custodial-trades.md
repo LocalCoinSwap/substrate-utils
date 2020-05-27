@@ -26,3 +26,23 @@ keypair = sr25519.pair_from_seed(bytes.fromhex(seller_key))
 escrow_signature = sr25519.sign(keypair, bytes.fromhex(escrow_payload[2:]))
 fee_signature = sr25519.sign(keypair, bytes.fromhex(fee_payload[2:]))
 ```
+
+### Broadcast the transactions
+```
+
+```
+
+### Release the escrow to buyer
+```
+
+```
+
+### Trade cancellation, return funds to seller
+```
+
+```
+
+### Buyer wins dispute
+```
+
+```
