@@ -1,12 +1,12 @@
 # kusama-utils
 Kusama utility library providing functionality for multi-signature trading
 
-# Installation
+## Installation
 ```
 pip install ksmutils
 ```
 
-# Quick start
+## Quick start
 ```
 from ksmutils import Kusama
 kusama = Kusama()
