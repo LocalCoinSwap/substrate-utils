@@ -7,8 +7,9 @@ from scalecodec.base import ScaleDecoder
 from scalecodec.metadata import MetadataDecoder
 from scalecodec.type_registry import load_type_registry_preset
 from scalecodec.utils.ss58 import ss58_decode
+from scalecodec.utils.ss58 import ss58_encode
 
-from .helper import id_to_kusama_addr
+from .helper import transfer_signature_payload
 from .network import Network
 
 # Hardcode this because we WANT things to break if it changes
@@ -19,10 +20,13 @@ logger = logging.getLogger(__name__)
 
 class Kusama:
     def __init__(
-        self, *, address: str = "wss://kusama-rpc.polkadot.io/", admin_addr: str = ""
+        self,
+        *,
+        address: str = "wss://kusama-rpc.polkadot.io/",
+        arbitrator_address: str = "",
     ):
         self.address = address
-        self.admin_addr = admin_addr
+        self.arbitrator_address = arbitrator_address
 
     def connect(self, *, address: str = "", network: "Network" = None):
         address = self.address if not address else address
@@ -109,38 +113,72 @@ class Kusama:
         """
         pass
 
-    def unsigned_transfer(self):
+    def transfer_payloads(self, from_address, to_address, value):
         """
-        Unsigned transfer endpoint
+        Get signature payloads for a regular transfer
         """
+        nonce = self.get_nonce(from_address)
+        return transfer_signature_payload(
+            self.metadata,
+            to_address,
+            value,
+            nonce,
+            self.genesis_hash,
+            self.spec_version,
+        )
+
+    def escrow_payloads(self, seller_address, escrow_address, trade_value, fee_value):
+        """
+        Get signature payloads for funding the multisig escrow,
+        and sending the fee to the arbitrator
+        """
+        nonce = self.get_nonce(seller_address)
+        escrow_payload = transfer_signature_payload(
+            self.metadata,
+            escrow_address,
+            trade_value,
+            nonce,
+            self.genesis_hash,
+            self.spec_version,
+        )
+        fee_payload = transfer_signature_payload(
+            self.metadata,
+            self.arbitrator_address,
+            fee_value,
+            nonce + 1,
+            self.genesis_hash,
+            self.spec_version,
+        )
+        return {"escrow_payload": escrow_payload, "fee_payload": fee_payload}
+
+    def _verify_fee(self):
         pass
 
-    def create_escrow(self):
-        """
-        Get unsigned escrow transactions
-        """
-        pass
+    # def cancellation(self):
+    #     """
+    #     1. Broadcast approveAsMulti from arbitrator to seller
+    #     2. Verify that the asMulti passed successfully and that the fee is valid
+    #     2. Broadcast fee return transfer from arbitrator to seller
+    #     """
+    #     pass
 
-    def get_escrow_address(self, buyer_addr, seller_addr, threshold=2):
+    # def resolve_dispute(self):
+    #     """
+    #     1. If sellers wins then use cancellation flow
+    #     2. If buyer wins then send broadcast approveAsMulti before
+    #       sending funds to buyer
+    #     """
+    #     pass
+
+    def get_escrow_address(self, buyer_address, seller_address, threshold=2):
         """
-        Gets an escrow address for multisignature transactions
-
-        Params:
-        -------
-        buyer_address - str
-        seller_address - str
-        escrow_address - str
-        threshold - int
-
-        Returns:
-        --------
-        escrow address - str
+        Returns an escrow address for multisignature transactions
         """
         MultiAccountId = RuntimeConfiguration().get_decoder_class("MultiAccountId")
 
         multi_sig_account = MultiAccountId.create_from_account_list(
-            [buyer_addr, seller_addr, self.admin_addr], 2
+            [buyer_address, seller_address, self.arbitrator_address], 2
         )
 
-        multi_sig_address = id_to_kusama_addr(multi_sig_account.value.replace("0x", ""))
+        multi_sig_address = ss58_encode(multi_sig_account.value.replace("0x", ""), 2)
         return multi_sig_address

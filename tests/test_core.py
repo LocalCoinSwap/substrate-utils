@@ -27,7 +27,9 @@ class TestBalanceEndpoint:
 
 class TestGetEscrowAddressEndpoint:
     def test_get_escrow_address(self, network):
-        kusama = Kusama(admin_addr="HvqnQxDQbi3LL2URh7WQfcmi8b2ZWfBhu7TEDmyyn5VK8e2")
+        kusama = Kusama(
+            arbitrator_address="HvqnQxDQbi3LL2URh7WQfcmi8b2ZWfBhu7TEDmyyn5VK8e2"
+        )
         kusama.connect(network=network)
 
         buyer_addr = "CdVuGwX71W4oRbXHsLuLQxNPns23rnSSiZwZPN4etWf6XYo"
