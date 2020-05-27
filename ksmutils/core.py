@@ -107,8 +107,6 @@ class Kusama:
         return result["nonce"]
 
     def get_block(self, block_hash):
-        logger.warning("get_block was called")
-
         # FIXME: Modify node_rpc_call to return single item when there's only one
         response = self.network.node_rpc_call(
             "chain_getBlock", [block_hash], loop_limit=1
