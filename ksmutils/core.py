@@ -10,6 +10,7 @@ from scalecodec.type_registry import load_type_registry_preset
 from scalecodec.utils.ss58 import ss58_decode
 from scalecodec.utils.ss58 import ss58_encode
 
+from .helper import approve_as_multi_signature_payload
 from .helper import transfer_signature_payload
 from .network import Network
 
@@ -116,7 +117,7 @@ class Kusama:
         """
         pass
 
-    def transfer_payloads(self, from_address, to_address, value):
+    def transfer_payload(self, from_address, to_address, value):
         """
         Get signature payloads for a regular transfer
         """
@@ -154,21 +155,42 @@ class Kusama:
         )
         return {"escrow_payload": escrow_payload, "fee_payload": fee_payload}
 
-    # def cancellation(self):
-    #     """
-    #     1. Broadcast approveAsMulti from arbitrator to seller
-    #     2. Verify that the asMulti passed successfully and that the fee is valid
-    #     2. Broadcast fee return transfer from arbitrator to seller
-    #     """
-    #     pass
+    def cancellation(self, seller_address, trade_value, fee_value, other_signatories):
+        """
+        1. Broadcast approveAsMulti from arbitrator to seller
+        2. Verify that the asMulti passed successfully and that the fee is valid
+        2. Broadcast fee return transfer from arbitrator to seller
+        """
+        assert fee_value <= trade_value * 0.01
+        nonce = self.get_nonce(self.arbitrator_address)
 
-    # def resolve_dispute(self):
-    #     """
-    #     1. If sellers wins then use cancellation flow
-    #     2. If buyer wins then send broadcast approveAsMulti before
-    #       sending funds to buyer
-    #     """
-    #     pass
+        revert_payload = approve_as_multi_signature_payload(
+            self.metadata,
+            self.spec_version,
+            self.genesis_hash,
+            nonce,
+            seller_address,
+            trade_value,
+            other_signatories,
+        )
+        fee_revert_payload = transfer_signature_payload(
+            self.metadata,
+            seller_address,
+            fee_value,
+            nonce + 1,
+            self.genesis_hash,
+            self.spec_version,
+        )
+        # TODO: Sign and publish transactions
+        return revert_payload, fee_revert_payload
+
+    def resolve_dispute(self):
+        """
+        1. If sellers wins then use cancellation flow
+        2. If buyer wins then send broadcast approveAsMulti before
+          sending funds to buyer
+        """
+        pass
 
     def get_escrow_address(self, buyer_address, seller_address, threshold=2):
         """
