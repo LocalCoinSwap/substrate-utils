@@ -24,19 +24,17 @@ class Kusama:
     def __init__(
         self,
         *,
-        address: str = "wss://kusama-rpc.polkadot.io/",
+        node_url: str = "wss://kusama-rpc.polkadot.io/",
         arbitrator_key: str = None,
     ):
-        self.address = address
+        self.node_url = node_url
         if arbitrator_key:
-            self.keypair = sr25519.pair_from_seed(bytes.fromhex(arbitrator_key))
-            self.arbitrator_account_id = self.keypair[0].hex()
-            self.arbitrator_address = ss58_encode(self.keypair[0], 2)
+            self.setup_arbitrator(arbitrator_key)
 
-    def connect(self, *, address: str = "", network: "Network" = None):
-        address = self.address if not address else address
+    def connect(self, *, node_url: str = "", network: "Network" = None):
+        node_url = self.node_url if not node_url else node_url
         if not network:
-            network = Network(address=address)
+            network = Network(node_url=node_url)
 
         self.network = network
         assert self.check_version() == BLOCKCHAIN_VERSION
@@ -49,6 +47,11 @@ class Kusama:
         self.metadata = self.get_metadata()
         self.spec_version = self.get_spec_version()
         self.genesis_hash = self.get_genesis_hash()
+
+    def setup_arbitrator(self, arbitrator_key):
+        self.keypair = sr25519.pair_from_seed(bytes.fromhex(arbitrator_key))
+        self.arbitrator_account_id = self.keypair[0].hex()
+        self.arbitrator_address = ss58_encode(self.keypair[0], 2)
 
     def check_version(self):
         """
@@ -153,7 +156,7 @@ class Kusama:
             self.genesis_hash,
             self.spec_version,
         )
-        return {"escrow_payload": escrow_payload, "fee_payload": fee_payload}
+        return escrow_payload, fee_payload
 
     def cancellation(self, seller_address, trade_value, fee_value, other_signatories):
         """

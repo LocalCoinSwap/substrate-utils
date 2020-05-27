@@ -15,13 +15,13 @@ class Network:
     The Network class manages a connection to local/remote Kusama node
     """
 
-    def __init__(self, *, address: str = "wss://kusama-rpc.polkadot.io/"):
+    def __init__(self, *, node_url: str = "wss://kusama-rpc.polkadot.io/"):
         global _INSTANCE
         assert _INSTANCE is None, "Network is a singleton!"
         _INSTANCE = self
 
-        logger.info(f"Instantiating network connection to {address}")
-        self.address = address
+        logger.info(f"Instantiating network connection to {node_url}")
+        self.node_url = node_url
 
     def node_rpc_call(self, method, params, *, loop_limit=False):
         return asyncio.run(self._node_rpc_call(method, params, loop_limit=loop_limit))
@@ -40,7 +40,7 @@ class Network:
         ws_results = {}
 
         async def ws_request(payload):
-            async with websockets.connect(self.address) as websocket:
+            async with websockets.connect(self.node_url) as websocket:
                 await websocket.send(json.dumps(payload))
                 event_number = 0
                 loops = 0
