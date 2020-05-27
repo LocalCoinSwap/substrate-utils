@@ -36,6 +36,7 @@ EXTRAS = {
         "portray==1.3.1",
         "pre-commit==2.3.0",
         "pytest==5.4.1",
+        "pytest-mock==3.1.0",
     ],
 }
 
