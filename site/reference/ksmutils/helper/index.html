@@ -260,18 +260,66 @@
       
       
 
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+    
+    <label class="md-nav__link" for="nav-3">
+      Examples
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        Examples
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../docs/examples/basic-usage/" title="Basic Usage" class="md-nav__link">
+      Basic Usage
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../docs/examples/non-custodial-trades/" title="Non Custodial Trades" class="md-nav__link">
+      Non Custodial Trades
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
   
 
 
   <li class="md-nav__item md-nav__item--active md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4" checked>
     
-    <label class="md-nav__link" for="nav-3">
+    <label class="md-nav__link" for="nav-4">
       Reference
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
-      <label class="md-nav__title" for="nav-3">
+      <label class="md-nav__title" for="nav-4">
         Reference
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -286,13 +334,13 @@
 
   <li class="md-nav__item md-nav__item--active md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3-1" type="checkbox" id="nav-3-1" checked>
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4-1" type="checkbox" id="nav-4-1" checked>
     
-    <label class="md-nav__link" for="nav-3-1">
+    <label class="md-nav__link" for="nav-4-1">
       Ksmutils
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
-      <label class="md-nav__title" for="nav-3-1">
+      <label class="md-nav__title" for="nav-4-1">
         Ksmutils
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -372,6 +420,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#sign_payload" class="md-nav__link">
+    sign_payload
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#transfer_signature_payload" class="md-nav__link">
     transfer_signature_payload
   </a>
@@ -423,18 +478,6 @@
   <li class="md-nav__item">
     <a href="../" title="Index" class="md-nav__link">
       Index
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../logging/" title="Logging" class="md-nav__link">
-      Logging
     </a>
   </li>
 
@@ -523,6 +566,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#sign_payload" class="md-nav__link">
+    sign_payload
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#transfer_signature_payload" class="md-nav__link">
     transfer_signature_payload
   </a>
@@ -583,6 +633,8 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">hashlib</span> <span class="kn">import</span> <span class="n">blake2b</span>
+
+<span class="kn">import</span> <span class="nn">sr25519</span>
 
 <span class="kn">from</span> <span class="nn">scalecodec.base</span> <span class="kn">import</span> <span class="n">ScaleDecoder</span>
 
@@ -1059,6 +1111,24 @@
         <span class="n">tip</span><span class="p">,</span>
 
     <span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">sign_payload</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="n">signer_public_key</span><span class="p">,</span> <span class="n">signer_private_key</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    TODO: Either validate that 0x is not prefixed or handle both in this function</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">signature</span> <span class="o">=</span> <span class="n">sr25519</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span>
+
+        <span class="p">(</span><span class="nb">bytes</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="n">signer_public_key</span><span class="p">),</span> <span class="nb">bytes</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="n">signer_private_key</span><span class="p">)),</span>
+
+        <span class="nb">bytes</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="n">payload</span><span class="p">),</span>
+
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;0x{signature.hex()}&quot;</span>
 </code></pre></div>
 
 
@@ -1295,6 +1365,37 @@
     <span class="k">call</span> <span class="o">=</span> <span class="n">bytes</span><span class="p">.</span><span class="n">fromhex</span><span class="p">(</span><span class="n">str</span><span class="p">(</span><span class="k">call</span><span class="p">.</span><span class="k">data</span><span class="p">)[</span><span class="mi">2</span><span class="p">:])</span>
 
     <span class="k">return</span> <span class="n">f</span><span class="ss">&quot;0x{blake2b(call, digest_size=32).digest().hex()}&quot;</span>
+</code></pre></div>
+
+
+</details>
+<h3 id="sign_payload">sign_payload</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">sign_payload</span><span class="p">(</span>
+    <span class="n">payload</span><span class="p">,</span>
+    <span class="n">signer_public_key</span><span class="p">,</span>
+    <span class="n">signer_private_key</span>
+<span class="p">)</span>
+</code></pre></div>
+
+
+<p>TODO: Either validate that 0x is not prefixed or handle both in this function</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span> <span class="n">sign_payload</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="n">signer_public_key</span><span class="p">,</span> <span class="n">signer_private_key</span><span class="p">):</span>
+
+    <span class="ss">&quot;&quot;&quot;</span>
+
+<span class="ss">    TODO: Either validate that 0x is not prefixed or handle both in this function</span>
+
+<span class="ss">    &quot;&quot;&quot;</span>
+
+    <span class="n">signature</span> <span class="o">=</span> <span class="n">sr25519</span><span class="p">.</span><span class="n">sign</span><span class="p">(</span>
+
+        <span class="p">(</span><span class="n">bytes</span><span class="p">.</span><span class="n">fromhex</span><span class="p">(</span><span class="n">signer_public_key</span><span class="p">),</span> <span class="n">bytes</span><span class="p">.</span><span class="n">fromhex</span><span class="p">(</span><span class="n">signer_private_key</span><span class="p">)),</span>
+
+        <span class="n">bytes</span><span class="p">.</span><span class="n">fromhex</span><span class="p">(</span><span class="n">payload</span><span class="p">),</span>
+
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">f</span><span class="ss">&quot;0x{signature.hex()}&quot;</span>
 </code></pre></div>
 
 

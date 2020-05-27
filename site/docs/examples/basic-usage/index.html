@@ -36,16 +36,16 @@
     
     
       
-        <title>kusama-utils</title>
+        <title>Basic Usage - kusama-utils</title>
       
     
     
-      <link rel="stylesheet" href="/assets/stylesheets/application.adb8469c.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/application.adb8469c.css">
       
       
     
     
-      <script src="/assets/javascripts/modernizr.86422ebf.js"></script>
+      <script src="../../../assets/javascripts/modernizr.86422ebf.js"></script>
     
     
       
@@ -54,7 +54,7 @@
         <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
       
     
-    <link rel="stylesheet" href="/assets/fonts/material-icons.css">
+    <link rel="stylesheet" href="../../../assets/fonts/material-icons.css">
     
     
     
@@ -77,12 +77,16 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
+      <a href="#basic-setup-of-the-module" tabindex="0" class="md-skip">
+        Skip to content
+      </a>
+    
     
       <header class="md-header" data-md-component="header">
   <nav class="md-header-nav md-grid">
     <div class="md-flex">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="/." title="kusama-utils" aria-label="kusama-utils" class="md-header-nav__button md-logo">
+        <a href="../../.." title="kusama-utils" aria-label="kusama-utils" class="md-header-nav__button md-logo">
           
             <img alt="logo" src="https://static.localcoinswap.com/exchange/assets/images/lcs_logo_light.svg" width="24" height="24">
           
@@ -99,7 +103,7 @@
             </span>
             <span class="md-header-nav__topic">
               
-                
+                Basic Usage
               
             </span>
           
@@ -174,7 +178,7 @@
                   <div class="md-sidebar__inner">
                     <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="/." title="kusama-utils" class="md-nav__button md-logo">
+    <a href="../../.." title="kusama-utils" class="md-nav__button md-logo">
       
         <img alt="logo" src="https://static.localcoinswap.com/exchange/assets/images/lcs_logo_light.svg" width="48" height="48">
       
@@ -210,7 +214,7 @@
 
 
   <li class="md-nav__item">
-    <a href="/." title="Home" class="md-nav__link">
+    <a href="../../.." title="Home" class="md-nav__link">
       Home
     </a>
   </li>
@@ -241,7 +245,7 @@
 
 
   <li class="md-nav__item">
-    <a href="/docs/contributing/1.-local-development/" title="1. Local Development" class="md-nav__link">
+    <a href="../../contributing/1.-local-development/" title="1. Local Development" class="md-nav__link">
       1. Local Development
     </a>
   </li>
@@ -256,10 +260,12 @@
       
       
 
+  
 
-  <li class="md-nav__item md-nav__item--nested">
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
     
     <label class="md-nav__link" for="nav-3">
       Examples
@@ -275,11 +281,79 @@
           
           
 
+  
 
-  <li class="md-nav__item">
-    <a href="/docs/examples/basic-usage/" title="Basic Usage" class="md-nav__link">
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Basic Usage
+      </label>
+    
+    <a href="./" title="Basic Usage" class="md-nav__link md-nav__link--active">
       Basic Usage
     </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#basic-setup-of-the-module" class="md-nav__link">
+    Basic setup of the module
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#instantiating-without-configuration" class="md-nav__link">
+    Instantiating without configuration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#loading-configuration-after-instantiation" class="md-nav__link">
+    Loading configuration after instantiation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#instantiating-with-arbitrator-and-websocket-configuration" class="md-nav__link">
+    Instantiating with arbitrator and websocket configuration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#connecting-to-the-kusama-blockchain" class="md-nav__link">
+    Connecting to the Kusama blockchain
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
   </li>
 
         
@@ -289,7 +363,7 @@
 
 
   <li class="md-nav__item">
-    <a href="/docs/examples/non-custodial-trades/" title="Non Custodial Trades" class="md-nav__link">
+    <a href="../non-custodial-trades/" title="Non Custodial Trades" class="md-nav__link">
       Non Custodial Trades
     </a>
   </li>
@@ -344,7 +418,7 @@
 
 
   <li class="md-nav__item">
-    <a href="/reference/ksmutils/core/" title="Core" class="md-nav__link">
+    <a href="../../../reference/ksmutils/core/" title="Core" class="md-nav__link">
       Core
     </a>
   </li>
@@ -356,7 +430,7 @@
 
 
   <li class="md-nav__item">
-    <a href="/reference/ksmutils/helper/" title="Helper" class="md-nav__link">
+    <a href="../../../reference/ksmutils/helper/" title="Helper" class="md-nav__link">
       Helper
     </a>
   </li>
@@ -368,7 +442,7 @@
 
 
   <li class="md-nav__item">
-    <a href="/reference/ksmutils/" title="Index" class="md-nav__link">
+    <a href="../../../reference/ksmutils/" title="Index" class="md-nav__link">
       Index
     </a>
   </li>
@@ -380,7 +454,7 @@
 
 
   <li class="md-nav__item">
-    <a href="/reference/ksmutils/network/" title="Network" class="md-nav__link">
+    <a href="../../../reference/ksmutils/network/" title="Network" class="md-nav__link">
       Network
     </a>
   </li>
@@ -392,7 +466,7 @@
 
 
   <li class="md-nav__item">
-    <a href="/reference/ksmutils/settings/" title="Settings" class="md-nav__link">
+    <a href="../../../reference/ksmutils/settings/" title="Settings" class="md-nav__link">
       Settings
     </a>
   </li>
@@ -415,12 +489,117 @@
               </div>
             
             
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#basic-setup-of-the-module" class="md-nav__link">
+    Basic setup of the module
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#instantiating-without-configuration" class="md-nav__link">
+    Instantiating without configuration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#loading-configuration-after-instantiation" class="md-nav__link">
+    Loading configuration after instantiation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#instantiating-with-arbitrator-and-websocket-configuration" class="md-nav__link">
+    Instantiating with arbitrator and websocket configuration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#connecting-to-the-kusama-blockchain" class="md-nav__link">
+    Connecting to the Kusama blockchain
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
           
           <div class="md-content">
             <article class="md-content__inner md-typeset">
               
-  <h1>404 - Not found</h1>
+                
+                  <a href="https://github.com/LocalCoinSwap/kusama-utils/edit/master/docs/examples/basic-usage.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                
+                
+                  <h1>Basic Usage</h1>
+                
+                <h2 id="basic-setup-of-the-module">Basic setup of the module</h2>
+<h3 id="instantiating-without-configuration">Instantiating without configuration</h3>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">ksmutils</span> <span class="kn">import</span> <span class="n">Kusama</span>
+<span class="n">kusama</span> <span class="o">=</span> <span class="n">Kusama</span><span class="p">()</span>
+</code></pre></div>
 
+
+<h3 id="loading-configuration-after-instantiation">Loading configuration after instantiation</h3>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">ksmutils</span> <span class="kn">import</span> <span class="n">Kusama</span>
+<span class="n">kusama</span> <span class="o">=</span> <span class="n">Kusama</span><span class="p">()</span>
+
+<span class="n">arbitrator_key</span> <span class="o">=</span> <span class="s1">&#39;b5643fe4084cae15ffbbc5c1cbe734bec5da9c351f4aa4d44f2897efeb8375c8&#39;</span>
+<span class="n">kusama</span><span class="o">.</span><span class="n">setup_arbitrator</span><span class="p">(</span><span class="n">arbitrator_key</span><span class="p">)</span>
+</code></pre></div>
+
+
+<h3 id="instantiating-with-arbitrator-and-websocket-configuration">Instantiating with arbitrator and websocket configuration</h3>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">ksmutils</span> <span class="kn">import</span> <span class="n">Kusama</span>
+<span class="n">kusama</span> <span class="o">=</span> <span class="n">Kusama</span><span class="p">()</span>
+
+<span class="n">arbitrator_key</span> <span class="o">=</span> <span class="s1">&#39;b5643fe4084cae15ffbbc5c1cbe734bec5da9c351f4aa4d44f2897efeb8375c8&#39;</span>
+<span class="n">node_provider</span> <span class="o">=</span> <span class="s1">&#39;wss://kusama-rpc.polkadot.io/&#39;</span>
+<span class="n">kusama</span> <span class="o">=</span> <span class="n">Kusama</span><span class="p">(</span>
+    <span class="n">arbitrator_key</span><span class="o">=</span><span class="n">arbitrator_key</span><span class="p">,</span>
+    <span class="n">node_url</span><span class="o">=</span><span class="n">node_provider</span>
+<span class="p">)</span>
+</code></pre></div>
+
+
+<h3 id="connecting-to-the-kusama-blockchain">Connecting to the Kusama blockchain</h3>
+<div class="codehilite"><pre><span></span><code><span class="n">kusama</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+<span class="k">assert</span> <span class="n">kusama</span><span class="o">.</span><span class="n">check_version</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1062</span> 
+</code></pre></div>
+                
+                  
+                
+                
+              
               
                 
 
@@ -433,6 +612,41 @@
       
         
 <footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../../contributing/1.-local-development/" title="1. Local Development" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                1. Local Development
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../non-custodial-trades/" title="Non Custodial Trades" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Non Custodial Trades
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
@@ -452,9 +666,9 @@
       
     </div>
     
-      <script src="/assets/javascripts/application.c33a9706.js"></script>
+      <script src="../../../assets/javascripts/application.c33a9706.js"></script>
       
-      <script>app.initialize({version:"1.1.2",url:{base:"/"}})</script>
+      <script>app.initialize({version:"1.1.2",url:{base:"../../.."}})</script>
       
     
   </body>

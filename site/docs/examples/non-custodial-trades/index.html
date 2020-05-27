@@ -36,16 +36,16 @@
     
     
       
-        <title>kusama-utils</title>
+        <title>Non Custodial Trades - kusama-utils</title>
       
     
     
-      <link rel="stylesheet" href="/assets/stylesheets/application.adb8469c.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/application.adb8469c.css">
       
       
     
     
-      <script src="/assets/javascripts/modernizr.86422ebf.js"></script>
+      <script src="../../../assets/javascripts/modernizr.86422ebf.js"></script>
     
     
       
@@ -54,7 +54,7 @@
         <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
       
     
-    <link rel="stylesheet" href="/assets/fonts/material-icons.css">
+    <link rel="stylesheet" href="../../../assets/fonts/material-icons.css">
     
     
     
@@ -77,12 +77,16 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
+      <a href="#non-custodial-trades-using-the-utility-module" tabindex="0" class="md-skip">
+        Skip to content
+      </a>
+    
     
       <header class="md-header" data-md-component="header">
   <nav class="md-header-nav md-grid">
     <div class="md-flex">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="/." title="kusama-utils" aria-label="kusama-utils" class="md-header-nav__button md-logo">
+        <a href="../../.." title="kusama-utils" aria-label="kusama-utils" class="md-header-nav__button md-logo">
           
             <img alt="logo" src="https://static.localcoinswap.com/exchange/assets/images/lcs_logo_light.svg" width="24" height="24">
           
@@ -99,7 +103,7 @@
             </span>
             <span class="md-header-nav__topic">
               
-                
+                Non Custodial Trades
               
             </span>
           
@@ -174,7 +178,7 @@
                   <div class="md-sidebar__inner">
                     <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="/." title="kusama-utils" class="md-nav__button md-logo">
+    <a href="../../.." title="kusama-utils" class="md-nav__button md-logo">
       
         <img alt="logo" src="https://static.localcoinswap.com/exchange/assets/images/lcs_logo_light.svg" width="48" height="48">
       
@@ -210,7 +214,7 @@
 
 
   <li class="md-nav__item">
-    <a href="/." title="Home" class="md-nav__link">
+    <a href="../../.." title="Home" class="md-nav__link">
       Home
     </a>
   </li>
@@ -241,7 +245,7 @@
 
 
   <li class="md-nav__item">
-    <a href="/docs/contributing/1.-local-development/" title="1. Local Development" class="md-nav__link">
+    <a href="../../contributing/1.-local-development/" title="1. Local Development" class="md-nav__link">
       1. Local Development
     </a>
   </li>
@@ -256,10 +260,12 @@
       
       
 
+  
 
-  <li class="md-nav__item md-nav__item--nested">
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
     
     <label class="md-nav__link" for="nav-3">
       Examples
@@ -277,7 +283,7 @@
 
 
   <li class="md-nav__item">
-    <a href="/docs/examples/basic-usage/" title="Basic Usage" class="md-nav__link">
+    <a href="../basic-usage/" title="Basic Usage" class="md-nav__link">
       Basic Usage
     </a>
   </li>
@@ -287,11 +293,72 @@
           
           
 
+  
 
-  <li class="md-nav__item">
-    <a href="/docs/examples/non-custodial-trades/" title="Non Custodial Trades" class="md-nav__link">
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Non Custodial Trades
+      </label>
+    
+    <a href="./" title="Non Custodial Trades" class="md-nav__link md-nav__link--active">
       Non Custodial Trades
     </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#non-custodial-trades-using-the-utility-module" class="md-nav__link">
+    Non-custodial trades using the utility module
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#generate-an-escrow-address" class="md-nav__link">
+    Generate an escrow address
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#generate-the-signature-payloads-to-fund-the-escrow-and-send-the-fee" class="md-nav__link">
+    Generate the signature payloads to fund the escrow and send the fee
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sign-the-payloads" class="md-nav__link">
+    Sign the payloads
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
   </li>
 
         
@@ -344,7 +411,7 @@
 
 
   <li class="md-nav__item">
-    <a href="/reference/ksmutils/core/" title="Core" class="md-nav__link">
+    <a href="../../../reference/ksmutils/core/" title="Core" class="md-nav__link">
       Core
     </a>
   </li>
@@ -356,7 +423,7 @@
 
 
   <li class="md-nav__item">
-    <a href="/reference/ksmutils/helper/" title="Helper" class="md-nav__link">
+    <a href="../../../reference/ksmutils/helper/" title="Helper" class="md-nav__link">
       Helper
     </a>
   </li>
@@ -368,7 +435,7 @@
 
 
   <li class="md-nav__item">
-    <a href="/reference/ksmutils/" title="Index" class="md-nav__link">
+    <a href="../../../reference/ksmutils/" title="Index" class="md-nav__link">
       Index
     </a>
   </li>
@@ -380,7 +447,7 @@
 
 
   <li class="md-nav__item">
-    <a href="/reference/ksmutils/network/" title="Network" class="md-nav__link">
+    <a href="../../../reference/ksmutils/network/" title="Network" class="md-nav__link">
       Network
     </a>
   </li>
@@ -392,7 +459,7 @@
 
 
   <li class="md-nav__item">
-    <a href="/reference/ksmutils/settings/" title="Settings" class="md-nav__link">
+    <a href="../../../reference/ksmutils/settings/" title="Settings" class="md-nav__link">
       Settings
     </a>
   </li>
@@ -415,12 +482,102 @@
               </div>
             
             
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#non-custodial-trades-using-the-utility-module" class="md-nav__link">
+    Non-custodial trades using the utility module
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#generate-an-escrow-address" class="md-nav__link">
+    Generate an escrow address
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#generate-the-signature-payloads-to-fund-the-escrow-and-send-the-fee" class="md-nav__link">
+    Generate the signature payloads to fund the escrow and send the fee
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sign-the-payloads" class="md-nav__link">
+    Sign the payloads
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
           
           <div class="md-content">
             <article class="md-content__inner md-typeset">
               
-  <h1>404 - Not found</h1>
+                
+                  <a href="https://github.com/LocalCoinSwap/kusama-utils/edit/master/docs/examples/non-custodial-trades.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                
+                
+                  <h1>Non Custodial Trades</h1>
+                
+                <h2 id="non-custodial-trades-using-the-utility-module">Non-custodial trades using the utility module</h2>
+<p>First, setup the module and connect to the Kusama blockchain using the instructions in the basic-usage section.</p>
+<p>You can now use the library to go through each step of the trading process.</p>
+<h3 id="generate-an-escrow-address">Generate an escrow address</h3>
+<div class="codehilite"><pre><span></span><code><span class="n">buyer_address</span> <span class="o">=</span> <span class="s2">&quot;CofvaLbP3m8PLeNRQmLVPWmTT7jGgAXTwyT69k2wkfPxJ9V&quot;</span>
+<span class="n">seller_address</span> <span class="o">=</span> <span class="s2">&quot;D2bHQwFcQj11SvtkjULEdKhK4WAeP6MThXgosMHjW9DrmbE&quot;</span>
+<span class="n">escrow_address</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">get_escrow_address</span><span class="p">(</span><span class="n">buyer_address</span><span class="p">,</span> <span class="n">seller_address</span><span class="p">)</span>
+</code></pre></div>
 
+
+<h3 id="generate-the-signature-payloads-to-fund-the-escrow-and-send-the-fee">Generate the signature payloads to fund the escrow and send the fee</h3>
+<div class="codehilite"><pre><span></span><code><span class="n">trade_value</span> <span class="o">=</span> <span class="mi">10000000000</span> <span class="c1"># Value of the trade in Plancks</span>
+<span class="n">fee_value</span> <span class="o">=</span> <span class="mi">100000000</span> <span class="c1"># Fee being paid in Plancks (trade_value is not inclusive of fee)</span>
+<span class="n">escrow_payload</span><span class="p">,</span> <span class="n">fee_payload</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">escrow_payloads</span><span class="p">(</span>
+    <span class="n">seller_address</span><span class="p">,</span> <span class="n">escrow_address</span><span class="p">,</span> <span class="n">trade_value</span><span class="p">,</span> <span class="n">fee_value</span><span class="p">)</span>
+</code></pre></div>
+
+
+<h3 id="sign-the-payloads">Sign the payloads</h3>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">sr25519</span>
+<span class="n">seller_key</span> <span class="o">=</span> <span class="s1">&#39;427a2c7cdff26fc2ab1dfda2ba991624cad12f8adc8b0851540db6efec2c7431&#39;</span>
+<span class="n">keypair</span> <span class="o">=</span> <span class="n">sr25519</span><span class="o">.</span><span class="n">pair_from_seed</span><span class="p">(</span><span class="nb">bytes</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="n">seller_key</span><span class="p">))</span>
+<span class="n">escrow_signature</span> <span class="o">=</span> <span class="n">sr25519</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">keypair</span><span class="p">,</span> <span class="nb">bytes</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="n">escrow_payload</span><span class="p">[</span><span class="mi">2</span><span class="p">:]))</span>
+<span class="n">fee_signature</span> <span class="o">=</span> <span class="n">sr25519</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">keypair</span><span class="p">,</span> <span class="nb">bytes</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="n">fee_payload</span><span class="p">[</span><span class="mi">2</span><span class="p">:]))</span>
+</code></pre></div>
+                
+                  
+                
+                
+              
               
                 
 
@@ -433,6 +590,41 @@
       
         
 <footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../basic-usage/" title="Basic Usage" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Basic Usage
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../../../reference/ksmutils/core/" title="Core" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Core
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
@@ -452,9 +644,9 @@
       
     </div>
     
-      <script src="/assets/javascripts/application.c33a9706.js"></script>
+      <script src="../../../assets/javascripts/application.c33a9706.js"></script>
       
-      <script>app.initialize({version:"1.1.2",url:{base:"/"}})</script>
+      <script>app.initialize({version:"1.1.2",url:{base:"../../.."}})</script>
       
     
   </body>
