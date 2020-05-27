@@ -1,6 +1,7 @@
 import logging
 from hashlib import blake2b
 
+import sr25519
 from scalecodec import ScaleBytes
 from scalecodec.base import RuntimeConfiguration
 from scalecodec.base import ScaleDecoder
@@ -20,13 +21,14 @@ logger = logging.getLogger(__name__)
 
 class Kusama:
     def __init__(
-        self,
-        *,
-        address: str = "wss://kusama-rpc.polkadot.io/",
-        arbitrator_address: str = "",
+        self, *, address: str = "wss://kusama-rpc.polkadot.io/",
+        arbitrator_address: str = None
     ):
         self.address = address
-        self.arbitrator_address = arbitrator_address
+        if admin_key:
+            self.keypair = sr25519.pair_from_seed(bytes.fromhex(admin_key))
+            self.arbitrator_account_id = self.keypair[0].hex()
+            self.arbitrator_address = ss58_encode(self.keypair[0], 2)
 
     def connect(self, *, address: str = "", network: "Network" = None):
         address = self.address if not address else address
@@ -176,9 +178,9 @@ class Kusama:
         """
         MultiAccountId = RuntimeConfiguration().get_decoder_class("MultiAccountId")
 
-        multi_sig_account = MultiAccountId.create_from_account_list(
+        multi_sig_account_id = MultiAccountId.create_from_account_list(
             [buyer_address, seller_address, self.arbitrator_address], 2
         )
 
-        multi_sig_address = ss58_encode(multi_sig_account.value.replace("0x", ""), 2)
+        multi_sig_address = ss58_encode(multi_sig_account_id.value.replace("0x", ""), 2)
         return multi_sig_address
