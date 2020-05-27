@@ -1,11 +1,10 @@
-<<<<<<< HEAD
 """
 Helper functions - all functions in this file are pure with no side effects
 """
 from hashlib import blake2b
 
 from scalecodec.base import ScaleDecoder
-
+from scalecodec.utils.ss58 import ss58_decode, ss58_encode
 
 def hash_call(call):
     call = bytes.fromhex(str(call.data)[2:])
@@ -261,14 +260,9 @@ def unsigned_as_multi_construction(
         nonce,
         tip,
     )
-=======
-from hashlib import blake2b
-from scalecodec.base import RuntimeConfiguration, ScaleDecoder
-from scalecodec.utils.ss58 import ss58_decode
-from scalecodec.type_registry import load_type_registry_preset
-from scalecodec.types import Vec
 
-def kusama_addr_to_account_id(addr):
+
+def kusama_addr_to_id(addr):
     """
     Gets account ID from a Substrate address
 
@@ -278,46 +272,22 @@ def kusama_addr_to_account_id(addr):
 
     Returns
     -------
-    AccountId
+    AccountId - str
     """
     decoded_addr = ss58_decode(addr)
-    decoded_addr_bytes = bytes.fromhex(decoded_addr)
-    return decoded_addr_bytes
+    return decoded_addr
 
-def get_escrow_address(buyer_addr, seller_addr, admin_addr, threshold=2):
+def id_to_kusama_addr(addr):
     """
-    Params:
+    Gets an address from a Substrate account ID
+
+    Parameters
+    ----------
+    AccountId - str
+
+    Returns
     -------
-    buyer_address - str
-    seller_address - str
-    escrow_address - str
-    threshold - int
-
-    Returns:
-    --------
-    escrow address - str
+    address - str
     """
-    buyer_id = kusama_addr_to_account_id(buyer_addr)
-    seller_id = kusama_addr_to_account_id(seller_addr)
-    admin_id = kusama_addr_to_account_id(admin_addr)
-
-    trade_addresses = sorted([buyer_id, seller_id, admin_id])
-    # trade_addresses are already in bytes
-    magic_character = [12]
-
-
-    RuntimeConfiguration().update_type_registry(load_type_registry_preset("default"))
-    RuntimeConfiguration().update_type_registry(load_type_registry_preset("kusama"))
-    obj = ScaleDecoder.get_decoder_class('Vec<Bytes>')
-     
-    str(obj.encode([b"modlpy/utilisuba", magic_character, [trade_addresses.0, trade_addresses.1, trade_addresses.2], threshold]))
-
-
-
-#let encoded = (b"modlpy/utilisuba", magic_character, [accounts.0, accounts.1, accounts.2], threshold).encode();
-
-    blake2b().digest()
-
-#escrow_addr = multisig.multi_account_id(trade_addresses, 2)
-#escrow_addr = binascii.hexlify(bytearray(escrow_addr)).decode("ascii")
->>>>>>> 83f8ffb... Begin get_escrow_address, yet to encode without bindings
+    encoded_id = ss58_encode(addr, 2)
+    return encoded_id

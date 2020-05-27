@@ -7,6 +7,8 @@ from ksmutils.helper import transfer_signature_payload
 from ksmutils.helper import unsigned_approve_as_multi_construction
 from ksmutils.helper import unsigned_as_multi_construction
 from ksmutils.helper import unsigned_transfer_construction
+from ksmutils.helper import kusama_addr_to_id
+from ksmutils.helper import id_to_kusama_addr
 
 
 class TestSignaturePayloads:
@@ -198,3 +200,22 @@ class TestPayloadConstruction:
             other_signatories,
         )
         assert result == expected_final_extrinsic
+
+class TestAddressAndIdConversions:
+    def test_address_to_id(self):
+        """
+       
+        """
+        result = id_to_kusama_addr(
+            "8852f77f2aea5d2d5808cefa7cd49a3ed0ce1f1aa8ff2564c3cb96cb2510337d"
+        )
+        assert result == "Ff4gBd7WcHgsNVhr5HGPQXQx4PzPHGtHdNVaCRK5d5KeMHh"
+
+    def test_id_to_address(self):
+        """
+       
+        """
+        result = kusama_addr_to_id(
+            "Ff4gBd7WcHgsNVhr5HGPQXQx4PzPHGtHdNVaCRK5d5KeMHh"
+        )
+        assert result == "8852f77f2aea5d2d5808cefa7cd49a3ed0ce1f1aa8ff2564c3cb96cb2510337d"

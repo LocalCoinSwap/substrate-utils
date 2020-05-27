@@ -8,6 +8,8 @@ from scalecodec.metadata import MetadataDecoder
 from scalecodec.type_registry import load_type_registry_preset
 from scalecodec.utils.ss58 import ss58_decode
 
+from .helper import kusama_addr_to_id
+from .helper import id_to_kusama_addr
 from .network import Network
 
 # Hardcode this because we WANT things to break if it changes
@@ -116,3 +118,27 @@ class Kusama:
         Get unsigned escrow transactions
         """
         pass
+
+    def get_escrow_address(self, buyer_addr, seller_addr, admin_addr, threshold=2):
+        """
+        Gets an escrow address for multisignature transactions
+
+        Params:
+        -------
+        buyer_address - str
+        seller_address - str
+        escrow_address - str
+        threshold - int
+
+        Returns:
+        --------
+        escrow address - str
+        """
+        MultiAccountId = RuntimeConfiguration().get_decoder_class("MultiAccountId")
+
+        multi_sig_account = MultiAccountId.create_from_account_list(
+            [buyer_addr, seller_addr, admin_addr], 2)
+
+        multi_sig_address = id_to_kusama_addr(multi_sig_account.value.replace('0x', ''))
+        return multi_sig_address
+
