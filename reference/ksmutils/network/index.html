@@ -260,18 +260,66 @@
       
       
 
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+    
+    <label class="md-nav__link" for="nav-3">
+      Examples
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        Examples
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../docs/examples/basic-usage/" title="Basic Usage" class="md-nav__link">
+      Basic Usage
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../docs/examples/non-custodial-trades/" title="Non Custodial Trades" class="md-nav__link">
+      Non Custodial Trades
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
   
 
 
   <li class="md-nav__item md-nav__item--active md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4" checked>
     
-    <label class="md-nav__link" for="nav-3">
+    <label class="md-nav__link" for="nav-4">
       Reference
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
-      <label class="md-nav__title" for="nav-3">
+      <label class="md-nav__title" for="nav-4">
         Reference
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -286,13 +334,13 @@
 
   <li class="md-nav__item md-nav__item--active md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3-1" type="checkbox" id="nav-3-1" checked>
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4-1" type="checkbox" id="nav-4-1" checked>
     
-    <label class="md-nav__link" for="nav-3-1">
+    <label class="md-nav__link" for="nav-4-1">
       Ksmutils
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
-      <label class="md-nav__title" for="nav-3-1">
+      <label class="md-nav__title" for="nav-4-1">
         Ksmutils
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -338,18 +386,6 @@
           
           
 
-
-  <li class="md-nav__item">
-    <a href="../logging/" title="Logging" class="md-nav__link">
-      Logging
-    </a>
-  </li>
-
-        
-          
-          
-          
-
   
 
 
@@ -377,6 +413,13 @@
   
     <label class="md-nav__title" for="__toc">Table of contents</label>
     <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#variables" class="md-nav__link">
+    Variables
+  </a>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#classes" class="md-nav__link">
@@ -478,6 +521,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#variables" class="md-nav__link">
+    Variables
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#classes" class="md-nav__link">
     Classes
   </a>
@@ -547,11 +597,13 @@
 
 <span class="kn">import</span> <span class="nn">json</span>
 
-<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">Logger</span>
+<span class="kn">import</span> <span class="nn">logging</span>
 
 <span class="kn">import</span> <span class="nn">websockets</span>
 
 <span class="n">_INSTANCE</span> <span class="o">=</span> <span class="bp">None</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="k">class</span> <span class="nc">Network</span><span class="p">:</span>
 
@@ -561,17 +613,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-
-        <span class="bp">self</span><span class="p">,</span>
-
-        <span class="o">*</span><span class="p">,</span>
-
-        <span class="n">logger</span><span class="p">:</span> <span class="s2">&quot;Logger&quot;</span> <span class="o">=</span> <span class="n">Logger</span><span class="p">,</span>
-
-        <span class="n">address</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;wss://kusama-rpc.polkadot.io/&quot;</span><span class="p">,</span>
-
-    <span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">node_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;wss://kusama-rpc.polkadot.io/&quot;</span><span class="p">):</span>
 
         <span class="k">global</span> <span class="n">_INSTANCE</span>
 
@@ -579,21 +621,15 @@
 
         <span class="n">_INSTANCE</span> <span class="o">=</span> <span class="bp">self</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Instantiating network connection to {node_url}&quot;</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Instantiating network connection to {address}&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_url</span> <span class="o">=</span> <span class="n">node_url</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">address</span>
+    <span class="k">def</span> <span class="nf">node_rpc_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">loop_limit</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">node_rpc_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">loop_limit</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_node_rpc_call</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">loop_limit</span><span class="o">=</span><span class="n">loop_limit</span><span class="p">))</span>
 
-        <span class="k">return</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
-
-            <span class="bp">self</span><span class="o">.</span><span class="n">_node_rpc_call</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">loop_limit</span><span class="o">=</span><span class="n">loop_limit</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="n">debug</span><span class="p">)</span>
-
-        <span class="p">)</span>
-
-    <span class="n">async</span> <span class="k">def</span> <span class="nf">_node_rpc_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">loop_limit</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="n">async</span> <span class="k">def</span> <span class="nf">_node_rpc_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">loop_limit</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
 
         <span class="sd">&quot;&quot;&quot;</span>
 
@@ -619,7 +655,7 @@
 
         <span class="n">async</span> <span class="k">def</span> <span class="nf">ws_request</span><span class="p">(</span><span class="n">payload</span><span class="p">):</span>
 
-            <span class="n">async</span> <span class="k">with</span> <span class="n">websockets</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span> <span class="k">as</span> <span class="n">websocket</span><span class="p">:</span>
+            <span class="n">async</span> <span class="k">with</span> <span class="n">websockets</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node_url</span><span class="p">)</span> <span class="k">as</span> <span class="n">websocket</span><span class="p">:</span>
 
                 <span class="n">await</span> <span class="n">websocket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">payload</span><span class="p">))</span>
 
@@ -633,9 +669,7 @@
 
                     <span class="n">result</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">await</span> <span class="n">websocket</span><span class="o">.</span><span class="n">recv</span><span class="p">())</span>
 
-                    <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
-
-                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Received from server&quot;</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+                    <span class="c1"># logger.info(f&quot;Received from server {result}&quot;)</span>
 
                     <span class="n">ws_results</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">event_number</span><span class="p">:</span> <span class="n">result</span><span class="p">})</span>
 
@@ -670,12 +704,16 @@
 
 
 </details>
+<h2 id="variables">Variables</h2>
+<div class="codehilite"><pre><span></span><code><span class="n">logger</span>
+</code></pre></div>
+
+
 <h2 id="classes">Classes</h2>
 <h3 id="network">Network</h3>
 <div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="nc">Network</span><span class="p">(</span>
     <span class="o">*</span><span class="p">,</span>
-    <span class="n">logger</span><span class="p">:</span> <span class="s1">&#39;Logger&#39;</span> <span class="o">=</span> <span class="o">&lt;</span><span class="k">class</span> <span class="err">&#39;</span><span class="nc">logging</span><span class="o">.</span><span class="n">Logger</span><span class="s1">&#39;&gt;,</span>
-    <span class="n">address</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;wss://kusama-rpc.polkadot.io/&#39;</span>
+    <span class="n">node_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;wss://kusama-rpc.polkadot.io/&#39;</span>
 <span class="p">)</span>
 </code></pre></div>
 
@@ -689,17 +727,7 @@
 
 <span class="s">    &quot;&quot;&quot;</span>
 
-    <span class="n">def</span> <span class="n">__init__</span>(
-
-        <span class="nb">self</span>,
-
-        *,
-
-        <span class="n">logger:</span> <span class="s">&quot;Logger&quot;</span> = <span class="n">Logger</span>,
-
-        <span class="n">address:</span> <span class="n">str</span> = <span class="s">&quot;wss://kusama-rpc.polkadot.io/&quot;</span>,
-
-    ):
+    <span class="n">def</span> <span class="n">__init__</span>(<span class="nb">self</span>, *, <span class="n">node_url:</span> <span class="n">str</span> = <span class="s">&quot;wss://kusama-rpc.polkadot.io/&quot;</span>):
 
         <span class="n">global</span> <span class="n">_INSTANCE</span>
 
@@ -707,21 +735,15 @@
 
         <span class="n">_INSTANCE</span> = <span class="nb">self</span>
 
-        <span class="nb">self</span>.<span class="n">logger</span> = <span class="n">logger</span>()
+        <span class="n">logger</span>.<span class="n">info</span>(<span class="nb">f</span><span class="s">&quot;Instantiating network connection to {node_url}&quot;</span>)
 
-        <span class="nb">self</span>.<span class="n">logger</span>.<span class="n">info</span>(<span class="nb">f</span><span class="s">&quot;Instantiating network connection to {address}&quot;</span>)
+        <span class="nb">self</span>.<span class="n">node_url</span> = <span class="n">node_url</span>
 
-        <span class="nb">self</span>.<span class="n">address</span> = <span class="n">address</span>
+    <span class="n">def</span> <span class="n">node_rpc_call</span>(<span class="nb">self</span>, <span class="k">method</span>, <span class="nb">params</span>, *, <span class="n">loop_limit</span>=<span class="nb">False</span>):
 
-    <span class="n">def</span> <span class="n">node_rpc_call</span>(<span class="nb">self</span>, <span class="k">method</span>, <span class="nb">params</span>, <span class="n">loop_limit</span>=<span class="nb">False</span>, *, <span class="n">debug</span>=<span class="nb">False</span>):
+        <span class="k">return</span> <span class="n">asyncio</span>.<span class="nb">run</span>(<span class="nb">self</span>.<span class="n">_node_rpc_call</span>(<span class="k">method</span>, <span class="nb">params</span>, <span class="n">loop_limit</span>=<span class="n">loop_limit</span>))
 
-        <span class="k">return</span> <span class="n">asyncio</span>.<span class="nb">run</span>(
-
-            <span class="nb">self</span>.<span class="n">_node_rpc_call</span>(<span class="k">method</span>, <span class="nb">params</span>, <span class="n">loop_limit</span>=<span class="n">loop_limit</span>, <span class="n">debug</span>=<span class="n">debug</span>)
-
-        )
-
-    <span class="n">async</span> <span class="n">def</span> <span class="n">_node_rpc_call</span>(<span class="nb">self</span>, <span class="k">method</span>, <span class="nb">params</span>, <span class="n">loop_limit</span>=<span class="nb">False</span>, *, <span class="n">debug</span>=<span class="nb">False</span>):
+    <span class="n">async</span> <span class="n">def</span> <span class="n">_node_rpc_call</span>(<span class="nb">self</span>, <span class="k">method</span>, <span class="nb">params</span>, *, <span class="n">loop_limit</span>=<span class="nb">False</span>):
 
         <span class="s">&quot;&quot;&quot;</span>
 
@@ -747,7 +769,7 @@
 
         <span class="n">async</span> <span class="n">def</span> <span class="n">ws_request</span>(<span class="nb">payload</span>):
 
-            <span class="n">async</span> <span class="k">with</span> <span class="n">websockets</span>.<span class="nb">connect</span>(<span class="nb">self</span>.<span class="n">address</span>) <span class="n">as</span> <span class="n">websocket:</span>
+            <span class="n">async</span> <span class="k">with</span> <span class="n">websockets</span>.<span class="nb">connect</span>(<span class="nb">self</span>.<span class="n">node_url</span>) <span class="n">as</span> <span class="n">websocket:</span>
 
                 <span class="nb">await</span> <span class="n">websocket</span>.<span class="nb">send</span>(<span class="n">json</span>.<span class="n">dumps</span>(<span class="nb">payload</span>))
 
@@ -761,9 +783,7 @@
 
                     <span class="nb">result</span> = <span class="n">json</span>.<span class="n">loads</span>(<span class="nb">await</span> <span class="n">websocket</span>.<span class="nb">recv</span>())
 
-                    <span class="k">if</span> <span class="n">debug:</span>
-
-                        <span class="nb">self</span>.<span class="n">logger</span>.<span class="n">debug</span>(<span class="s">&quot;Received from server&quot;</span>, <span class="nb">result</span>)
+                    <span class="c1"># logger.info(f&quot;Received from server {result}&quot;)</span>
 
                     <span class="n">ws_results</span>.<span class="n">update</span>({<span class="n">event_number:</span> <span class="nb">result</span>})
 
@@ -805,20 +825,15 @@
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">method</span><span class="p">,</span>
     <span class="n">params</span><span class="p">,</span>
-    <span class="n">loop_limit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
-    <span class="n">debug</span><span class="o">=</span><span class="kc">False</span>
+    <span class="n">loop_limit</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">)</span>
 </code></pre></div>
 
 
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="n">node_rpc_call</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="k">method</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">loop_limit</span><span class="o">=</span><span class="k">False</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="k">False</span><span class="p">):</span>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="n">node_rpc_call</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="k">method</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">loop_limit</span><span class="o">=</span><span class="k">False</span><span class="p">):</span>
 
-        <span class="k">return</span> <span class="n">asyncio</span><span class="p">.</span><span class="n">run</span><span class="p">(</span>
-
-            <span class="k">self</span><span class="p">.</span><span class="n">_node_rpc_call</span><span class="p">(</span><span class="k">method</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">loop_limit</span><span class="o">=</span><span class="n">loop_limit</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="n">debug</span><span class="p">)</span>
-
-        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">asyncio</span><span class="p">.</span><span class="n">run</span><span class="p">(</span><span class="k">self</span><span class="p">.</span><span class="n">_node_rpc_call</span><span class="p">(</span><span class="k">method</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">loop_limit</span><span class="o">=</span><span class="n">loop_limit</span><span class="p">))</span>
 </code></pre></div>
 
 
@@ -844,7 +859,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../logging/" title="Logging" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../" title="Index" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -853,7 +868,7 @@
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Logging
+                Index
               </span>
             </div>
           </a>
