@@ -21,12 +21,14 @@ logger = logging.getLogger(__name__)
 
 class Kusama:
     def __init__(
-        self, *, address: str = "wss://kusama-rpc.polkadot.io/",
-        arbitrator_address: str = None
+        self,
+        *,
+        address: str = "wss://kusama-rpc.polkadot.io/",
+        arbitrator_key: str = None,
     ):
         self.address = address
-        if admin_key:
-            self.keypair = sr25519.pair_from_seed(bytes.fromhex(admin_key))
+        if arbitrator_key:
+            self.keypair = sr25519.pair_from_seed(bytes.fromhex(arbitrator_key))
             self.arbitrator_account_id = self.keypair[0].hex()
             self.arbitrator_address = ss58_encode(self.keypair[0], 2)
 
@@ -38,7 +40,6 @@ class Kusama:
         self.network = network
         assert self.check_version() == BLOCKCHAIN_VERSION
 
-        # WARNING: Relying on side effects to run code is dangerous, refactor this if possible
         RuntimeConfiguration().update_type_registry(
             load_type_registry_preset("default")
         )
@@ -152,9 +153,6 @@ class Kusama:
             self.spec_version,
         )
         return {"escrow_payload": escrow_payload, "fee_payload": fee_payload}
-
-    def _verify_fee(self):
-        pass
 
     # def cancellation(self):
     #     """

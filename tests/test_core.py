@@ -28,8 +28,7 @@ class TestBalanceEndpoint:
 class TestGetEscrowAddressEndpoint:
     def test_get_escrow_address(self, network):
         kusama = Kusama(
-            arbitrator_address="HvqnQxDQbi3LL2URh7WQfcmi8b2ZWfBhu7TEDmyyn5VK8e2"
-            admin_key="5c65b9f9f75f95d70b84577ab07e22f7400d394ca3c8bcb227fb6d42920d9b50"
+            arbitrator_key="5c65b9f9f75f95d70b84577ab07e22f7400d394ca3c8bcb227fb6d42920d9b50"
         )
         kusama.connect(network=network)
 
