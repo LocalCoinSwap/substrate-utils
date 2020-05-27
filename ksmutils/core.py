@@ -10,6 +10,8 @@ from scalecodec.type_registry import load_type_registry_preset
 from scalecodec.utils.ss58 import ss58_decode
 from scalecodec.utils.ss58 import ss58_encode
 
+from .helper import approve_as_multi_signature_payload
+from .helper import transfer_signature_payload
 from .network import Network
 
 # Hardcode this because we WANT things to break if it changes
@@ -20,13 +22,16 @@ logger = logging.getLogger(__name__)
 
 class Kusama:
     def __init__(
-        self, *, address: str = "wss://kusama-rpc.polkadot.io/", admin_key: str = None
+        self,
+        *,
+        address: str = "wss://kusama-rpc.polkadot.io/",
+        arbitrator_key: str = None,
     ):
         self.address = address
-        if admin_key:
-            self.keypair = sr25519.pair_from_seed(bytes.fromhex(admin_key))
-            self.admin_account_id = self.keypair[0].hex()
-            self.admin_address = ss58_encode(self.keypair[0], 2)
+        if arbitrator_key:
+            self.keypair = sr25519.pair_from_seed(bytes.fromhex(arbitrator_key))
+            self.arbitrator_account_id = self.keypair[0].hex()
+            self.arbitrator_address = ss58_encode(self.keypair[0], 2)
 
     def connect(self, *, address: str = "", network: "Network" = None):
         address = self.address if not address else address
@@ -36,7 +41,6 @@ class Kusama:
         self.network = network
         assert self.check_version() == BLOCKCHAIN_VERSION
 
-        # WARNING: Relying on side effects to run code is dangerous, refactor this if possible
         RuntimeConfiguration().update_type_registry(
             load_type_registry_preset("default")
         )
@@ -113,37 +117,89 @@ class Kusama:
         """
         pass
 
-    def unsigned_transfer(self):
+    def transfer_payload(self, from_address, to_address, value):
         """
-        Unsigned transfer endpoint
+        Get signature payloads for a regular transfer
         """
-        pass
+        nonce = self.get_nonce(from_address)
+        return transfer_signature_payload(
+            self.metadata,
+            to_address,
+            value,
+            nonce,
+            self.genesis_hash,
+            self.spec_version,
+        )
 
-    def create_escrow(self):
+    def escrow_payloads(self, seller_address, escrow_address, trade_value, fee_value):
         """
-        Get unsigned escrow transactions
+        Get signature payloads for funding the multisig escrow,
+        and sending the fee to the arbitrator
+        """
+        nonce = self.get_nonce(seller_address)
+        escrow_payload = transfer_signature_payload(
+            self.metadata,
+            escrow_address,
+            trade_value,
+            nonce,
+            self.genesis_hash,
+            self.spec_version,
+        )
+        fee_payload = transfer_signature_payload(
+            self.metadata,
+            self.arbitrator_address,
+            fee_value,
+            nonce + 1,
+            self.genesis_hash,
+            self.spec_version,
+        )
+        return {"escrow_payload": escrow_payload, "fee_payload": fee_payload}
+
+    def cancellation(self, seller_address, trade_value, fee_value, other_signatories):
+        """
+        1. Broadcast approveAsMulti from arbitrator to seller
+        2. Verify that the asMulti passed successfully and that the fee is valid
+        2. Broadcast fee return transfer from arbitrator to seller
+        """
+        assert fee_value <= trade_value * 0.01
+        nonce = self.get_nonce(self.arbitrator_address)
+
+        revert_payload = approve_as_multi_signature_payload(
+            self.metadata,
+            self.spec_version,
+            self.genesis_hash,
+            nonce,
+            seller_address,
+            trade_value,
+            other_signatories,
+        )
+        fee_revert_payload = transfer_signature_payload(
+            self.metadata,
+            seller_address,
+            fee_value,
+            nonce + 1,
+            self.genesis_hash,
+            self.spec_version,
+        )
+        # TODO: Sign and publish transactions
+        return revert_payload, fee_revert_payload
+
+    def resolve_dispute(self):
+        """
+        1. If sellers wins then use cancellation flow
+        2. If buyer wins then send broadcast approveAsMulti before
+          sending funds to buyer
         """
         pass
 
     def get_escrow_address(self, buyer_address, seller_address, threshold=2):
         """
-        Gets an escrow address for multisignature transactions
-
-        Params:
-        -------
-        buyer_address - str
-        seller_address - str
-        escrow_address - str
-        threshold - int
-
-        Returns:
-        --------
-        escrow address - str
+        Returns an escrow address for multisignature transactions
         """
         MultiAccountId = RuntimeConfiguration().get_decoder_class("MultiAccountId")
 
         multi_sig_account_id = MultiAccountId.create_from_account_list(
-            [buyer_address, seller_address, self.admin_address], 2
+            [buyer_address, seller_address, self.arbitrator_address], 2
         )
 
         multi_sig_address = ss58_encode(multi_sig_account_id.value.replace("0x", ""), 2)
