@@ -36,6 +36,8 @@ class Kusama(NonceManager):
         *,
         node_url: str = "wss://kusama-rpc.polkadot.io/",
         arbitrator_key: str = None,
+        # The amount we give the buyer if they win a dispute
+        welfare_value: int = 1000000000,
     ):
         self.node_url = node_url
         if arbitrator_key:
@@ -258,9 +260,9 @@ class Kusama(NonceManager):
         )
 
         revert_signature = helper.sign_payload(self.keypair, revert_payload)
-        fee_revert_signature = heper.sign_payload(self.keypair, fee_revert_payload)
+        fee_revert_signature = helper.sign_payload(self.keypair, fee_revert_payload)
 
-        revert_transaction = helper.unsigned_transfer_construction(
+        revert_transaction = helper.unsigned_approve_as_multi_construction(
             self.metadata,
             self.arbitrator_account_id,
             revert_signature,
@@ -269,7 +271,7 @@ class Kusama(NonceManager):
             trade_value,
             other_signatories,
         )
-        fee_revert_transaction = helper.unsigned_approve_as_multi_construction(
+        fee_revert_transaction = helper.unsigned_transfer_construction(
             self.metadata,
             self.arbitrator_account_id,
             fee_revert_signature,
@@ -279,13 +281,58 @@ class Kusama(NonceManager):
         )
         return revert_transaction, fee_revert_transaction
 
-    def resolve_dispute(self):
+    def resolve_dispute(
+        self, victor, seller_address, trade_value, fee_value, other_signatories
+    ):
         """
-        1. If sellers wins then use cancellation flow
-        2. If buyer wins then send broadcast approveAsMulti before
-          sending funds to buyer
+        If sellers wins then return cancellation logic
+        If buyer wins then return ready approveAsMulti and ready buyer replenishment
         """
-        pass
+        if victor == "seller":
+            return self.cancellation(
+                seller_address, trade_value, fee_value, other_signatories
+            )
+
+        nonce = self.arbitrator_nonce()
+        release_payload = helper.approve_as_multi_signature_payload(
+            self.metadata,
+            self.spec_version,
+            self.genesis_hash,
+            nonce,
+            seller_address,
+            trade_value,
+            other_signatories,
+        )
+        buyer_welfare_payload = helper.transfer_signature_payload(
+            self.metadata,
+            seller_address,
+            self.welfare_value,
+            nonce + 1,
+            self.genesis_hash,
+            self.spec_version,
+        )
+
+        release_signature = helper.sign_payload(self.keypair, release_payload)
+        welfare_signature = helper.sign_payload(self.keypair, buyer_welfare_payload)
+
+        release_transaction = helper.unsigned_approve_as_multi_construction(
+            self.metadata,
+            self.arbitrator_account_id,
+            release_signature,
+            nonce,
+            seller_address,
+            trade_value,
+            other_signatories,
+        )
+        welfare_transaction = helper.unsigned_transfer_construction(
+            self.metadata,
+            self.arbitrator_account_id,
+            welfare_signature,
+            nonce + 1,
+            seller_address,
+            self.welfare_value,
+        )
+        return release_transaction, welfare_transaction
 
     def escrow_broadcast(self, escrow_address, keypair, value):
         # TODO: Add a validation on keypair
