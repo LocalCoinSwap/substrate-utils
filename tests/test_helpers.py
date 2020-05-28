@@ -4,7 +4,7 @@ from .fixtures import spec_version
 from ksmutils.helper import approve_as_multi_signature_payload
 from ksmutils.helper import as_multi_signature_payload
 from ksmutils.helper import sign_payload
-from ksmutils.helper import transfer_signature_payload
+from ksmutils.helper import transfer_call_and_signature_payload
 from ksmutils.helper import unsigned_approve_as_multi_construction
 from ksmutils.helper import unsigned_as_multi_construction
 from ksmutils.helper import unsigned_transfer_construction
@@ -24,10 +24,10 @@ class TestSignaturePayloads:
             "01197a149ca93654499ea3dafeb0a8d493285c2df73290dfb7e61f870f17b418011"
             "97a149ca93654499ea3dafe"
         )
-        result = transfer_signature_payload(
+        result = transfer_call_and_signature_payload(
             metadata, address, value, nonce, genesis_hash, spec_version
         )
-        assert result == expected_signature_payload
+        assert result["signature_payload"] == expected_signature_payload
 
     def test_approve_as_multi_payload(self):
         """
