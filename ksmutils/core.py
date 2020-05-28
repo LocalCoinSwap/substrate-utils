@@ -20,7 +20,17 @@ BLOCKCHAIN_VERSION = 1062
 logger = logging.getLogger(__name__)
 
 
-class Kusama:
+class NonceManager:
+    """
+    Extending this class allows a user to build in advanced nonce management
+    in asyncronous environments where ordering is important
+    """
+
+    def arbitrator_nonce(self):
+        return self.get_nonce(self.arbitrator_address)
+
+
+class Kusama(NonceManager):
     def __init__(
         self,
         *,
@@ -224,12 +234,10 @@ class Kusama:
 
     def cancellation(self, seller_address, trade_value, fee_value, other_signatories):
         """
-        1. Broadcast approveAsMulti from arbitrator to seller
-        2. Verify that the asMulti passed successfully and that the fee is valid
-        2. Broadcast fee return transfer from arbitrator to seller
+        Return signed and ready transactions for the fee return and escrow return
         """
         assert fee_value <= trade_value * 0.01
-        nonce = self.get_nonce(self.arbitrator_address)
+        nonce = self.arbitrator_nonce()
 
         revert_payload = helper.approve_as_multi_signature_payload(
             self.metadata,
@@ -248,8 +256,28 @@ class Kusama:
             self.genesis_hash,
             self.spec_version,
         )
-        # TODO: Sign and publish transactions
-        return revert_payload, fee_revert_payload
+
+        revert_signature = helper.sign_payload(self.keypair, revert_payload)
+        fee_revert_signature = heper.sign_payload(self.keypair, fee_revert_payload)
+
+        revert_transaction = helper.unsigned_transfer_construction(
+            self.metadata,
+            self.arbitrator_account_id,
+            revert_signature,
+            nonce,
+            seller_address,
+            trade_value,
+            other_signatories,
+        )
+        fee_revert_transaction = helper.unsigned_approve_as_multi_construction(
+            self.metadata,
+            self.arbitrator_account_id,
+            fee_revert_signature,
+            nonce + 1,
+            seller_address,
+            fee_value,
+        )
+        return revert_transaction, fee_revert_transaction
 
     def resolve_dispute(self):
         """
