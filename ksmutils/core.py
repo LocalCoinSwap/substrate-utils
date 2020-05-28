@@ -11,8 +11,7 @@ from scalecodec.type_registry import load_type_registry_preset
 from scalecodec.utils.ss58 import ss58_decode
 from scalecodec.utils.ss58 import ss58_encode
 
-from .helper import approve_as_multi_signature_payload
-from .helper import transfer_signature_payload
+from . import helper
 from .network import Network
 
 # Hardcode this because we WANT things to break if it changes
@@ -157,6 +156,22 @@ class Kusama:
 
         return (block_number, extrinsic_index)
 
+    def get_escrow_address(self, buyer_address, seller_address, threshold=2):
+        """
+        Returns an escrow address for multisignature transactions
+        """
+        MultiAccountId = RuntimeConfiguration().get_decoder_class("MultiAccountId")
+
+        multi_sig_account_id = MultiAccountId.create_from_account_list(
+            [buyer_address, seller_address, self.arbitrator_address], 2
+        )
+
+        multi_sig_address = ss58_encode(multi_sig_account_id.value.replace("0x", ""), 2)
+        return multi_sig_address
+
+    # Put all the GET methods above this line
+    # After this all the functions modify something on the blockchain
+    # A better segregation would be an extended class which below functions
     def broadcast_extrinsic(self):
         """
         Raw extrinsic broadcast
@@ -174,7 +189,7 @@ class Kusama:
         Get signature payloads for a regular transfer
         """
         nonce = self.get_nonce(from_address)
-        return transfer_signature_payload(
+        return helper.transfer_signature_payload(
             self.metadata,
             to_address,
             value,
@@ -189,7 +204,7 @@ class Kusama:
         and sending the fee to the arbitrator
         """
         nonce = self.get_nonce(seller_address)
-        escrow_payload = transfer_signature_payload(
+        escrow_payload = helper.transfer_signature_payload(
             self.metadata,
             escrow_address,
             trade_value,
@@ -197,7 +212,7 @@ class Kusama:
             self.genesis_hash,
             self.spec_version,
         )
-        fee_payload = transfer_signature_payload(
+        fee_payload = helper.transfer_signature_payload(
             self.metadata,
             self.arbitrator_address,
             fee_value,
@@ -216,7 +231,7 @@ class Kusama:
         assert fee_value <= trade_value * 0.01
         nonce = self.get_nonce(self.arbitrator_address)
 
-        revert_payload = approve_as_multi_signature_payload(
+        revert_payload = helper.approve_as_multi_signature_payload(
             self.metadata,
             self.spec_version,
             self.genesis_hash,
@@ -225,7 +240,7 @@ class Kusama:
             trade_value,
             other_signatories,
         )
-        fee_revert_payload = transfer_signature_payload(
+        fee_revert_payload = helper.transfer_signature_payload(
             self.metadata,
             seller_address,
             fee_value,
@@ -244,15 +259,36 @@ class Kusama:
         """
         pass
 
-    def get_escrow_address(self, buyer_address, seller_address, threshold=2):
-        """
-        Returns an escrow address for multisignature transactions
-        """
-        MultiAccountId = RuntimeConfiguration().get_decoder_class("MultiAccountId")
+    def escrow_broadcast(self, escrow_address, keypair, value):
+        # TODO: Add a validation on keypair
+        from_address = ss58_encode(keypair[0], 2)
+        from_public_key = ss58_decode(from_address)
+        from_account_id = f"0x{from_public_key}"
 
-        multi_sig_account_id = MultiAccountId.create_from_account_list(
-            [buyer_address, seller_address, self.arbitrator_address], 2
+        nonce = self.get_nonce(from_address)
+
+        unsigned_payload = helper.transfer_signature_payload(
+            self.metadata,
+            escrow_address,
+            value,
+            nonce,
+            self.genesis_hash,
+            self.spec_version,
         )
 
-        multi_sig_address = ss58_encode(multi_sig_account_id.value.replace("0x", ""), 2)
-        return multi_sig_address
+        signed_payload = helper.sign_payload(unsigned_payload[2:], keypair)
+
+        extrinsic_data = helper.unsigned_transfer_construction(
+            self.metadata,
+            from_account_id,
+            signed_payload,
+            nonce,
+            escrow_address,
+            value,
+        )
+
+        result = self.network.node_rpc_call(
+            "author_submitAndWatchExtrinsic", [extrinsic_data],
+        )
+
+        return result
