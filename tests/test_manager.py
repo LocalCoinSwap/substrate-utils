@@ -31,7 +31,7 @@ class TestBroadcastMethods:
 
         mocker.patch("ksmutils.network.Network.node_rpc_call")
 
-        escrow_payload, fee_payload = trade_manager.escrow_payloads(
+        escrow_payload, fee_payload, nonce = trade_manager.escrow_payloads(
             seller_address, escrow_address, trade_value, fee_value,
         )
 

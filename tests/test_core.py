@@ -87,3 +87,21 @@ class TestGetMethods:
         expected_result = (2493157, 3)
         result = kusama.get_extrinsic_timepoint(node_response, extrinsic_data)
         assert result == expected_result
+
+    def test_escrow_payloads(self, network, mocker):
+        kusama = Kusama()
+        kusama.connect(network=network)
+        mocker.patch("ksmutils.core.Kusama.get_nonce", return_value=46)
+        # seller_address, escrow_address, trade_value, fee_value
+
+    def test_cancellation(self, network, mocker):
+        kusama = Kusama()
+        kusama.connect(network=network)
+        mocker.patch("ksmutils.core.Kusama.get_nonce", return_value=46)
+        # seller_address, trade_value, fee_value, other_signatories
+
+    def test_resolve_dispute(self, network, mocker):
+        kusama = Kusama()
+        kusama.connect(network=network)
+        mocker.patch("ksmutils.core.Kusama.get_nonce", return_value=46)
+        # victor, seller_address, trade_value, fee_value, other_signatories

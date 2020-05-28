@@ -14,22 +14,27 @@ escrow_address = kusama.get_escrow_address(buyer_address, seller_address)
 ```python
 trade_value = 10000000000 # Value of the trade in Plancks
 fee_value = 100000000 # Fee being paid in Plancks (trade_value is not inclusive of fee)
-escrow_payload, fee_payload = kusama.escrow_payloads(
+escrow_payload, fee_payload, nonce = kusama.escrow_payloads(
     seller_address, escrow_address, trade_value, fee_value)
 ```
 
 ### Sign the payloads
 ```
 import sr25519
+from helper import sign_payload
 seller_key = '427a2c7cdff26fc2ab1dfda2ba991624cad12f8adc8b0851540db6efec2c7431'
 keypair = sr25519.pair_from_seed(bytes.fromhex(seller_key))
-escrow_signature = sr25519.sign(keypair, bytes.fromhex(escrow_payload[2:]))
-fee_signature = sr25519.sign(keypair, bytes.fromhex(fee_payload[2:]))
+
+escrow_signature = sign_payload(keypair, escrow_payload)
+fee_signature = sign_payload(keypair, fee_payload)
 ```
 
-### Broadcast the transactions
+### Construct and broadcast the transactions
 ```
-
+escrow_tx = kusama.publish(
+    'transfer', [seller_address, escrow_signature, nonce, escrow_address, trade_value])
+fee_tx = kusama.publish(
+    'fee_transfer', [seller_address, fee_signature, nonce + 1, fee_value])
 ```
 
 ### Release the escrow to buyer

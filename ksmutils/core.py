@@ -181,21 +181,6 @@ class Kusama(NonceManager):
         multi_sig_address = ss58_encode(multi_sig_account_id.value.replace("0x", ""), 2)
         return multi_sig_address
 
-    # Put all the GET methods above this line
-    # After this all the functions modify something on the blockchain
-    # A better segregation would be an extended class which below functions
-    def broadcast_extrinsic(self):
-        """
-        Raw extrinsic broadcast
-        """
-        pass
-
-    def broadcast(self):
-        """
-        Handles final transaction construction according to transaction type
-        """
-        pass
-
     def transfer_payload(self, from_address, to_address, value):
         """
         Get signature payloads for a regular transfer
@@ -232,7 +217,35 @@ class Kusama(NonceManager):
             self.genesis_hash,
             self.spec_version,
         )
-        return escrow_payload, fee_payload
+        return escrow_payload, fee_payload, nonce
+
+    def release_escrow(self, buyer_address, trade_value, timepoint, other_signatories):
+        """
+        Return final arbitrator as_multi transaction for releasing escrow
+        """
+        nonce = self.arbitrator_nonce()
+        release_payload = helper.as_multi_signature_payload(
+            self.metadata,
+            self.spec_version,
+            self.genesis_hash,
+            nonce,
+            buyer_address,
+            trade_value,
+            other_signatories,
+            timepoint,
+        )
+        release_signature = helper.sign_payload(self.keypair, release_payload)
+        release_transaction = helper.unsigned_as_multi_construction(
+            self.metadata,
+            self.arbitrator_address,
+            release_signature,
+            nonce,
+            buyer_address,
+            trade_value,
+            timepoint,
+            other_signatories,
+        )
+        return release_transaction
 
     def cancellation(self, seller_address, trade_value, fee_value, other_signatories):
         """
@@ -333,3 +346,40 @@ class Kusama(NonceManager):
             self.welfare_value,
         )
         return release_transaction, welfare_transaction
+
+    def publish(self, type, params):
+        """
+        Raw extrinsic broadcast
+        """
+        if type == "transfer":
+            final_tx = helper.unsigned_transfer_construction(self.metadata, *params)
+            return self.network.node_rpc_call(
+                "author_submitAndWatchExtrinsic", [final_tx]
+            )
+
+        if type == "fee_transfer":
+            final_tx = helper.unsigned_transfer_construction(
+                self.metadata,
+                params[0],
+                params[1],
+                params[2],
+                self.arbitrator_address,
+                params[3],
+            )
+            return self.network.node_rpc_call(
+                "author_submitAndWatchExtrinsic", [final_tx]
+            )
+
+        if type == "approve_as_multi":
+            final_tx = helper.unsigned_approve_as_multi_construction(
+                self.metadata, *params
+            )
+            return self.network.node_rpc_call(
+                "author_submitAndWatchExtrinsic", [final_tx]
+            )
+
+        if type == "as_multi":
+            final_tx = helper.unsigned_as_multi_construction(self.metadata, *params)
+            return self.network.node_rpc_call(
+                "author_submitAndWatchExtrinsic", [final_tx]
+            )

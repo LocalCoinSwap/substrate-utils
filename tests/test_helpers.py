@@ -213,4 +213,4 @@ class TestPayloadConstruction:
 
         keypair = sr25519.pair_from_seed(bytes.fromhex(signer_hex))
         result = sign_payload(keypair, payload)
-        assert len(result) == 130
+        assert len(result) == 128
