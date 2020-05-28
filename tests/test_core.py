@@ -133,3 +133,48 @@ class TestGetMethods:
         expected_result = (2493157, 3)
         result = kusama.get_extrinsic_timepoint(node_response, extrinsic_data)
         assert result == expected_result
+
+
+class TestBroadcast:
+    def test_broadcast(self, network):
+        arbitrator_key = (
+            "b5643fe4084cae15ffbbc5c1cbe734bec5da9c351f4aa4d44f2897efeb8375c8"
+        )
+        node_provider = "wss://kusama-rpc.polkadot.io/"
+
+        kusama = Kusama(arbitrator_key=arbitrator_key, node_url=node_provider)
+        kusama.connect(network=network)
+        assert kusama.check_version() == 1062
+
+        buyer_address = "CofvaLbP3m8PLeNRQmLVPWmTT7jGgAXTwyT69k2wkfPxJ9V"
+        seller_address = "D2bHQwFcQj11SvtkjULEdKhK4WAeP6MThXgosMHjW9DrmbE"
+        escrow_address = kusama.get_escrow_address(buyer_address, seller_address)
+
+        trade_value = 10000000000
+        fee_value = 100000000
+
+        escrow_info, fee_info = kusama.escrow_payloads(
+            seller_address, escrow_address, trade_value, fee_value
+        )
+
+        import sr25519
+
+        seller_key = "427a2c7cdff26fc2ab1dfda2ba991624cad12f8adc8b0851540db6efec2c7431"
+        keypair = sr25519.pair_from_seed(bytes.fromhex(seller_key))
+        escrow_signature = sr25519.sign(
+            keypair, bytes.fromhex(escrow_info["signature_payload"][2:])
+        )
+        # fee_signature = sr25519.sign(keypair, bytes.fromhex(fee_info['signature_payload'][2:]))
+
+        extrinsic = kusama.broadcast(
+            seller_address,
+            escrow_signature,
+            escrow_info["call_info"],
+            escrow_info["nonce"],
+        )
+        assert len(str(extrinsic.data)) == 288
+
+    def test_broadcast_extrinsic(self):
+        pass
+        # kusama = Kusama()
+        # kusama.connect(network=network)
