@@ -27,10 +27,12 @@ keypair = sr25519.pair_from_seed(bytes.fromhex(seller_key))
 escrow_signature = sign_payload(keypair, escrow_payload)
 fee_signature = sign_payload(keypair, fee_payload)
 
-escrow_tx = kusama.publish(
+escrow_tx_hash, escrow_timepoint, success = kusama.publish(
     'transfer', [seller_address, escrow_signature, nonce, escrow_address, trade_value])
-fee_tx = kusama.publish(
+assert success
+fee_tx_hash, fee_timepoint, success = kusama.publish(
     'fee_transfer', [seller_address, fee_signature, nonce + 1, fee_value])
+assert success
 ```
 
 ## End-to-end cancellation

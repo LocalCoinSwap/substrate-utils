@@ -121,7 +121,6 @@ class Kusama(NonceManager):
         return result["nonce"]
 
     def get_block(self, block_hash):
-        # FIXME: Modify node_rpc_call to return single item when there's only one
         response = self.network.node_rpc_call(
             "chain_getBlock", [block_hash], loop_limit=1
         )[0]["result"]
@@ -162,19 +161,22 @@ class Kusama(NonceManager):
                 return idx
         return 0
 
-    def get_extrinsic_timepoint(self, node_response, extrinsic_data):
+    def get_extrinsic_hash(self, final_transaction):
+        return (
+            blake2b(bytes.fromhex(final_transaction[2:]), digest_size=32).digest().hex()
+        )
+
+    def get_extrinsic_timepoint(self, node_response, final_transaction):
         if not node_response:
             raise Exception("node_response is empty")
 
-        last_item = node_response[len(node_response) - 1]
+        last_item = node_response[max(node_response.keys())]
         finalized_hash = last_item.get("params", {}).get("result", {}).get("finalized")
 
         if not finalized_hash:
             raise Exception("Last item in the node_response is not finalized hash")
 
-        extrinsic_hash = (
-            blake2b(bytes.fromhex(extrinsic_data[2:]), digest_size=32).digest().hex()
-        )
+        extrinsic_hash = self.get_extrinsic_hash(final_transaction)
 
         block = self.get_block(finalized_hash)
         block_number = block.get("block").get("header").get("number")
@@ -371,18 +373,43 @@ class Kusama(NonceManager):
         )
         return release_transaction, welfare_transaction
 
+    def get_block_hash(self, node_response):
+        return (
+            node_response[max(node_response.keys())]
+            .get("params", {})
+            .get("result", {})
+            .get("finalized")
+        )
+
+    def is_transaction_success(self, transaction_type, events):
+        successfull = False
+        event_names = []
+        for event in events:
+            event_names.append(event["event_id"])
+        if transaction_type == "transfer" and "Transfer" in event_names:
+            successfull = True
+        return successfull
+
     def publish(self, type, params):
         """
         Raw extrinsic broadcast
         """
         if type == "transfer":
-            final_tx = helper.unsigned_transfer_construction(self.metadata, *params)
-            return self.network.node_rpc_call(
-                "author_submitAndWatchExtrinsic", [final_tx]
+            final_transaction = helper.unsigned_transfer_construction(
+                self.metadata, *params
             )
+            node_response = self.network.node_rpc_call(
+                "author_submitAndWatchExtrinsic", [final_transaction]
+            )
+            tx_hash = self.get_extrinsic_hash(final_transaction)
+            block_hash = self.get_block_hash(node_response)
+            timepoint = self.get_extrinsic_timepoint(node_response, final_transaction)
+            events = self.get_extrinsic_events(block_hash, timepoint[1])
+            success = self.is_transaction_success("transfer", events)
+            return tx_hash, timepoint, success
 
         if type == "fee_transfer":
-            final_tx = helper.unsigned_transfer_construction(
+            final_transaction = helper.unsigned_transfer_construction(
                 self.metadata,
                 params[0],
                 params[1],
@@ -390,20 +417,40 @@ class Kusama(NonceManager):
                 self.arbitrator_address,
                 params[3],
             )
-            return self.network.node_rpc_call(
-                "author_submitAndWatchExtrinsic", [final_tx]
+            node_response = self.network.node_rpc_call(
+                "author_submitAndWatchExtrinsic", [final_transaction]
             )
+            tx_hash = self.get_extrinsic_hash(final_transaction)
+            block_hash = self.get_block_hash(node_response)
+            timepoint = self.get_extrinsic_timepoint(node_response, final_transaction)
+            events = self.get_extrinsic_events(block_hash, timepoint[1])
+            success = self.is_transaction_success("transfer", events)
+            return tx_hash, timepoint, success
 
         if type == "approve_as_multi":
-            final_tx = helper.unsigned_approve_as_multi_construction(
+            final_transaction = helper.unsigned_approve_as_multi_construction(
                 self.metadata, *params
             )
-            return self.network.node_rpc_call(
-                "author_submitAndWatchExtrinsic", [final_tx]
+            node_response = self.network.node_rpc_call(
+                "author_submitAndWatchExtrinsic", [final_transaction]
             )
+            tx_hash = self.get_extrinsic_hash(final_transaction)
+            block_hash = self.get_block_hash(node_response)
+            timepoint = self.get_extrinsic_timepoint(node_response, final_transaction)
+            events = self.get_extrinsic_events(block_hash, timepoint[1])
+            success = self.is_transaction_success("approve_as_multi", events)
+            return tx_hash, timepoint, success
 
         if type == "as_multi":
-            final_tx = helper.unsigned_as_multi_construction(self.metadata, *params)
-            return self.network.node_rpc_call(
-                "author_submitAndWatchExtrinsic", [final_tx]
+            final_transaction = helper.unsigned_as_multi_construction(
+                self.metadata, *params
             )
+            node_response = self.network.node_rpc_call(
+                "author_submitAndWatchExtrinsic", [final_transaction]
+            )
+            tx_hash = self.get_extrinsic_hash(final_transaction)
+            block_hash = self.get_block_hash(node_response)
+            timepoint = self.get_extrinsic_timepoint(node_response, final_transaction)
+            events = self.get_extrinsic_events(block_hash, timepoint[1])
+            success = self.is_transaction_success("as_multi", events)
+            return tx_hash, timepoint, success
