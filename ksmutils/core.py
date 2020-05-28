@@ -333,37 +333,3 @@ class Kusama(NonceManager):
             self.welfare_value,
         )
         return release_transaction, welfare_transaction
-
-    def escrow_broadcast(self, escrow_address, keypair, value):
-        # TODO: Add a validation on keypair
-        from_address = ss58_encode(keypair[0], 2)
-        from_public_key = ss58_decode(from_address)
-        from_account_id = f"0x{from_public_key}"
-
-        nonce = self.get_nonce(from_address)
-
-        unsigned_payload = helper.transfer_signature_payload(
-            self.metadata,
-            escrow_address,
-            value,
-            nonce,
-            self.genesis_hash,
-            self.spec_version,
-        )
-
-        signed_payload = helper.sign_payload(unsigned_payload[2:], keypair)
-
-        extrinsic_data = helper.unsigned_transfer_construction(
-            self.metadata,
-            from_account_id,
-            signed_payload,
-            nonce,
-            escrow_address,
-            value,
-        )
-
-        result = self.network.node_rpc_call(
-            "author_submitAndWatchExtrinsic", [extrinsic_data],
-        )
-
-        return result

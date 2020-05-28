@@ -51,7 +51,6 @@ class TestGetMethods:
         result = kusama.get_block(block_hash)
 
         expected_number = 2493157
-        print(result)
         assert result.get("block").get("header").get("number") == expected_number
 
     def test_get_extrinsic_timepoint(self, network, mocker):
