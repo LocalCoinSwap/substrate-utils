@@ -139,6 +139,22 @@ class Kusama(NonceManager):
 
         return response
 
+    def get_events(self, block_hash):
+        # If there's one more function where we have to do ths, let's add the helper function
+        # xxHash128(System) + xxHash128(Events)
+        storage_hash = (
+            "0x26aa394eea5630e07c48ae0c9558cef780d41e5e16056765bc8461851072c9d7"
+        )
+
+        result = self.network.node_rpc_call(
+            "state_getStorageAt", [storage_hash, block_hash], loop_limit=1
+        )[0]["result"]
+
+        return_decoder = ScaleDecoder.get_decoder_class(
+            "Vec<EventRecord<Event, Hash>>", ScaleBytes(result), metadata=self.metadata,
+        )
+        return return_decoder.decode()
+
     def _get_extrinsix_index(self, block_extrinsics, extrinsic_hash):
         for idx, extrinsics in enumerate(block_extrinsics):
             ehash = extrinsics.get("extrinsic_hash")
@@ -167,6 +183,14 @@ class Kusama(NonceManager):
         )
 
         return (block_number, extrinsic_index)
+
+    def get_extrinsic_events(self, block_hash, extrinsinc_index):
+        events = self.get_events(block_hash)
+        extrinsic_events = []
+        for event in events:
+            if event.get("extrinsic_idx") == extrinsinc_index:
+                extrinsic_events.append(event)
+        return extrinsic_events
 
     def get_escrow_address(self, buyer_address, seller_address, threshold=2):
         """

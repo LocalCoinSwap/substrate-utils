@@ -53,6 +53,33 @@ class TestGetMethods:
         expected_number = 2493157
         assert result.get("block").get("header").get("number") == expected_number
 
+    def test_get_events(self, network):
+        kusama = Kusama()
+        kusama.connect(network=network)
+
+        block_hash = (
+            "0xa8495cdf2eaf0025966e96b06fba92f647e1e316f2abc698186ecf67919dc52b"
+        )
+
+        result = kusama.get_events(block_hash)
+
+        assert len(result) > 0
+
+    def test_get_extrinsic_events(self, network):
+        kusama = Kusama()
+        kusama.connect(network=network)
+
+        block_hash = (
+            "0xa8495cdf2eaf0025966e96b06fba92f647e1e316f2abc698186ecf67919dc52b"
+        )
+        extrinsic_index = 3
+
+        result = kusama.get_extrinsic_events(block_hash, extrinsic_index)
+        assert len(result) > 0
+
+        for event in result:
+            assert event["extrinsic_idx"] == extrinsic_index
+
     def test_get_extrinsic_timepoint(self, network, mocker):
         kusama = Kusama()
         kusama.connect(network=network)
