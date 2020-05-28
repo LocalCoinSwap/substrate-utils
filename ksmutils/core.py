@@ -1,7 +1,10 @@
+import asyncio
+import json
 import logging
 from hashlib import blake2b
 
 import sr25519
+import websockets
 from scalecodec import ScaleBytes
 from scalecodec.base import RuntimeConfiguration
 from scalecodec.base import ScaleDecoder
@@ -12,7 +15,7 @@ from scalecodec.utils.ss58 import ss58_decode
 from scalecodec.utils.ss58 import ss58_encode
 
 from .helper import approve_as_multi_signature_payload
-from .helper import transfer_signature_payload
+from .helper import transfer_call_and_signature_payload
 from .network import Network
 
 # Hardcode this because we WANT things to break if it changes
@@ -157,24 +160,71 @@ class Kusama:
 
         return (block_number, extrinsic_index)
 
-    def broadcast_extrinsic(self):
+    def broadcast_extrinsic(self, extrinsic_data, request_id=1, loop_forever=False):
         """
         Raw extrinsic broadcast
         """
-        pass
 
-    def broadcast(self):
+        payload = {
+            "jsonrpc": "2.0",
+            "method": "author_submitAndWatchExtrinsic",
+            "params": [str(extrinsic_data)],
+            "id": request_id,
+        }
+        ws_results = {}
+
+        async def ws_request(payload):
+            async with websockets.connect(self.node_url) as websocket:
+                await websocket.send(json.dumps(payload))
+                event_number = 0
+                looping = True
+                while looping:
+                    result = json.loads(await websocket.recv())
+                    ws_results.update({event_number: result})
+
+                    # This is nasty but nested ifs are worse
+                    if (
+                        "params" in result
+                        and type(result["params"]["result"]) is dict
+                        and "finalized" in result["params"]["result"]
+                    ):
+                        looping = False
+                        looping = loop_forever
+
+                    event_number += 1
+
+        asyncio.run(ws_request(payload))
+        return ws_results
+
+    def broadcast(self, sender_address, signature, call_info, nonce):
         """
         Handles final transaction construction according to transaction type
         """
-        pass
+        sender_account_id = "0x{}".format(ss58_decode(sender_address, 2))
+        signature = "0x{}".format(signature.hex())
+        # Create extrinsic
+        extrinsic = ScaleDecoder.get_decoder_class("Extrinsic", metadata=self.metadata)
+        extrinsic.encode(
+            {
+                "account_id": sender_account_id,
+                "signature_version": 1,
+                "signature": signature,
+                "call_function": call_info.value["call_function"],
+                "call_module": call_info.value["call_module"],
+                "call_args": call_info.value["call_args"],
+                "nonce": nonce,
+                "era": "00",
+                "tip": 0,
+            }
+        )
+        return extrinsic
 
     def transfer_payload(self, from_address, to_address, value):
         """
-        Get signature payloads for a regular transfer
+        Get signature payloads and call data for a regular transfer
         """
         nonce = self.get_nonce(from_address)
-        return transfer_signature_payload(
+        return transfer_call_and_signature_payload(
             self.metadata,
             to_address,
             value,
@@ -185,11 +235,11 @@ class Kusama:
 
     def escrow_payloads(self, seller_address, escrow_address, trade_value, fee_value):
         """
-        Get signature payloads for funding the multisig escrow,
+        Get signature payloads and call data for funding the multisig escrow,
         and sending the fee to the arbitrator
         """
         nonce = self.get_nonce(seller_address)
-        escrow_payload = transfer_signature_payload(
+        escrow_extrinsic_info = transfer_call_and_signature_payload(
             self.metadata,
             escrow_address,
             trade_value,
@@ -197,7 +247,7 @@ class Kusama:
             self.genesis_hash,
             self.spec_version,
         )
-        fee_payload = transfer_signature_payload(
+        fee_extrinsic_info = transfer_call_and_signature_payload(
             self.metadata,
             self.arbitrator_address,
             fee_value,
@@ -205,7 +255,7 @@ class Kusama:
             self.genesis_hash,
             self.spec_version,
         )
-        return escrow_payload, fee_payload
+        return escrow_extrinsic_info, fee_extrinsic_info
 
     def cancellation(self, seller_address, trade_value, fee_value, other_signatories):
         """
@@ -225,7 +275,7 @@ class Kusama:
             trade_value,
             other_signatories,
         )
-        fee_revert_payload = transfer_signature_payload(
+        fee_revert_payload = transfer_call_and_signature_payload(
             self.metadata,
             seller_address,
             fee_value,

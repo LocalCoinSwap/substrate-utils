@@ -12,7 +12,7 @@ def hash_call(call):
     return f"0x{blake2b(call, digest_size=32).digest().hex()}"
 
 
-def transfer_signature_payload(
+def transfer_call_and_signature_payload(
     metadata, address, value, nonce, genesis_hash, spec_version
 ):
     """
@@ -38,7 +38,11 @@ def transfer_signature_payload(
             "blockHash": genesis_hash,
         }
     )
-    return str(signature_payload.data)
+    return {
+        "signature_payload": str(signature_payload.data),
+        "call_info": call,
+        "nonce": nonce,
+    }
 
 
 def approve_as_multi_signature_payload(
