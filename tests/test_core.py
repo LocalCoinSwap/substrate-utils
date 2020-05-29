@@ -169,18 +169,6 @@ class TestGetMethods:
 
         assert kusama._get_extrinsix_index([], "") == -1
 
-    def test_transfer_payload(self, network, mocker):
-        # This test isn't really necessary because it just calls another
-        # function, a better way would be to test if that another function
-        # gets called ONCE, can't figure out how to do this without unittest
-        kusama = Kusama()
-        kusama.connect(network=network)
-
-        mocker.patch("ksmutils.core.Kusama.get_nonce", return_value=4)
-        mocker.patch("ksmutils.helper.transfer_signature_payload", return_value=None)
-
-        assert kusama.transfer_payload("", "", 0) is None
-
     def test_escrow_payloads(self, network, mocker):
         kusama = Kusama()
         kusama.connect(network=network)
@@ -214,6 +202,10 @@ class TestNonceManager:
 
 
 class TestWrapperMethods:
+    # These tests aren't really necessary because they just call another
+    # function which are already testd,
+    # a better way would be to test if that other function
+    # gets called ONCE, can't figure out how to do this without unittest
     def test_broadcast(self, network, mocker):
         kusama = Kusama()
         kusama.connect(network=network)
@@ -254,3 +246,47 @@ class TestWrapperMethods:
         kusama = Kusama()
         kusama.connect(network=network)
         assert kusama.is_transaction_success("transfer", [{"event_id": "Transfer"}])
+
+    def test_transfer_payload(self, network, mocker):
+        kusama = Kusama()
+        kusama.connect(network=network)
+
+        mocker.patch("ksmutils.core.Kusama.get_nonce", return_value=4)
+        mocker.patch("ksmutils.helper.transfer_signature_payload", return_value=None)
+
+        assert kusama.transfer_payload("", "", 0) is None
+
+    def test_approve_as_multi_payload(self, network, mocker):
+        kusama = Kusama()
+        kusama.connect(network=network)
+
+        mocker.patch("ksmutils.core.Kusama.get_nonce", return_value=4)
+        mocker.patch(
+            "ksmutils.helper.approve_as_multi_signature_payload", return_value=None
+        )
+
+        assert kusama.approve_as_multi_payload("", "", 0, []) == (None, 4)
+
+    def test_as_multi_payload(self, network, mocker):
+        kusama = Kusama()
+        kusama.connect(network=network)
+
+        mocker.patch("ksmutils.core.Kusama.get_nonce", return_value=4)
+        mocker.patch("ksmutils.helper.as_multi_signature_payload", return_value=None)
+
+        assert kusama.as_multi_payload("", "", 0, []) == (None, 4)
+
+    def test_release_escrow(self, network, mocker):
+        kusama = Kusama(
+            arbitrator_key="5c65b9f9f75f95d70b84577ab07e22f7400d394ca3c8bcb227fb6d42920d9b50"
+        )
+        kusama.connect(network=network)
+
+        mocker.patch("ksmutils.core.Kusama.arbitrator_nonce", return_value=4)
+        mocker.patch("ksmutils.helper.as_multi_signature_payload", return_value=None)
+        mocker.patch("ksmutils.helper.sign_payload", return_value=None)
+        mocker.patch(
+            "ksmutils.helper.unsigned_as_multi_construction", return_value="tx"
+        )
+
+        assert kusama.release_escrow("", "", (1, 2), []) == "tx"
