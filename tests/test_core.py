@@ -40,12 +40,17 @@ class TestGetMethods:
 
         assert result == "Fgh5GQ1guNxvurv71cmHm8H5Eo8Ywrdz1mZemffAP2UrrH2"
 
-    def test_get_block(self, network):
+    def test_get_block(self, network, mocker):
         kusama = Kusama()
         kusama.connect(network=network)
 
         block_hash = (
             "0xa8495cdf2eaf0025966e96b06fba92f647e1e316f2abc698186ecf67919dc52b"
+        )
+
+        mocker.patch(
+            "ksmutils.network.Network.node_rpc_call",
+            return_value=mocked_returns.node_rpc_call_return_2,
         )
 
         result = kusama.get_block(block_hash)

@@ -54,6 +54,34 @@ node_rpc_call_return_1 = {
     "id": 1,
 }
 
+node_rpc_call_return_2 = {
+    "jsonrpc": "2.0",
+    "result": {
+        "block": {
+            "extrinsics": [
+                "0x280402000b60b07e577201",
+                "0x1c0409008a2b9800",
+                "0x1004140000",
+                "0x35028444ac0e6cb2c7e9adfcc86919959ff044cd6f6aefcc99152592a4fe8e6d22ce7701d86d7a5e2fdecb5a927a2e38beb91ec2d7ac97680d8271638676684c3d1f0e5fec54215035204e2e0d6323e029cee37938c5984bdca37d1c1fa7890cdecd7a8200b0000400be51e7d8eb439683272967dfce076362514e8519a51164e73f21272d157b446e0700e40b5402",
+            ],
+            "header": {
+                "digest": {
+                    "logs": [
+                        "0x0642414245b5010196000000aa1ecd0f00000000b0b938a0d0806425117cdb0683d8daa9e4b1a97ab126da764b076fcf459ecc67ca18a3938872e7755d06963f1f7e57bcefa0dca6a5618b0696358a3c2d4b4801d1f6c6e7a1f5ed1b074c22789134ad1ac3a22192d189a5e85de7de8cc791b409",
+                        "0x054241424501011a8d8474fcd4f72b548b4f380a8b7f562d249cd7a52fb8041c64e4cba8cd102ad93fe499d80c066c2ec7a90670ab0ace12428d61ed7a67f185d93dd5f4ea488a",
+                    ]
+                },
+                "extrinsicsRoot": "0x279e02b9226cc0cef2e52a1b7d85ca29cc4d29e7becd371cda8d3c01c51de654",
+                "number": "0x260ae5",
+                "parentHash": "0x689c6a7b41d3ed6dd3d2bf682675a17a86e5bfd83c005aa1881c165ada73a534",
+                "stateRoot": "0xf6fc126880916cbca767412ba1cc64ba96b500b155af7cc46f89388c8710c196",
+            },
+        },
+        "justification": None,
+    },
+    "id": 1,
+}
+
 get_events_return_1 = [
     {
         "phase": 0,
