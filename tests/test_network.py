@@ -7,9 +7,9 @@ class TestBasicConnection:
         test_block = (
             "0x9371a6742726810f20ef7e26c53a141270d76e50b2c636baa4a0a1f5961f33ef"
         )
-        result = network.node_rpc_call(
-            "state_getStorage", [storage_key, test_block], loop_limit=1
-        )[0]["result"]
+        result = network.node_rpc_call("state_getStorage", [storage_key, test_block])[
+            "result"
+        ]
 
         expected_result = (
             "0x1800000000000000c0257a09000000000200000001000000000000ca9a3b000000000200000"

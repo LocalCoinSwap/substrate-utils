@@ -70,15 +70,11 @@ class Kusama(NonceManager):
         Make sure the versioning of the Kusama blockchain has not been
         updated since the last developer verification of the codebase
         """
-        version = self.network.node_rpc_call(
-            "state_getRuntimeVersion", [], loop_limit=1
-        )
-        return version[0]["result"]["specVersion"]
+        version = self.network.node_rpc_call("state_getRuntimeVersion", [])
+        return version["result"]["specVersion"]
 
     def get_metadata(self):
-        raw_metadata = self.network.node_rpc_call(
-            "state_getMetadata", [None], loop_limit=1
-        )[0]["result"]
+        raw_metadata = self.network.node_rpc_call("state_getMetadata", [None])["result"]
         metadata = MetadataDecoder(ScaleBytes(raw_metadata))
         metadata.decode()
         return metadata
@@ -87,9 +83,7 @@ class Kusama(NonceManager):
         return BLOCKCHAIN_VERSION
 
     def get_genesis_hash(self):
-        return self.network.node_rpc_call("chain_getBlockHash", [0], loop_limit=1)[0][
-            "result"
-        ]
+        return self.network.node_rpc_call("chain_getBlockHash", [0])["result"]
 
     def _get_address_info(self, address):
         # xxHash128(System) + xxHash128(Account)
@@ -101,9 +95,9 @@ class Kusama(NonceManager):
         hashed_address = f"{blake2b(bytes.fromhex(account_id), digest_size=16).digest().hex()}{account_id}"
         storage_hash = storage_key + hashed_address
 
-        result = self.network.node_rpc_call(
-            "state_getStorageAt", [storage_hash, None], loop_limit=1
-        )[0]["result"]
+        result = self.network.node_rpc_call("state_getStorageAt", [storage_hash, None])[
+            "result"
+        ]
 
         return_decoder = ScaleDecoder.get_decoder_class(
             "AccountInfo<Index, AccountData>",
@@ -121,9 +115,7 @@ class Kusama(NonceManager):
         return result["nonce"]
 
     def get_block(self, block_hash):
-        response = self.network.node_rpc_call(
-            "chain_getBlock", [block_hash], loop_limit=1
-        )[0]["result"]
+        response = self.network.node_rpc_call("chain_getBlock", [block_hash])["result"]
 
         response["block"]["header"]["number"] = int(
             response["block"]["header"]["number"], 16
@@ -146,9 +138,10 @@ class Kusama(NonceManager):
         )
 
         result = self.network.node_rpc_call(
-            "state_getStorageAt", [storage_hash, block_hash], loop_limit=1
-        )[0]["result"]
+            "state_getStorageAt", [storage_hash, block_hash]
+        )["result"]
 
+        logger.warning(result)
         return_decoder = ScaleDecoder.get_decoder_class(
             "Vec<EventRecord<Event, Hash>>", ScaleBytes(result), metadata=self.metadata,
         )
@@ -171,7 +164,6 @@ class Kusama(NonceManager):
             raise Exception("node_response is empty")
 
         finalized_hash = self.get_block_hash(node_response)
-
         if not finalized_hash:
             raise Exception("Last item in the node_response is not finalized hash")
 
@@ -397,7 +389,7 @@ class Kusama(NonceManager):
             final_transaction = helper.unsigned_transfer_construction(
                 self.metadata, *params
             )
-            node_response = self.network.node_rpc_call(
+            node_response = self.network.node_rpc_call_watch(
                 "author_submitAndWatchExtrinsic", [final_transaction]
             )
             tx_hash = self.get_extrinsic_hash(final_transaction)
@@ -416,7 +408,7 @@ class Kusama(NonceManager):
                 self.arbitrator_address,
                 params[3],
             )
-            node_response = self.network.node_rpc_call(
+            node_response = self.network.node_rpc_call_watch(
                 "author_submitAndWatchExtrinsic", [final_transaction]
             )
             tx_hash = self.get_extrinsic_hash(final_transaction)
@@ -430,7 +422,7 @@ class Kusama(NonceManager):
             final_transaction = helper.unsigned_approve_as_multi_construction(
                 self.metadata, *params
             )
-            node_response = self.network.node_rpc_call(
+            node_response = self.network.node_rpc_call_watch(
                 "author_submitAndWatchExtrinsic", [final_transaction]
             )
             tx_hash = self.get_extrinsic_hash(final_transaction)
@@ -444,7 +436,7 @@ class Kusama(NonceManager):
             final_transaction = helper.unsigned_as_multi_construction(
                 self.metadata, *params
             )
-            node_response = self.network.node_rpc_call(
+            node_response = self.network.node_rpc_call_watch(
                 "author_submitAndWatchExtrinsic", [final_transaction]
             )
             tx_hash = self.get_extrinsic_hash(final_transaction)

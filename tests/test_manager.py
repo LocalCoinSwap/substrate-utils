@@ -29,7 +29,7 @@ class TestBroadcastMethods:
 
         mocker.patch("ksmutils.core.Kusama.get_nonce", return_value=46)
 
-        mocker.patch("ksmutils.network.Network.node_rpc_call")
+        mocker.patch("ksmutils.network.Network.node_rpc_call_watch")
 
         escrow_payload, fee_payload, nonce = trade_manager.escrow_payloads(
             seller_address, escrow_address, trade_value, fee_value,

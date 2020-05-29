@@ -53,13 +53,18 @@ class TestGetMethods:
         expected_number = 2493157
         assert result.get("block").get("header").get("number") == expected_number
 
-    def test_get_events(self, network):
+    def test_get_events(self, network, mocker):
         kusama = Kusama()
         kusama.connect(network=network)
 
         block_hash = (
             "0xa8495cdf2eaf0025966e96b06fba92f647e1e316f2abc698186ecf67919dc52b"
         )
+
+        # mocker.patch(
+        #     "ksmutils.network.Network.node_rpc_call",
+        #     return_value=mocked_returns.node_rpc_call_return_1
+        # )
 
         result = kusama.get_events(block_hash)
 

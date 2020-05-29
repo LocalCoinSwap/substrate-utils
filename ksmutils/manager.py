@@ -26,7 +26,7 @@ class TradeManager(Kusama):
             trade_value,
         )
 
-        result = self.network.node_rpc_call(
+        result = self.network.node_rpc_call_watch(
             "author_submitAndWatchExtrinsic", [extrinsic_data],
         )
         return result
