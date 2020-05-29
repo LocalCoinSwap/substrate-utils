@@ -25,6 +25,7 @@ REQUIRED = [
     "websockets==8.1",
     "scalecodec==0.9.42",
     "base58==2.0.0",
+    "py-sr25519-bindings==0.1.1",
     "xxhash==1.4.3",
 ]
 
