@@ -551,11 +551,17 @@
 <ul>
 <li>Please make sure the docs look as expected on local</li>
 <li>Checkout to <code>docs-branch</code> branch</li>
+<li><code>git checkout docs-branch</code></li>
 <li>Only difference between <code>master</code> and <code>docs-branch</code> is that the <code>site/</code> is not gitignored in <code>docs-branch</code></li>
-<li>Rebase <code>docs-branch</code> with <code>master</code></li>
+<li>Merge <code>master</code> into <code>docs-branch</code></li>
+<li><code>git merge master</code></li>
+<li>Add the merge commit</li>
 <li>Run <code>portray as_html --overwrite</code> (Read <a href="https://timothycrosley.github.io/portray/docs/quick_start/2.-cli/#outputting-documentation-locally">portray docs</a> to know more)</li>
 <li>That will generate html docs in <code>site/</code> directory, it will overwrite the existing content</li>
-<li>Commit the changes and push to <code>docs-branch</code> (Use <code>--force</code> since we rebased with <code>master</code>)</li>
+<li>Commit the changes and push to <code>docs-branch</code></li>
+<li><code>git add site/</code></li>
+<li><code>git commit</code></li>
+<li><code>git push origin docs-branch</code></li>
 <li>Run this nested git command to publish the changes in <code>gh-pages</code> branch (which serves the static html)</li>
 </ul>
 <p><code>git push origin `git subtree split --prefix site docs-branch`:gh-pages --force</code></p>
