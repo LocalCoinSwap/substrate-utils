@@ -170,8 +170,7 @@ class Kusama(NonceManager):
         if not node_response:
             raise Exception("node_response is empty")
 
-        last_item = node_response[max(node_response.keys())]
-        finalized_hash = last_item.get("params", {}).get("result", {}).get("finalized")
+        finalized_hash = self.get_block_hash(node_response)
 
         if not finalized_hash:
             raise Exception("Last item in the node_response is not finalized hash")
