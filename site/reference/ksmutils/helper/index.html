@@ -488,6 +488,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../manager/" title="Manager" class="md-nav__link">
+      Manager
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../network/" title="Network" class="md-nav__link">
       Network
     </a>
@@ -1112,23 +1124,15 @@
 
     <span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">sign_payload</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="n">signer_public_key</span><span class="p">,</span> <span class="n">signer_private_key</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">sign_payload</span><span class="p">(</span><span class="n">keypair</span><span class="p">,</span> <span class="n">payload</span><span class="p">):</span>
 
-    <span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">payload</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;0x&quot;</span><span class="p">:</span>
 
-<span class="sd">    TODO: Either validate that 0x is not prefixed or handle both in this function</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">signature</span> <span class="o">=</span> <span class="n">sr25519</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">keypair</span><span class="p">,</span> <span class="nb">bytes</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="n">payload</span><span class="p">))</span>
 
-    <span class="n">signature</span> <span class="o">=</span> <span class="n">sr25519</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span>
-
-        <span class="p">(</span><span class="nb">bytes</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="n">signer_public_key</span><span class="p">),</span> <span class="nb">bytes</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="n">signer_private_key</span><span class="p">)),</span>
-
-        <span class="nb">bytes</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="n">payload</span><span class="p">),</span>
-
-    <span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;0x{signature.hex()}&quot;</span>
+    <span class="k">return</span> <span class="n">signature</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span>
 </code></pre></div>
 
 
@@ -1371,31 +1375,21 @@
 </details>
 <h3 id="sign_payload">sign_payload</h3>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">sign_payload</span><span class="p">(</span>
-    <span class="n">payload</span><span class="p">,</span>
-    <span class="n">signer_public_key</span><span class="p">,</span>
-    <span class="n">signer_private_key</span>
+    <span class="n">keypair</span><span class="p">,</span>
+    <span class="n">payload</span>
 <span class="p">)</span>
 </code></pre></div>
 
 
-<p>TODO: Either validate that 0x is not prefixed or handle both in this function</p>
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span> <span class="n">sign_payload</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="n">signer_public_key</span><span class="p">,</span> <span class="n">signer_private_key</span><span class="p">):</span>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span> <span class="n">sign_payload</span><span class="p">(</span><span class="n">keypair</span><span class="p">,</span> <span class="n">payload</span><span class="p">):</span>
 
-    <span class="ss">&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">payload</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="ss">&quot;0x&quot;</span><span class="p">:</span>
 
-<span class="ss">    TODO: Either validate that 0x is not prefixed or handle both in this function</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
 
-<span class="ss">    &quot;&quot;&quot;</span>
+    <span class="n">signature</span> <span class="o">=</span> <span class="n">sr25519</span><span class="p">.</span><span class="n">sign</span><span class="p">(</span><span class="n">keypair</span><span class="p">,</span> <span class="n">bytes</span><span class="p">.</span><span class="n">fromhex</span><span class="p">(</span><span class="n">payload</span><span class="p">))</span>
 
-    <span class="n">signature</span> <span class="o">=</span> <span class="n">sr25519</span><span class="p">.</span><span class="n">sign</span><span class="p">(</span>
-
-        <span class="p">(</span><span class="n">bytes</span><span class="p">.</span><span class="n">fromhex</span><span class="p">(</span><span class="n">signer_public_key</span><span class="p">),</span> <span class="n">bytes</span><span class="p">.</span><span class="n">fromhex</span><span class="p">(</span><span class="n">signer_private_key</span><span class="p">)),</span>
-
-        <span class="n">bytes</span><span class="p">.</span><span class="n">fromhex</span><span class="p">(</span><span class="n">payload</span><span class="p">),</span>
-
-    <span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">f</span><span class="ss">&quot;0x{signature.hex()}&quot;</span>
+    <span class="k">return</span> <span class="n">signature</span><span class="p">.</span><span class="n">hex</span><span class="p">()</span>
 </code></pre></div>
 
 
