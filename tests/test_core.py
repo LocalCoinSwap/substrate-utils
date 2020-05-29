@@ -1,5 +1,7 @@
 import copy
 
+import pytest
+
 from . import mocked_returns
 from ksmutils import Kusama
 
@@ -129,6 +131,26 @@ class TestGetMethods:
         expected_result = (2493157, 3)
         result = kusama.get_extrinsic_timepoint(node_response, extrinsic_data)
         assert result == expected_result
+
+    def test_get_extrinsic_timepoint_exception_1(self, network):
+        kusama = Kusama()
+        kusama.connect(network=network)
+
+        with pytest.raises(Exception) as excinfo:
+            kusama.get_extrinsic_timepoint({}, "")
+        assert "node_response is empty" in str(excinfo.value)
+
+    def test_get_extrinsic_timepoint_exception_2(self, network):
+        kusama = Kusama()
+        kusama.connect(network=network)
+
+        node_response = {0: {"jsonrpc": "2.0", "result": 723219, "id": 1}}
+
+        with pytest.raises(Exception) as excinfo:
+            kusama.get_extrinsic_timepoint(node_response, "")
+        assert "Last item in the node_response is not finalized hash" in str(
+            excinfo.value
+        )
 
     def test_escrow_payloads(self, network, mocker):
         kusama = Kusama()
