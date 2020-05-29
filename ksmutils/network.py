@@ -23,8 +23,14 @@ class Network:
         logger.info(f"Instantiating network connection to {node_url}")
         self.node_url = node_url
 
-    def node_rpc_call(self, method, params, *, loop_limit=False):
-        return asyncio.run(self._node_rpc_call(method, params, loop_limit=loop_limit))
+    def node_rpc_call(self, method, params):
+        logger.info("node_rpc_call for {}".format(method))
+        # TODO: Handle the case when the list is empty
+        return asyncio.run(self._node_rpc_call(method, params, loop_limit=1))[0]
+
+    def node_rpc_call_watch(self, method, params):
+        logger.info("node_rpc_call_watch for {}".format(method))
+        return asyncio.run(self._node_rpc_call(method, params, loop_limit=False))
 
     async def _node_rpc_call(self, method, params, *, loop_limit=False):
         """
