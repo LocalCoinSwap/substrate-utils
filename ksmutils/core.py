@@ -306,7 +306,13 @@ class Kusama(NonceManager):
         """
         Return signed and ready transactions for the fee return and escrow return
         """
-        assert fee_value <= trade_value * 0.01
+
+        # TODO: Why are we doing this btw?
+        # I removed `assert fee_value <= trade_value * 0.01`
+        # and added an exception like this but still
+        if fee_value > trade_value * 0.01:
+            raise Exception("Fee should not be more than 1% of trade value")
+
         nonce = self.arbitrator_nonce()
 
         revert_payload = helper.as_multi_signature_payload(

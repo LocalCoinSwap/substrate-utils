@@ -290,3 +290,58 @@ class TestWrapperMethods:
         )
 
         assert kusama.release_escrow("", "", (1, 2), []) == "tx"
+
+    def test_cancellation(self, network, mocker):
+        kusama = Kusama(
+            arbitrator_key="5c65b9f9f75f95d70b84577ab07e22f7400d394ca3c8bcb227fb6d42920d9b50"
+        )
+        kusama.connect(network=network)
+
+        mocker.patch("ksmutils.core.Kusama.arbitrator_nonce", return_value=4)
+        mocker.patch("ksmutils.helper.as_multi_signature_payload", return_value=None)
+        mocker.patch("ksmutils.helper.transfer_signature_payload", return_value=None)
+        mocker.patch("ksmutils.helper.sign_payload", return_value=None)
+        mocker.patch(
+            "ksmutils.helper.unsigned_as_multi_construction", return_value="tx"
+        )
+        mocker.patch(
+            "ksmutils.helper.unsigned_transfer_construction", return_value="fx"
+        )
+        assert kusama.cancellation("", 1, 0.01, [], (1, 2)) == ("tx", "fx")
+
+        with pytest.raises(Exception) as excinfo:
+            kusama.cancellation("", 1, 0.02, [], (1, 2)) == ("tx", "fx")
+        assert "Fee should not be more than 1% of trade value" in str(excinfo.value)
+
+    def test_resolve_dispute_seller_wins(self, network, mocker):
+        kusama = Kusama(
+            arbitrator_key="5c65b9f9f75f95d70b84577ab07e22f7400d394ca3c8bcb227fb6d42920d9b50"
+        )
+        kusama.connect(network=network)
+
+        mocker.patch("ksmutils.core.Kusama.arbitrator_nonce", return_value=4)
+
+        mocker.patch("ksmutils.core.Kusama.cancellation", return_value=("tx", "fx"))
+
+        assert kusama.resolve_dispute("seller", "", 1, 0.01, []) == ("tx", "fx")
+
+    def test_resolve_dispute_buyer_wins(self, network, mocker):
+        kusama = Kusama(
+            arbitrator_key="5c65b9f9f75f95d70b84577ab07e22f7400d394ca3c8bcb227fb6d42920d9b50"
+        )
+        kusama.connect(network=network)
+
+        mocker.patch("ksmutils.core.Kusama.arbitrator_nonce", return_value=4)
+        mocker.patch(
+            "ksmutils.helper.approve_as_multi_signature_payload", return_value=None
+        )
+        mocker.patch("ksmutils.helper.transfer_signature_payload", return_value=None)
+        mocker.patch("ksmutils.helper.sign_payload", return_value=None)
+        mocker.patch(
+            "ksmutils.helper.unsigned_approve_as_multi_construction", return_value="tx"
+        )
+        mocker.patch(
+            "ksmutils.helper.unsigned_transfer_construction", return_value="wx"
+        )
+
+        assert kusama.resolve_dispute("seller", "", 1, 0.01, []) == ("tx", "wx")
