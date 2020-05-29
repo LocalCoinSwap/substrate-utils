@@ -249,3 +249,8 @@ class TestWrapperMethods:
         assert kusama.publish("fee_transfer", [1, 2, 3, 4])
         assert kusama.publish("approve_as_multi", [1, 2, 3, 4])
         assert kusama.publish("as_multi", [1, 2, 3, 4])
+
+    def test_is_transaction_success(self, network):
+        kusama = Kusama()
+        kusama.connect(network=network)
+        assert kusama.is_transaction_success("transfer", [{"event_id": "Transfer"}])

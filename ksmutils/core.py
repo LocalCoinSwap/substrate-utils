@@ -422,12 +422,21 @@ class Kusama(NonceManager):
         event_names = []
         for event in events:
             event_names.append(event["event_id"])
-        if transaction_type == "transfer" and "Transfer" in event_names:
-            successfull = True
-        if transaction_type == "approve_as_multi" and "NewMultisig" in event_names:
-            successfull = True
-        if transaction_type == "as_multi" and "MultisigExecuted" in event_names:
-            successfull = True
+        successfull = (
+            True
+            if transaction_type == "transfer" and "Transfer" in event_names
+            else successfull
+        )
+        successfull = (
+            True
+            if transaction_type == "approve_as_multi" and "NewMultisig" in event_names
+            else successfull
+        )
+        successfull = (
+            True
+            if transaction_type == "as_multi" and "MultisigExecuted" in event_names
+            else successfull
+        )
         return successfull
 
     def publish(self, type, params):
