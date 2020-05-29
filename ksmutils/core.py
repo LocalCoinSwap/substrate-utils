@@ -36,8 +36,6 @@ class Kusama(NonceManager):
         *,
         node_url: str = "wss://kusama-rpc.polkadot.io/",
         arbitrator_key: str = None,
-        # The amount we give the buyer if they win a dispute
-        welfare_value: int = 1000000000,
     ):
         self.node_url = node_url
         if arbitrator_key:
@@ -211,6 +209,43 @@ class Kusama(NonceManager):
             self.spec_version,
         )
 
+    def approve_as_multi_payload(
+        self, from_address, to_address, value, other_signatories
+    ):
+        """
+        Get signature payloads for approve_as_multi
+        """
+        nonce = self.get_nonce(from_address)
+        approve_as_multi_payload = helper.approve_as_multi_signature_payload(
+            self.metadata,
+            self.spec_version,
+            self.genesis_hash,
+            nonce,
+            to_address,
+            value,
+            other_signatories,
+        )
+        return approve_as_multi_payload, nonce
+
+    def as_multi_payload(
+        self, from_address, to_address, value, other_signatories, nonce, timepoint=None,
+    ):
+        """
+        Get signature payloads for as_multi
+        """
+        nonce = self.get_nonce(from_address)
+        as_multi_payload = helper.as_multi_signature_payload(
+            self.metadata,
+            self.spec_version,
+            self.genesis_hash,
+            nonce,
+            to_address,
+            value,
+            other_signatories,
+            timepoint,
+        )
+        return as_multi_payload, nonce
+
     def escrow_payloads(self, seller_address, escrow_address, trade_value, fee_value):
         """
         Get signature payloads for funding the multisig escrow,
@@ -263,14 +298,16 @@ class Kusama(NonceManager):
         )
         return release_transaction
 
-    def cancellation(self, seller_address, trade_value, fee_value, other_signatories):
+    def cancellation(
+        self, seller_address, trade_value, fee_value, other_signatories, timepoint
+    ):
         """
         Return signed and ready transactions for the fee return and escrow return
         """
         assert fee_value <= trade_value * 0.01
         nonce = self.arbitrator_nonce()
 
-        revert_payload = helper.approve_as_multi_signature_payload(
+        revert_payload = helper.as_multi_signature_payload(
             self.metadata,
             self.spec_version,
             self.genesis_hash,
@@ -278,6 +315,7 @@ class Kusama(NonceManager):
             seller_address,
             trade_value,
             other_signatories,
+            timepoint,
         )
         fee_revert_payload = helper.transfer_signature_payload(
             self.metadata,
@@ -291,18 +329,19 @@ class Kusama(NonceManager):
         revert_signature = helper.sign_payload(self.keypair, revert_payload)
         fee_revert_signature = helper.sign_payload(self.keypair, fee_revert_payload)
 
-        revert_transaction = helper.unsigned_approve_as_multi_construction(
+        revert_transaction = helper.unsigned_as_multi_construction(
             self.metadata,
-            self.arbitrator_account_id,
+            self.arbitrator_address,
             revert_signature,
             nonce,
             seller_address,
             trade_value,
+            timepoint,
             other_signatories,
         )
         fee_revert_transaction = helper.unsigned_transfer_construction(
             self.metadata,
-            self.arbitrator_account_id,
+            self.arbitrator_address,
             fee_revert_signature,
             nonce + 1,
             seller_address,
@@ -311,18 +350,25 @@ class Kusama(NonceManager):
         return revert_transaction, fee_revert_transaction
 
     def resolve_dispute(
-        self, victor, seller_address, trade_value, fee_value, other_signatories
+        self,
+        victor,
+        seller_address,
+        trade_value,
+        fee_value,
+        other_signatories,
+        welfare_value: int = 1000000000,
     ):
         """
         If sellers wins then return cancellation logic
         If buyer wins then return ready approveAsMulti and ready buyer replenishment
         """
+        nonce = self.arbitrator_nonce()
+
         if victor == "seller":
             return self.cancellation(
-                seller_address, trade_value, fee_value, other_signatories
+                seller_address, trade_value, fee_value, other_signatories, None
             )
 
-        nonce = self.arbitrator_nonce()
         release_payload = helper.approve_as_multi_signature_payload(
             self.metadata,
             self.spec_version,
@@ -332,21 +378,21 @@ class Kusama(NonceManager):
             trade_value,
             other_signatories,
         )
-        buyer_welfare_payload = helper.transfer_signature_payload(
+        welfare_payload = helper.transfer_signature_payload(
             self.metadata,
             seller_address,
-            self.welfare_value,
+            welfare_value,
             nonce + 1,
             self.genesis_hash,
             self.spec_version,
         )
 
         release_signature = helper.sign_payload(self.keypair, release_payload)
-        welfare_signature = helper.sign_payload(self.keypair, buyer_welfare_payload)
+        welfare_signature = helper.sign_payload(self.keypair, welfare_payload)
 
         release_transaction = helper.unsigned_approve_as_multi_construction(
             self.metadata,
-            self.arbitrator_account_id,
+            self.arbitrator_address,
             release_signature,
             nonce,
             seller_address,
@@ -355,11 +401,11 @@ class Kusama(NonceManager):
         )
         welfare_transaction = helper.unsigned_transfer_construction(
             self.metadata,
-            self.arbitrator_account_id,
+            self.arbitrator_address,
             welfare_signature,
             nonce + 1,
             seller_address,
-            self.welfare_value,
+            welfare_value,
         )
         return release_transaction, welfare_transaction
 
@@ -378,6 +424,10 @@ class Kusama(NonceManager):
             event_names.append(event["event_id"])
         if transaction_type == "transfer" and "Transfer" in event_names:
             successfull = True
+        if transaction_type == "approve_as_multi" and "NewMultisig" in event_names:
+            successfull = True
+        if transaction_type == "as_multi" and "MultisigExecuted" in event_names:
+            successfull = True
         return successfull
 
     def publish(self, type, params):
@@ -385,21 +435,11 @@ class Kusama(NonceManager):
         Raw extrinsic broadcast
         """
         if type == "transfer":
-            final_transaction = helper.unsigned_transfer_construction(
-                self.metadata, *params
-            )
-            node_response = self.network.node_rpc_call_watch(
-                "author_submitAndWatchExtrinsic", [final_transaction]
-            )
-            tx_hash = self.get_extrinsic_hash(final_transaction)
-            block_hash = self.get_block_hash(node_response)
-            timepoint = self.get_extrinsic_timepoint(node_response, final_transaction)
-            events = self.get_extrinsic_events(block_hash, timepoint[1])
-            success = self.is_transaction_success("transfer", events)
-            return tx_hash, timepoint, success
+            transaction = helper.unsigned_transfer_construction(self.metadata, *params)
+            return self.broadcast(type, transaction)
 
         if type == "fee_transfer":
-            final_transaction = helper.unsigned_transfer_construction(
+            transaction = helper.unsigned_transfer_construction(
                 self.metadata,
                 params[0],
                 params[1],
@@ -407,40 +447,28 @@ class Kusama(NonceManager):
                 self.arbitrator_address,
                 params[3],
             )
-            node_response = self.network.node_rpc_call_watch(
-                "author_submitAndWatchExtrinsic", [final_transaction]
-            )
-            tx_hash = self.get_extrinsic_hash(final_transaction)
-            block_hash = self.get_block_hash(node_response)
-            timepoint = self.get_extrinsic_timepoint(node_response, final_transaction)
-            events = self.get_extrinsic_events(block_hash, timepoint[1])
-            success = self.is_transaction_success("transfer", events)
-            return tx_hash, timepoint, success
+            return self.broadcast("transfer", transaction)
 
         if type == "approve_as_multi":
-            final_transaction = helper.unsigned_approve_as_multi_construction(
+            transaction = helper.unsigned_approve_as_multi_construction(
                 self.metadata, *params
             )
-            node_response = self.network.node_rpc_call_watch(
-                "author_submitAndWatchExtrinsic", [final_transaction]
-            )
-            tx_hash = self.get_extrinsic_hash(final_transaction)
-            block_hash = self.get_block_hash(node_response)
-            timepoint = self.get_extrinsic_timepoint(node_response, final_transaction)
-            events = self.get_extrinsic_events(block_hash, timepoint[1])
-            success = self.is_transaction_success("approve_as_multi", events)
-            return tx_hash, timepoint, success
+            return self.broadcast(type, transaction)
 
         if type == "as_multi":
-            final_transaction = helper.unsigned_as_multi_construction(
-                self.metadata, *params
-            )
-            node_response = self.network.node_rpc_call_watch(
-                "author_submitAndWatchExtrinsic", [final_transaction]
-            )
-            tx_hash = self.get_extrinsic_hash(final_transaction)
-            block_hash = self.get_block_hash(node_response)
-            timepoint = self.get_extrinsic_timepoint(node_response, final_transaction)
-            events = self.get_extrinsic_events(block_hash, timepoint[1])
-            success = self.is_transaction_success("as_multi", events)
-            return tx_hash, timepoint, success
+            transaction = helper.unsigned_as_multi_construction(self.metadata, *params)
+            return self.broadcast(type, transaction)
+
+    def broadcast(self, type, transaction):
+        """
+        Utility function to broadcast complete final transactions
+        """
+        node_response = self.network.node_rpc_call(
+            "author_submitAndWatchExtrinsic", [transaction]
+        )
+        tx_hash = self.get_extrinsic_hash(transaction)
+        block_hash = self.get_block_hash(node_response)
+        timepoint = self.get_extrinsic_timepoint(node_response, transaction)
+        events = self.get_extrinsic_events(block_hash, timepoint[1])
+        success = self.is_transaction_success(type, events)
+        return tx_hash, timepoint, success
