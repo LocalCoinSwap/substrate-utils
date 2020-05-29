@@ -211,3 +211,22 @@ class TestNonceManager:
         result = kusama.arbitrator_nonce()
 
         assert result == 2
+
+
+class TestWrapperMethods:
+    def test_broadcast(self, network, mocker):
+        kusama = Kusama()
+        kusama.connect(network=network)
+
+        mocker.patch("ksmutils.network.Network.node_rpc_call")
+
+        mocker.patch("ksmutils.core.Kusama.get_extrinsic_hash", return_value="a")
+        mocker.patch("ksmutils.core.Kusama.get_block_hash")
+        mocker.patch(
+            "ksmutils.core.Kusama.get_extrinsic_timepoint", return_value=(1, 2)
+        )
+        mocker.patch("ksmutils.core.Kusama.get_extrinsic_events", return_value=[])
+        mocker.patch("ksmutils.core.Kusama.is_transaction_success", return_value=True)
+
+        result = kusama.broadcast("t", "tx")
+        assert result == ("a", (1, 2), True)
