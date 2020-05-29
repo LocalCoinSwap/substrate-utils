@@ -61,16 +61,16 @@ class TestGetMethods:
             "0xa8495cdf2eaf0025966e96b06fba92f647e1e316f2abc698186ecf67919dc52b"
         )
 
-        # mocker.patch(
-        #     "ksmutils.network.Network.node_rpc_call",
-        #     return_value=mocked_returns.node_rpc_call_return_1
-        # )
+        mocker.patch(
+            "ksmutils.network.Network.node_rpc_call",
+            return_value=mocked_returns.node_rpc_call_return_1,
+        )
 
         result = kusama.get_events(block_hash)
 
         assert len(result) > 0
 
-    def test_get_extrinsic_events(self, network):
+    def test_get_extrinsic_events(self, network, mocker):
         kusama = Kusama()
         kusama.connect(network=network)
 
@@ -78,6 +78,11 @@ class TestGetMethods:
             "0xa8495cdf2eaf0025966e96b06fba92f647e1e316f2abc698186ecf67919dc52b"
         )
         extrinsic_index = 3
+
+        mocker.patch(
+            "ksmutils.core.Kusama.get_events",
+            return_value=mocked_returns.get_events_return_1,
+        )
 
         result = kusama.get_extrinsic_events(block_hash, extrinsic_index)
         assert len(result) > 0

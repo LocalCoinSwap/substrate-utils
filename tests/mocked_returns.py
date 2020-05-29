@@ -48,4 +48,138 @@ get_block_mock_1 = {
     "justification": None,
 }
 
-node_rpc_call_return_1 = "0x1c00000000000000c0257a09000000000200000001000000000000000000000000000200000002000000000000ca9a3b000000000200000003000000020244ac0e6cb2c7e9adfcc86919959ff044cd6f6aefcc99152592a4fe8e6d22ce77be51e7d8eb439683272967dfce076362514e8519a51164e73f21272d157b446e00e40b540200000000000000000000000000030000000d060008af2f00000000000000000000000000000300000002043412f138b55741bb9dd7b4413ad55b00ed2c0b06654b73433d69ccb2e4a4214700c2eb0b0000000000000000000000000000030000000000c0769f0b00000000000000"
+node_rpc_call_return_1 = {
+    "jsonrpc": "2.0",
+    "result": "0x1c00000000000000c0257a09000000000200000001000000000000000000000000000200000002000000000000ca9a3b000000000200000003000000020244ac0e6cb2c7e9adfcc86919959ff044cd6f6aefcc99152592a4fe8e6d22ce77be51e7d8eb439683272967dfce076362514e8519a51164e73f21272d157b446e00e40b540200000000000000000000000000030000000d060008af2f00000000000000000000000000000300000002043412f138b55741bb9dd7b4413ad55b00ed2c0b06654b73433d69ccb2e4a4214700c2eb0b0000000000000000000000000000030000000000c0769f0b00000000000000",
+    "id": 1,
+}
+
+get_events_return_1 = [
+    {
+        "phase": 0,
+        "extrinsic_idx": 0,
+        "type": "0000",
+        "module_id": "System",
+        "event_id": "ExtrinsicSuccess",
+        "params": [
+            {
+                "type": "DispatchInfo",
+                "value": {"weight": 159000000, "class": "Mandatory", "paysFee": "Yes"},
+                "valueRaw": "",
+            }
+        ],
+        "topics": [],
+        "event_idx": 0,
+    },
+    {
+        "phase": 0,
+        "extrinsic_idx": 1,
+        "type": "0000",
+        "module_id": "System",
+        "event_id": "ExtrinsicSuccess",
+        "params": [
+            {
+                "type": "DispatchInfo",
+                "value": {"weight": 0, "class": "Mandatory", "paysFee": "Yes"},
+                "valueRaw": "",
+            }
+        ],
+        "topics": [],
+        "event_idx": 1,
+    },
+    {
+        "phase": 0,
+        "extrinsic_idx": 2,
+        "type": "0000",
+        "module_id": "System",
+        "event_id": "ExtrinsicSuccess",
+        "params": [
+            {
+                "type": "DispatchInfo",
+                "value": {"weight": 1000000000, "class": "Mandatory", "paysFee": "Yes"},
+                "valueRaw": "",
+            }
+        ],
+        "topics": [],
+        "event_idx": 2,
+    },
+    {
+        "phase": 0,
+        "extrinsic_idx": 3,
+        "type": "0202",
+        "module_id": "Balances",
+        "event_id": "Transfer",
+        "params": [
+            {
+                "type": "AccountId",
+                "value": "0x44ac0e6cb2c7e9adfcc86919959ff044cd6f6aefcc99152592a4fe8e6d22ce77",
+                "valueRaw": "44ac0e6cb2c7e9adfcc86919959ff044cd6f6aefcc99152592a4fe8e6d22ce77",
+            },
+            {
+                "type": "AccountId",
+                "value": "0xbe51e7d8eb439683272967dfce076362514e8519a51164e73f21272d157b446e",
+                "valueRaw": "be51e7d8eb439683272967dfce076362514e8519a51164e73f21272d157b446e",
+            },
+            {
+                "type": "Balance",
+                "value": 10000000000,
+                "valueRaw": "00e40b54020000000000000000000000",
+            },
+        ],
+        "topics": [],
+        "event_idx": 3,
+    },
+    {
+        "phase": 0,
+        "extrinsic_idx": 3,
+        "type": "0d06",
+        "module_id": "Treasury",
+        "event_id": "Deposit",
+        "params": [
+            {
+                "type": "Balance",
+                "value": 800000000,
+                "valueRaw": "0008af2f000000000000000000000000",
+            }
+        ],
+        "topics": [],
+        "event_idx": 4,
+    },
+    {
+        "phase": 0,
+        "extrinsic_idx": 3,
+        "type": "0204",
+        "module_id": "Balances",
+        "event_id": "Deposit",
+        "params": [
+            {
+                "type": "AccountId",
+                "value": "0x3412f138b55741bb9dd7b4413ad55b00ed2c0b06654b73433d69ccb2e4a42147",
+                "valueRaw": "3412f138b55741bb9dd7b4413ad55b00ed2c0b06654b73433d69ccb2e4a42147",
+            },
+            {
+                "type": "Balance",
+                "value": 200000000,
+                "valueRaw": "00c2eb0b000000000000000000000000",
+            },
+        ],
+        "topics": [],
+        "event_idx": 5,
+    },
+    {
+        "phase": 0,
+        "extrinsic_idx": 3,
+        "type": "0000",
+        "module_id": "System",
+        "event_id": "ExtrinsicSuccess",
+        "params": [
+            {
+                "type": "DispatchInfo",
+                "value": {"weight": 195000000, "class": "Normal", "paysFee": "Yes"},
+                "valueRaw": "",
+            }
+        ],
+        "topics": [],
+        "event_idx": 6,
+    },
+]

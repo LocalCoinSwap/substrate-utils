@@ -141,7 +141,6 @@ class Kusama(NonceManager):
             "state_getStorageAt", [storage_hash, block_hash]
         )["result"]
 
-        logger.warning(result)
         return_decoder = ScaleDecoder.get_decoder_class(
             "Vec<EventRecord<Event, Hash>>", ScaleBytes(result), metadata=self.metadata,
         )
