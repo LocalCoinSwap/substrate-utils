@@ -464,7 +464,7 @@ class Kusama(NonceManager):
         Utility function to broadcast complete final transactions
         """
         node_response = self.network.node_rpc_call(
-            "author_submitAndWatchExtrinsic", [transaction]
+            "author_submitAndWatchExtrinsic", [transaction], watch=True
         )
         tx_hash = self.get_extrinsic_hash(transaction)
         block_hash = self.get_block_hash(node_response)
