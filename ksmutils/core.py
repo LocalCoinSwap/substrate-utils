@@ -11,8 +11,7 @@ from scalecodec.type_registry import load_type_registry_preset
 from scalecodec.utils.ss58 import ss58_decode
 from scalecodec.utils.ss58 import ss58_encode
 
-from .helper import approve_as_multi_signature_payload
-from .helper import transfer_signature_payload
+from . import helper
 from .network import Network
 
 # Hardcode this because we WANT things to break if it changes
@@ -21,7 +20,17 @@ BLOCKCHAIN_VERSION = 1062
 logger = logging.getLogger(__name__)
 
 
-class Kusama:
+class NonceManager:
+    """
+    Extending this class allows a user to build in advanced nonce management
+    in asyncronous environments where ordering is important
+    """
+
+    def arbitrator_nonce(self):
+        return self.get_nonce(self.arbitrator_address)
+
+
+class Kusama(NonceManager):
     def __init__(
         self,
         *,
@@ -59,15 +68,11 @@ class Kusama:
         Make sure the versioning of the Kusama blockchain has not been
         updated since the last developer verification of the codebase
         """
-        version = self.network.node_rpc_call(
-            "state_getRuntimeVersion", [], loop_limit=1
-        )
-        return version[0]["result"]["specVersion"]
+        version = self.network.node_rpc_call("state_getRuntimeVersion", [])
+        return version["result"]["specVersion"]
 
     def get_metadata(self):
-        raw_metadata = self.network.node_rpc_call(
-            "state_getMetadata", [None], loop_limit=1
-        )[0]["result"]
+        raw_metadata = self.network.node_rpc_call("state_getMetadata", [None])["result"]
         metadata = MetadataDecoder(ScaleBytes(raw_metadata))
         metadata.decode()
         return metadata
@@ -76,9 +81,7 @@ class Kusama:
         return BLOCKCHAIN_VERSION
 
     def get_genesis_hash(self):
-        return self.network.node_rpc_call("chain_getBlockHash", [0], loop_limit=1)[0][
-            "result"
-        ]
+        return self.network.node_rpc_call("chain_getBlockHash", [0])["result"]
 
     def _get_address_info(self, address):
         # xxHash128(System) + xxHash128(Account)
@@ -90,9 +93,9 @@ class Kusama:
         hashed_address = f"{blake2b(bytes.fromhex(account_id), digest_size=16).digest().hex()}{account_id}"
         storage_hash = storage_key + hashed_address
 
-        result = self.network.node_rpc_call(
-            "state_getStorageAt", [storage_hash, None], loop_limit=1
-        )[0]["result"]
+        result = self.network.node_rpc_call("state_getStorageAt", [storage_hash, None])[
+            "result"
+        ]
 
         return_decoder = ScaleDecoder.get_decoder_class(
             "AccountInfo<Index, AccountData>",
@@ -110,10 +113,7 @@ class Kusama:
         return result["nonce"]
 
     def get_block(self, block_hash):
-        # FIXME: Modify node_rpc_call to return single item when there's only one
-        response = self.network.node_rpc_call(
-            "chain_getBlock", [block_hash], loop_limit=1
-        )[0]["result"]
+        response = self.network.node_rpc_call("chain_getBlock", [block_hash])["result"]
 
         response["block"]["header"]["number"] = int(
             response["block"]["header"]["number"], 16
@@ -128,26 +128,43 @@ class Kusama:
 
         return response
 
+    def get_events(self, block_hash):
+        # If there's one more function where we have to do ths, let's add the helper function
+        # xxHash128(System) + xxHash128(Events)
+        storage_hash = (
+            "0x26aa394eea5630e07c48ae0c9558cef780d41e5e16056765bc8461851072c9d7"
+        )
+
+        result = self.network.node_rpc_call(
+            "state_getStorageAt", [storage_hash, block_hash]
+        )["result"]
+
+        return_decoder = ScaleDecoder.get_decoder_class(
+            "Vec<EventRecord<Event, Hash>>", ScaleBytes(result), metadata=self.metadata,
+        )
+        return return_decoder.decode()
+
     def _get_extrinsix_index(self, block_extrinsics, extrinsic_hash):
         for idx, extrinsics in enumerate(block_extrinsics):
             ehash = extrinsics.get("extrinsic_hash")
             if ehash == extrinsic_hash:
                 return idx
-        return 0
+        return -1
 
-    def get_extrinsic_timepoint(self, node_response, extrinsic_data):
+    def get_extrinsic_hash(self, final_transaction):
+        return (
+            blake2b(bytes.fromhex(final_transaction[2:]), digest_size=32).digest().hex()
+        )
+
+    def get_extrinsic_timepoint(self, node_response, final_transaction):
         if not node_response:
             raise Exception("node_response is empty")
 
-        last_item = node_response[len(node_response) - 1]
-        finalized_hash = last_item.get("params", {}).get("result", {}).get("finalized")
-
+        finalized_hash = self.get_block_hash(node_response)
         if not finalized_hash:
             raise Exception("Last item in the node_response is not finalized hash")
 
-        extrinsic_hash = (
-            blake2b(bytes.fromhex(extrinsic_data[2:]), digest_size=32).digest().hex()
-        )
+        extrinsic_hash = self.get_extrinsic_hash(final_transaction)
 
         block = self.get_block(finalized_hash)
         block_number = block.get("block").get("header").get("number")
@@ -157,92 +174,13 @@ class Kusama:
 
         return (block_number, extrinsic_index)
 
-    def broadcast_extrinsic(self):
-        """
-        Raw extrinsic broadcast
-        """
-        pass
-
-    def broadcast(self):
-        """
-        Handles final transaction construction according to transaction type
-        """
-        pass
-
-    def transfer_payload(self, from_address, to_address, value):
-        """
-        Get signature payloads for a regular transfer
-        """
-        nonce = self.get_nonce(from_address)
-        return transfer_signature_payload(
-            self.metadata,
-            to_address,
-            value,
-            nonce,
-            self.genesis_hash,
-            self.spec_version,
-        )
-
-    def escrow_payloads(self, seller_address, escrow_address, trade_value, fee_value):
-        """
-        Get signature payloads for funding the multisig escrow,
-        and sending the fee to the arbitrator
-        """
-        nonce = self.get_nonce(seller_address)
-        escrow_payload = transfer_signature_payload(
-            self.metadata,
-            escrow_address,
-            trade_value,
-            nonce,
-            self.genesis_hash,
-            self.spec_version,
-        )
-        fee_payload = transfer_signature_payload(
-            self.metadata,
-            self.arbitrator_address,
-            fee_value,
-            nonce + 1,
-            self.genesis_hash,
-            self.spec_version,
-        )
-        return escrow_payload, fee_payload
-
-    def cancellation(self, seller_address, trade_value, fee_value, other_signatories):
-        """
-        1. Broadcast approveAsMulti from arbitrator to seller
-        2. Verify that the asMulti passed successfully and that the fee is valid
-        2. Broadcast fee return transfer from arbitrator to seller
-        """
-        assert fee_value <= trade_value * 0.01
-        nonce = self.get_nonce(self.arbitrator_address)
-
-        revert_payload = approve_as_multi_signature_payload(
-            self.metadata,
-            self.spec_version,
-            self.genesis_hash,
-            nonce,
-            seller_address,
-            trade_value,
-            other_signatories,
-        )
-        fee_revert_payload = transfer_signature_payload(
-            self.metadata,
-            seller_address,
-            fee_value,
-            nonce + 1,
-            self.genesis_hash,
-            self.spec_version,
-        )
-        # TODO: Sign and publish transactions
-        return revert_payload, fee_revert_payload
-
-    def resolve_dispute(self):
-        """
-        1. If sellers wins then use cancellation flow
-        2. If buyer wins then send broadcast approveAsMulti before
-          sending funds to buyer
-        """
-        pass
+    def get_extrinsic_events(self, block_hash, extrinsinc_index):
+        events = self.get_events(block_hash)
+        extrinsic_events = []
+        for event in events:
+            if event.get("extrinsic_idx") == extrinsinc_index:
+                extrinsic_events.append(event)
+        return extrinsic_events
 
     def get_escrow_address(self, buyer_address, seller_address, threshold=2):
         """
@@ -256,3 +194,298 @@ class Kusama:
 
         multi_sig_address = ss58_encode(multi_sig_account_id.value.replace("0x", ""), 2)
         return multi_sig_address
+
+    def transfer_payload(self, from_address, to_address, value):
+        """
+        Get signature payloads for a regular transfer
+        """
+        nonce = self.get_nonce(from_address)
+        return helper.transfer_signature_payload(
+            self.metadata,
+            to_address,
+            value,
+            nonce,
+            self.genesis_hash,
+            self.spec_version,
+        )
+
+    def approve_as_multi_payload(
+        self, from_address, to_address, value, other_signatories
+    ):
+        """
+        Get signature payloads for approve_as_multi
+        """
+        nonce = self.get_nonce(from_address)
+        approve_as_multi_payload = helper.approve_as_multi_signature_payload(
+            self.metadata,
+            self.spec_version,
+            self.genesis_hash,
+            nonce,
+            to_address,
+            value,
+            other_signatories,
+        )
+        return approve_as_multi_payload, nonce
+
+    def as_multi_payload(
+        self, from_address, to_address, value, other_signatories, timepoint=None,
+    ):
+        """
+        Get signature payloads for as_multi
+        TODO: We should either accept `nonce` as argument and remove `nonce = self.get_nonce(from_address)`
+        OR  just keep `nonce = self.get_nonce(from_address)`, not both
+        """
+        nonce = self.get_nonce(from_address)
+        as_multi_payload = helper.as_multi_signature_payload(
+            self.metadata,
+            self.spec_version,
+            self.genesis_hash,
+            nonce,
+            to_address,
+            value,
+            other_signatories,
+            timepoint,
+        )
+        return as_multi_payload, nonce
+
+    def escrow_payloads(self, seller_address, escrow_address, trade_value, fee_value):
+        """
+        Get signature payloads for funding the multisig escrow,
+        and sending the fee to the arbitrator
+        """
+        nonce = self.get_nonce(seller_address)
+        escrow_payload = helper.transfer_signature_payload(
+            self.metadata,
+            escrow_address,
+            trade_value,
+            nonce,
+            self.genesis_hash,
+            self.spec_version,
+        )
+        fee_payload = helper.transfer_signature_payload(
+            self.metadata,
+            self.arbitrator_address,
+            fee_value,
+            nonce + 1,
+            self.genesis_hash,
+            self.spec_version,
+        )
+        return escrow_payload, fee_payload, nonce
+
+    def release_escrow(self, buyer_address, trade_value, timepoint, other_signatories):
+        """
+        Return final arbitrator as_multi transaction for releasing escrow
+        """
+        nonce = self.arbitrator_nonce()
+        release_payload = helper.as_multi_signature_payload(
+            self.metadata,
+            self.spec_version,
+            self.genesis_hash,
+            nonce,
+            buyer_address,
+            trade_value,
+            other_signatories,
+            timepoint,
+        )
+        release_signature = helper.sign_payload(self.keypair, release_payload)
+        release_transaction = helper.unsigned_as_multi_construction(
+            self.metadata,
+            self.arbitrator_address,
+            release_signature,
+            nonce,
+            buyer_address,
+            trade_value,
+            timepoint,
+            other_signatories,
+        )
+        return release_transaction
+
+    def cancellation(
+        self, seller_address, trade_value, fee_value, other_signatories, timepoint
+    ):
+        """
+        Return signed and ready transactions for the fee return and escrow return
+        """
+
+        # TODO: Why are we doing this btw?
+        # I removed `assert fee_value <= trade_value * 0.01`
+        # and added an exception like this but still
+        if fee_value > trade_value * 0.01:
+            raise Exception("Fee should not be more than 1% of trade value")
+
+        nonce = self.arbitrator_nonce()
+
+        revert_payload = helper.as_multi_signature_payload(
+            self.metadata,
+            self.spec_version,
+            self.genesis_hash,
+            nonce,
+            seller_address,
+            trade_value,
+            other_signatories,
+            timepoint,
+        )
+        fee_revert_payload = helper.transfer_signature_payload(
+            self.metadata,
+            seller_address,
+            fee_value,
+            nonce + 1,
+            self.genesis_hash,
+            self.spec_version,
+        )
+
+        revert_signature = helper.sign_payload(self.keypair, revert_payload)
+        fee_revert_signature = helper.sign_payload(self.keypair, fee_revert_payload)
+
+        revert_transaction = helper.unsigned_as_multi_construction(
+            self.metadata,
+            self.arbitrator_address,
+            revert_signature,
+            nonce,
+            seller_address,
+            trade_value,
+            timepoint,
+            other_signatories,
+        )
+        fee_revert_transaction = helper.unsigned_transfer_construction(
+            self.metadata,
+            self.arbitrator_address,
+            fee_revert_signature,
+            nonce + 1,
+            seller_address,
+            fee_value,
+        )
+        return revert_transaction, fee_revert_transaction
+
+    def resolve_dispute(
+        self,
+        victor,
+        seller_address,
+        trade_value,
+        fee_value,
+        other_signatories,
+        welfare_value: int = 1000000000,
+    ):
+        """
+        If sellers wins then return cancellation logic
+        If buyer wins then return ready approveAsMulti and ready buyer replenishment
+        """
+        nonce = self.arbitrator_nonce()
+
+        if victor == "seller":
+            return self.cancellation(
+                seller_address, trade_value, fee_value, other_signatories, None
+            )
+
+        release_payload = helper.approve_as_multi_signature_payload(
+            self.metadata,
+            self.spec_version,
+            self.genesis_hash,
+            nonce,
+            seller_address,
+            trade_value,
+            other_signatories,
+        )
+        welfare_payload = helper.transfer_signature_payload(
+            self.metadata,
+            seller_address,
+            welfare_value,
+            nonce + 1,
+            self.genesis_hash,
+            self.spec_version,
+        )
+
+        release_signature = helper.sign_payload(self.keypair, release_payload)
+        welfare_signature = helper.sign_payload(self.keypair, welfare_payload)
+
+        release_transaction = helper.unsigned_approve_as_multi_construction(
+            self.metadata,
+            self.arbitrator_address,
+            release_signature,
+            nonce,
+            seller_address,
+            trade_value,
+            other_signatories,
+        )
+        welfare_transaction = helper.unsigned_transfer_construction(
+            self.metadata,
+            self.arbitrator_address,
+            welfare_signature,
+            nonce + 1,
+            seller_address,
+            welfare_value,
+        )
+        return release_transaction, welfare_transaction
+
+    def get_block_hash(self, node_response):
+        return (
+            node_response[max(node_response.keys())]
+            .get("params", {})
+            .get("result", {})
+            .get("finalized")
+        )
+
+    def is_transaction_success(self, transaction_type, events):
+        successfull = False
+        event_names = []
+        for event in events:
+            event_names.append(event["event_id"])
+        successfull = (
+            True
+            if transaction_type == "transfer" and "Transfer" in event_names
+            else successfull
+        )
+        successfull = (
+            True
+            if transaction_type == "approve_as_multi" and "NewMultisig" in event_names
+            else successfull
+        )
+        successfull = (
+            True
+            if transaction_type == "as_multi" and "MultisigExecuted" in event_names
+            else successfull
+        )
+        return successfull
+
+    def publish(self, type, params):
+        """
+        Raw extrinsic broadcast
+        """
+        if type == "transfer":
+            transaction = helper.unsigned_transfer_construction(self.metadata, *params)
+            return self.broadcast(type, transaction)
+
+        if type == "fee_transfer":
+            transaction = helper.unsigned_transfer_construction(
+                self.metadata,
+                params[0],
+                params[1],
+                params[2],
+                self.arbitrator_address,
+                params[3],
+            )
+            return self.broadcast("transfer", transaction)
+
+        if type == "approve_as_multi":
+            transaction = helper.unsigned_approve_as_multi_construction(
+                self.metadata, *params
+            )
+            return self.broadcast(type, transaction)
+
+        if type == "as_multi":
+            transaction = helper.unsigned_as_multi_construction(self.metadata, *params)
+            return self.broadcast(type, transaction)
+
+    def broadcast(self, type, transaction):
+        """
+        Utility function to broadcast complete final transactions
+        """
+        node_response = self.network.node_rpc_call(
+            "author_submitAndWatchExtrinsic", [transaction], watch=True
+        )
+        tx_hash = self.get_extrinsic_hash(transaction)
+        block_hash = self.get_block_hash(node_response)
+        timepoint = self.get_extrinsic_timepoint(node_response, transaction)
+        events = self.get_extrinsic_events(block_hash, timepoint[1])
+        success = self.is_transaction_success(type, events)
+        return tx_hash, timepoint, success

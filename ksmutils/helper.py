@@ -263,13 +263,8 @@ def unsigned_as_multi_construction(
     )
 
 
-def sign_payload(payload, signer_public_key, signer_private_key):
-    """
-    TODO: Either validate that 0x is not prefixed or handle both in this function
-    """
-    signature = sr25519.sign(
-        (bytes.fromhex(signer_public_key), bytes.fromhex(signer_private_key)),
-        bytes.fromhex(payload),
-    )
-
-    return f"0x{signature.hex()}"
+def sign_payload(keypair, payload):
+    if payload[0:2] == "0x":
+        payload = payload[2:]
+    signature = sr25519.sign(keypair, bytes.fromhex(payload))
+    return signature.hex()

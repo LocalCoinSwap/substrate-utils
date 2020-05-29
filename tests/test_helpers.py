@@ -1,3 +1,5 @@
+import sr25519
+
 from .fixtures import genesis_hash
 from .fixtures import metadata
 from .fixtures import spec_version
@@ -207,13 +209,21 @@ class TestPayloadConstruction:
             "01197a149ca93654499ea3dafeb0a8d493285c2df73290dfb7e61f870f17b418011"
             "97a149ca93654499ea3dafe"
         )
-        signer_public_key = (
-            "b66b2bf14a50b06eb9cecf2a45fe10c953bb2c16f93cac735f7020634069a424"
-        )
-        signer_private_key = (
-            "202321b47a37e74b600683746f268ec03053a59fa228c492f042224ccf005f0dde1"
-            "df1a95d4afd7d9b55ad1855f10da5e9633c8837a9a3d2bc95a1c1ff00a4a9"
-        )
+        signer_hex = "52bb9cee00b1f93a8ff5c022360c97457a7bd1e7c9387002728cac022aedf1b0"
 
-        result = sign_payload(payload, signer_public_key, signer_private_key)
-        assert len(result) == 130
+        keypair = sr25519.pair_from_seed(bytes.fromhex(signer_hex))
+        result = sign_payload(keypair, payload)
+        assert len(result) == 128
+
+    def test_sign_0x_payload(self):
+        payload = (
+            "0x04005a989f0526b8a619b90205b6c3bef293f7b0c38fae7353afe10feae4c4712"
+            "55b0700e40b540200100026040000b0a8d493285c2df73290dfb7e61f870f17b418"
+            "01197a149ca93654499ea3dafeb0a8d493285c2df73290dfb7e61f870f17b418011"
+            "97a149ca93654499ea3dafe"
+        )
+        signer_hex = "52bb9cee00b1f93a8ff5c022360c97457a7bd1e7c9387002728cac022aedf1b0"
+
+        keypair = sr25519.pair_from_seed(bytes.fromhex(signer_hex))
+        result = sign_payload(keypair, payload)
+        assert len(result) == 128
