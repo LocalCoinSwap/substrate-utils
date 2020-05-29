@@ -13,6 +13,15 @@ class TestVersionEndpoint:
 
 
 class TestGetMethods:
+    def test_connect_no_network(self, mocker):
+        mocker.patch("ksmutils.network.Network.__init__", return_value=None)
+        mocker.patch("ksmutils.core.Kusama.check_version", return_value=1062)
+        mocker.patch("ksmutils.core.Kusama.get_metadata")
+        mocker.patch("ksmutils.core.Kusama.get_spec_version")
+        mocker.patch("ksmutils.core.Kusama.get_genesis_hash")
+        kusama = Kusama()
+        kusama.connect()
+
     def test_get_balance(self, network):
         kusama = Kusama()
         kusama.connect(network=network)
@@ -169,3 +178,16 @@ class TestGetMethods:
         kusama.connect(network=network)
         mocker.patch("ksmutils.core.Kusama.get_nonce", return_value=46)
         # victor, seller_address, trade_value, fee_value, other_signatories
+
+
+class TestNonceManager:
+    def test_arbitrator_nonce(self, network, mocker):
+        kusama = Kusama(
+            arbitrator_key="5c65b9f9f75f95d70b84577ab07e22f7400d394ca3c8bcb227fb6d42920d9b50"
+        )
+        kusama.connect(network=network)
+
+        mocker.patch("ksmutils.core.Kusama.get_nonce", return_value=2)
+        result = kusama.arbitrator_nonce()
+
+        assert result == 2
