@@ -1,7 +1,8 @@
 # kusama-utils
 Kusama utility library providing functionality for multi-signature trading
 
-![Python package](https://github.com/LocalCoinSwap/kusama-utils/workflows/Python%20package/badge.svg)
+![Python package](https://github.com/LocalCoinSwap/kusama-utils/workflows/Python%20package/badge.svg) [![PyPI pyversions](https://img.shields.io/pypi/pyversions/ksmutils.svg)](https://pypi.org/project/ksmutils/)
+
 
 ----
 
