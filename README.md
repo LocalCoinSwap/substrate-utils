@@ -17,6 +17,9 @@ from ksmutils import Kusama
 kusama = Kusama()
 ```
 
+## Documentation
+https://localcoinswap.github.io/kusama-utils/
+
 # Local development
 
 ## Pre-requisites
