@@ -230,3 +230,22 @@ class TestWrapperMethods:
 
         result = kusama.broadcast("t", "tx")
         assert result == ("a", (1, 2), True)
+
+    def test_publish(self, network, mocker):
+        kusama = Kusama()
+        arbitrator_key = (
+            "b5643fe4084cae15ffbbc5c1cbe734bec5da9c351f4aa4d44f2897efeb8375c8"
+        )
+        kusama.setup_arbitrator(arbitrator_key)
+        kusama.connect(network=network)
+
+        mocker.patch("ksmutils.core.Kusama.broadcast", return_value=True)
+        mocker.patch("ksmutils.helper.unsigned_transfer_construction")
+        mocker.patch("ksmutils.helper.unsigned_transfer_construction")
+        mocker.patch("ksmutils.helper.unsigned_approve_as_multi_construction")
+        mocker.patch("ksmutils.helper.unsigned_as_multi_construction")
+
+        assert kusama.publish("transfer", [True])
+        assert kusama.publish("fee_transfer", [1, 2, 3, 4])
+        assert kusama.publish("approve_as_multi", [1, 2, 3, 4])
+        assert kusama.publish("as_multi", [1, 2, 3, 4])
