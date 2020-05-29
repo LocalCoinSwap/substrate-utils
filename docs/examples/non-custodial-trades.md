@@ -39,12 +39,76 @@ fee_tx = kusama.publish(
 
 ### Release the escrow to buyer
 ```
+# Seller broadcasts approve_as_multi for escrow
+approve_as_multi_escrow_payload, nonce = kusama.approve_as_multi_payload(
+    seller_address, buyer_address, trade_value, [buyer_address, kusama.arbitrator_address]
+    )
+
+# Sign payload
+approve_as_multi_escrow_signature = sign_payload(keypair, approve_as_multi_escrow_payload)
+
+# Construct and broadcast
+escrow_approve_as_multi_tx = kusama.publish('approve_as_multi', [seller_address,approve_as_multi_escrow_signature, nonce, buyer_address, trade_value, [buyer_address, kusama.arbitrator_address]])
+
+# Arbitrator_address broadcasts as_multi for fee
+
+as_multi_escrow_tx = kusama.release_escrow(buyer_address, trade_value, escrow_as_multi_tx[1],[seller_address, buyer_address])
+
+# Broadcast
+
+broadcasted_as_multi_escrow_tx = kusama.broadcast('as_multi', as_multi_escrow_tx)
+```
+
+
+### Recover the trading fee
+```
+# Seller broadcasts approve_as_multi for fee
+approve_as_multi_fee_payload, nonce = kusama.approve_as_multi_payload(
+    seller_address, buyer_address, fee_value, [buyer_address, kusama.arbitrator_address]
+    )
+
+# Sign payload
+approve_as_multi_fee_signature = sign_payload(keypair, approve_as_multi_fee_payload)
+
+# Construct and broadcast
+fee_as_multi_tx = kusama.publish('approve_as_multi', [seller_address, approve_as_multi_fee_signature, nonce, buyer_address, fee_value, [buyer_address, kusama.arbitrator_address]])
+
+# Arbitrator_address broadcasts as_multi for fee
+
+as_multi_fee_tx = kusama.release_escrow(buyer_address, fee_value, fee_as_multi_tx[1], [seller_address, buyer_address])
+
+# Broadcast showing lower level functions
+node_response = kusama.network.node_rpc_call(
+    "author_submitAndWatchExtrinsic", [as_multi_fee_tx]
+)
+tx_hash = kusama.get_extrinsic_hash(as_multi_fee_tx)
+block_hash = kusama.get_block_hash(node_response)
+timepoint = kusama.get_extrinsic_timepoint(node_response, as_multi_fee_tx)
+events = kusama.get_extrinsic_events(block_hash, timepoint[1])
+success = kusama.is_transaction_success("as_multi", events)
 
 ```
 
 ### Trade cancellation, return funds to seller
 ```
+# Seller broadcasts approve_as_multi for escrow return
+approve_as_multi_escrow_payload, nonce = kusama.approve_as_multi_payload(
+    seller_address, seller_address, trade_value, [buyer_address, kusama.arbitrator_address]
+    )
 
+# Sign payload
+approve_as_multi_escrow_signature = sign_payload(keypair, approve_as_multi_escrow_payload)
+
+# Construct and broadcast
+escrow_approve_as_multi_tx = kusama.publish('approve_as_multi', [seller_address, approve_as_multi_escrow_signature, nonce, seller_address, trade_value, [buyer_address, kusama.arbitrator_address]])
+
+# Arbitrator_address broadcasts as_multi for fee
+
+as_multi_escrow_tx = kusama.cancellation(seller_address, trade_value, fee_value, [seller_address, buyer_address])
+
+# Broadcast
+
+broadcasted_as_multi_escrow_tx = kusama.broadcast('as_multi', as_multi_escrow_tx)
 ```
 
 ### Buyer wins dispute

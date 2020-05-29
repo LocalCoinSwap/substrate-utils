@@ -211,6 +211,24 @@ class Kusama(NonceManager):
             self.spec_version,
         )
 
+    def approve_as_multi_payload(
+        self, from_address, to_address, value, other_signatories
+    ):
+        """
+        Get signature payloads for approve_as_multi
+        """
+        nonce = self.get_nonce(from_address)
+        approve_as_multi_payload = helper.approve_as_multi_signature_payload(
+            self.metadata,
+            self.spec_version,
+            self.genesis_hash,
+            nonce,
+            to_address,
+            value,
+            other_signatories,
+        )
+        return approve_as_multi_payload, nonce
+
     def escrow_payloads(self, seller_address, escrow_address, trade_value, fee_value):
         """
         Get signature payloads for funding the multisig escrow,
@@ -378,6 +396,10 @@ class Kusama(NonceManager):
             event_names.append(event["event_id"])
         if transaction_type == "transfer" and "Transfer" in event_names:
             successfull = True
+        if transaction_type == "approve_as_multi" and "NewMultisig" in event_names:
+            successfull = True
+        if transaction_type == "as_multi" and "MultisigExecuted" in event_names:
+            successfull = True
         return successfull
 
     def publish(self, type, params):
@@ -444,3 +466,17 @@ class Kusama(NonceManager):
             events = self.get_extrinsic_events(block_hash, timepoint[1])
             success = self.is_transaction_success("as_multi", events)
             return tx_hash, timepoint, success
+
+    def broadcast(self, type, final_transaction):
+        """
+        Utility function to broadcast complete final transactions
+        """
+        node_response = self.network.node_rpc_call(
+            "author_submitAndWatchExtrinsic", [final_transaction]
+        )
+        tx_hash = self.get_extrinsic_hash(final_transaction)
+        block_hash = self.get_block_hash(node_response)
+        timepoint = self.get_extrinsic_timepoint(node_response, final_transaction)
+        events = self.get_extrinsic_events(block_hash, timepoint[1])
+        success = self.is_transaction_success(type, events)
+        return tx_hash, timepoint, success
