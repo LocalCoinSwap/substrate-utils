@@ -36,10 +36,7 @@ class Kusama(NonceManager):
         *,
         node_url: str = "wss://kusama-rpc.polkadot.io/",
         arbitrator_key: str = None,
-        # The amount we give the buyer if they win a dispute
-        welfare_value: int = 1000000000,
     ):
-        self.welfare_value = welfare_value
         self.node_url = node_url
         if arbitrator_key:
             self.setup_arbitrator(arbitrator_key)
@@ -353,7 +350,13 @@ class Kusama(NonceManager):
         return revert_transaction, fee_revert_transaction
 
     def resolve_dispute(
-        self, victor, seller_address, trade_value, fee_value, other_signatories
+        self,
+        victor,
+        seller_address,
+        trade_value,
+        fee_value,
+        other_signatories,
+        welfare_value: int = 1000000000,
     ):
         """
         If sellers wins then return cancellation logic
@@ -378,7 +381,7 @@ class Kusama(NonceManager):
         welfare_payload = helper.transfer_signature_payload(
             self.metadata,
             seller_address,
-            self.welfare_value,
+            welfare_value,
             nonce + 1,
             self.genesis_hash,
             self.spec_version,
@@ -402,7 +405,7 @@ class Kusama(NonceManager):
             welfare_signature,
             nonce + 1,
             seller_address,
-            self.welfare_value,
+            welfare_value,
         )
         return release_transaction, welfare_transaction
 
