@@ -23,14 +23,14 @@ class Network:
         logger.info(f"Instantiating network connection to {node_url}")
         self.node_url = node_url
 
-    def node_rpc_call(self, method, params):
+    def node_rpc_call(self, method, params, watch=False):
         logger.info("node_rpc_call for {}".format(method))
-        # TODO: Handle the case when the list is empty
-        return asyncio.run(self._node_rpc_call(method, params, loop_limit=1))[0]
-
-    def node_rpc_call_watch(self, method, params):
-        logger.info("node_rpc_call_watch for {}".format(method))
-        return asyncio.run(self._node_rpc_call(method, params, loop_limit=False))
+        execution = (
+            asyncio.run(self._node_rpc_call(method, params, loop_limit=False))
+            if watch
+            else asyncio.run(self._node_rpc_call(method, params, loop_limit=1))[0]
+        )
+        return execution
 
     async def _node_rpc_call(self, method, params, *, loop_limit=False):
         """
@@ -62,12 +62,15 @@ class Network:
                         looping = False
 
                     # End transactions when they are finalised
-                    if (
-                        "params" in result
-                        and type(result["params"]["result"]) is dict
-                        and "finalized" in result["params"]["result"]
-                    ):
-                        looping = False
+                    looping = (
+                        False
+                        if (
+                            "params" in result
+                            and type(result["params"]["result"]) is dict
+                            and "finalized" in result["params"]["result"]
+                        )
+                        else looping
+                    )
 
                     event_number += 1
 

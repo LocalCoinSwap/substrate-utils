@@ -214,3 +214,16 @@ class TestPayloadConstruction:
         keypair = sr25519.pair_from_seed(bytes.fromhex(signer_hex))
         result = sign_payload(keypair, payload)
         assert len(result) == 128
+
+    def test_sign_0x_payload(self):
+        payload = (
+            "0x04005a989f0526b8a619b90205b6c3bef293f7b0c38fae7353afe10feae4c4712"
+            "55b0700e40b540200100026040000b0a8d493285c2df73290dfb7e61f870f17b418"
+            "01197a149ca93654499ea3dafeb0a8d493285c2df73290dfb7e61f870f17b418011"
+            "97a149ca93654499ea3dafe"
+        )
+        signer_hex = "52bb9cee00b1f93a8ff5c022360c97457a7bd1e7c9387002728cac022aedf1b0"
+
+        keypair = sr25519.pair_from_seed(bytes.fromhex(signer_hex))
+        result = sign_payload(keypair, payload)
+        assert len(result) == 128
