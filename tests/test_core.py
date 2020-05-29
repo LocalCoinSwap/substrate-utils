@@ -344,4 +344,4 @@ class TestWrapperMethods:
             "ksmutils.helper.unsigned_transfer_construction", return_value="wx"
         )
 
-        assert kusama.resolve_dispute("seller", "", 1, 0.01, []) == ("tx", "wx")
+        assert kusama.resolve_dispute("buyer", "", 1, 0.01, []) == ("tx", "wx")
