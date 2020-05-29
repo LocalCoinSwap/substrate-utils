@@ -149,7 +149,7 @@ class Kusama(NonceManager):
             ehash = extrinsics.get("extrinsic_hash")
             if ehash == extrinsic_hash:
                 return idx
-        return 0
+        return -1
 
     def get_extrinsic_hash(self, final_transaction):
         return (

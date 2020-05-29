@@ -12,7 +12,7 @@ class TestVersionEndpoint:
         kusama.connect(network=network)
 
 
-class TestGetMethods:
+class TestNoNetwork:
     def test_connect_no_network(self, mocker):
         mocker.patch("ksmutils.network.Network.__init__", return_value=None)
         mocker.patch("ksmutils.core.Kusama.check_version", return_value=1062)
@@ -22,6 +22,8 @@ class TestGetMethods:
         kusama = Kusama()
         kusama.connect()
 
+
+class TestGetMethods:
     def test_get_balance(self, network):
         kusama = Kusama()
         kusama.connect(network=network)
@@ -160,6 +162,24 @@ class TestGetMethods:
         assert "Last item in the node_response is not finalized hash" in str(
             excinfo.value
         )
+
+    def test__get_extrinsix_index(self, network):
+        kusama = Kusama()
+        kusama.connect(network=network)
+
+        assert kusama._get_extrinsix_index([], "") == -1
+
+    def test_transfer_payload(self, network, mocker):
+        # This test isn't really necessary because it just calls another
+        # function, a better way would be to test if that another function
+        # gets called ONCE, can't figure out how to do this without unittest
+        kusama = Kusama()
+        kusama.connect(network=network)
+
+        mocker.patch("ksmutils.core.Kusama.get_nonce", return_value=4)
+        mocker.patch("ksmutils.helper.transfer_signature_payload", return_value=None)
+
+        assert kusama.transfer_payload("", "", 0) is None
 
     def test_escrow_payloads(self, network, mocker):
         kusama = Kusama()
