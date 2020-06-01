@@ -52,6 +52,9 @@ def approve_as_multi_signature_payload(
     threshold=2,
     tip=0,
 ):
+    """
+    Turn parameters gathered through side effects into unsigned approve_as_multi string
+    """
     transfer = ScaleDecoder.get_decoder_class("Call", metadata=metadata)
     approve_as_multi = ScaleDecoder.get_decoder_class("Call", metadata=metadata)
     transfer.encode(
@@ -101,6 +104,9 @@ def as_multi_signature_payload(
     threshold=2,
     tip=0,
 ):
+    """
+    Turn parameters gathered through side effects into unsigned as_multi string
+    """
     transfer = ScaleDecoder.get_decoder_class("Call", metadata=metadata)
     as_multi = ScaleDecoder.get_decoder_class("Call", metadata=metadata)
     transfer.encode(
@@ -148,6 +154,9 @@ def _extrinsic_construction(
     nonce,
     tip=0,
 ):
+    """
+    Turn parameters gathered through side effects into extrinsic object
+    """
     extrinsic = ScaleDecoder.get_decoder_class("Extrinsic", metadata=metadata)
     extrinsic.encode(
         {
@@ -168,6 +177,9 @@ def _extrinsic_construction(
 def unsigned_transfer_construction(
     metadata, account_id, signature, nonce, to_address, amount, tip=0
 ):
+    """
+    Turn parameters gathered through side effects into a transfer extrinsic object
+    """
     call_function = "transfer"
     call_module = "Balances"
     call_arguments = {"dest": to_address, "value": amount}
@@ -194,6 +206,9 @@ def unsigned_approve_as_multi_construction(
     threshold=2,
     tip=0,
 ):
+    """
+    Turn parameters gathered through side effects into an approve_as_multi extrinsic object
+    """
     call_function = "approve_as_multi"
     call_module = "Utility"
     transfer = ScaleDecoder.get_decoder_class("Call", metadata=metadata)
@@ -235,6 +250,9 @@ def unsigned_as_multi_construction(
     threshold=2,
     tip=0,
 ):
+    """
+    Turn parameters gathered through side effects into an as_multi extrinsic object
+    """
     call_function = "as_multi"
     call_module = "Utility"
     transfer = ScaleDecoder.get_decoder_class("Call", metadata=metadata)
@@ -264,6 +282,9 @@ def unsigned_as_multi_construction(
 
 
 def sign_payload(keypair, payload):
+    """
+    Sign payload with keypair and return a signed hex string
+    """
     if payload[0:2] == "0x":
         payload = payload[2:]
     signature = sr25519.sign(keypair, bytes.fromhex(payload))

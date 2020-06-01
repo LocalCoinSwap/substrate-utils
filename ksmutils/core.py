@@ -232,8 +232,6 @@ class Kusama(NonceManager):
     ):
         """
         Get signature payloads for as_multi
-        TODO: We should either accept `nonce` as argument and remove `nonce = self.get_nonce(from_address)`
-        OR  just keep `nonce = self.get_nonce(from_address)`, not both
         """
         nonce = self.get_nonce(from_address)
         as_multi_payload = helper.as_multi_signature_payload(
