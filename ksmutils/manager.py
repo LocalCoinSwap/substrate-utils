@@ -30,3 +30,9 @@ class TradeManager(Kusama):
             "author_submitAndWatchExtrinsic", [extrinsic_data], watch=True
         )
         return result
+
+    def publish(self):
+        pass
+
+    def status(self):
+        pass
