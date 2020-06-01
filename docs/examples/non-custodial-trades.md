@@ -15,8 +15,10 @@ escrow_address = kusama.get_escrow_address(buyer_address, seller_address)
 
 ### Generate the signature payloads to fund the escrow and send the fee
 ```python
-trade_value = 10000000000 # Value of the trade in Plancks
-fee_value = 100000000 # Fee being paid in Plancks (trade_value is not inclusive of fee)
+# Value of the trade in Plancks
+trade_value = 10000000000
+# Fee being paid in Plancks (trade_value is not inclusive of fee)
+fee_value = 100000000
 escrow_payload, fee_payload, nonce = kusama.escrow_payloads(
     seller_address, escrow_address, trade_value, fee_value)
 ```
@@ -35,10 +37,21 @@ fee_signature = sign_payload(keypair, fee_payload)
 ### Construct and broadcast the transactions
 ```python
 escrow_tx_hash, escrow_timepoint, success = kusama.publish(
-    'transfer', [seller_address, escrow_signature, nonce, escrow_address, trade_value])
+    'transfer',
+    [seller_address,
+    escrow_signature,
+    nonce,
+    escrow_address,
+    trade_value]
+)
 assert success
 fee_tx_hash, fee_timepoint, success = kusama.publish(
-    'fee_transfer', [seller_address, fee_signature, nonce + 1, fee_value])
+    'fee_transfer',
+    [seller_address,
+    fee_signature,
+    nonce + 1,
+    fee_value]
+)
 assert success
 ```
 
@@ -46,7 +59,11 @@ assert success
 ```python
 # Seller broadcasts approve_as_multi for escrow
 approve_as_multi_payload, nonce = kusama.approve_as_multi_payload(
-    seller_address, buyer_address, trade_value, [buyer_address, kusama.arbitrator_address])
+    seller_address,
+    buyer_address,
+    trade_value,
+    [buyer_address, kusama.arbitrator_address]
+)
 
 # Sign payload
 approve_as_multi_signature = sign_payload(keypair, approve_as_multi_payload)
@@ -59,11 +76,17 @@ tx_hash, timepoint, success = kusama.publish(
         nonce,
         buyer_address,
         trade_value,
-        [buyer_address, kusama.arbitrator_address]])
+        [buyer_address, kusama.arbitrator_address]]
+)
 assert success
 
 # Get arbitrator release escrow transaction and broadcast it
-as_multi = kusama.release_escrow(buyer_address, trade_value, timepoint, [seller_address, buyer_address])
+as_multi = kusama.release_escrow(
+    buyer_address,
+    trade_value,
+    timepoint,
+    [seller_address, buyer_address]
+)
 tx_hash, timepoint, success = kusama.broadcast('as_multi', as_multi)
 assert success
 ```
@@ -81,7 +104,9 @@ tx_hash, timepoint, success = kusama.publish(
         nonce,
         seller_address,
         trade_value,
-        [buyer_address, kusama.arbitrator_address]])
+        [buyer_address, kusama.arbitrator_address]
+        ]
+    )
 assert success
 
 # Get arbitrator cancellation transactions and broadcast them
