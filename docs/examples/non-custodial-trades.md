@@ -103,15 +103,16 @@ approve_as_multi_payload, nonce = kusama.approve_as_multi_payload(
     )
 approve_as_multi_signature = sign_payload(keypair, approve_as_multi_payload)
 tx_hash, timepoint, success = kusama.publish(
-    'approve_as_multi', [
+    'approve_as_multi',
+    [
         seller_address,
         approve_as_multi_signature,
         nonce,
         seller_address,
         trade_value,
         [buyer_address, kusama.arbitrator_address]
-        ]
-        )
+    ]
+    )
 assert success
 
 # Get arbitrator cancellation transactions and broadcast them
@@ -159,14 +160,16 @@ as_multi_payload, nonce = kusama.approve_as_multi_payload(
     )
 as_multi_signature = sign_payload(keypair, as_multi_payload)
 tx_hash, timepoint, success = kusama.publish(
-    'as_multi', [
+    'as_multi',
+    [
         seller_address,
         as_multi_signature,
         nonce,
         seller_address,
         trade_value,
         [buyer_address, kusama.arbitrator_address],
-        escrow_timepoint]
+        escrow_timepoint
+    ]
     )
 assert success
 ```
@@ -226,14 +229,16 @@ approve_as_multi_signature = sign_payload(
 
 # Construct and broadcast seller approve_as_multi
 tx_hash, timepoint, success = kusama.publish(
-    'approve_as_multi', [
+    'approve_as_multi',
+    [
         seller_address,
         approve_as_multi_signature,
         nonce,
         buyer_address,
         trade_value,
-        [buyer_address, kusama.arbitrator_address]]
-        )
+        [buyer_address, kusama.arbitrator_address]
+    ]
+    )
 assert success
 
 # Get arbitrator release escrow transaction and broadcast it
