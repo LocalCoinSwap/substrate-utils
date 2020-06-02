@@ -169,36 +169,70 @@ class TestGetMethods:
 
         assert kusama._get_extrinsix_index([], "") == -1
 
+    def test_get_pending_extrinsics(self, network, mocker):
+        kusama = Kusama()
+        kusama.connect(network=network)
+
+        pending_extrinsics = {
+            "jsonrpc": "2.0",
+            "result": [
+                "0x35028444ac0e6cb2c7e9adfcc86919959ff044cd6f6aefcc99152592a4fe8e6d22ce770128866403321ec45a22384a671a8fdb2c22e6fc7920f0585a15e9e5de122e3d0c904069fb7f3116fe5c70813b772d3e26c84e69c6e771aa5163a4c4f23602928f00d8000400be51e7d8eb439683272967dfce076362514e8519a51164e73f21272d157b446e0700e40b5402"
+            ],
+            "id": 1,
+        }
+
+        mocker.patch(
+            "ksmutils.network.Network.node_rpc_call", return_value=pending_extrinsics,
+        )
+
+        result = kusama.get_pending_extrinsics()
+        print(result)
+        assert len(result) > 0
+
     def test_escrow_payloads(self, network, mocker):
         kusama = Kusama()
         kusama.connect(network=network)
         mocker.patch("ksmutils.core.Kusama.get_nonce", return_value=46)
         # seller_address, escrow_address, trade_value, fee_value
 
-    def test_cancellation(self, network, mocker):
-        kusama = Kusama()
-        kusama.connect(network=network)
-        mocker.patch("ksmutils.core.Kusama.get_nonce", return_value=46)
-        # seller_address, trade_value, fee_value, other_signatories
-
-    def test_resolve_dispute(self, network, mocker):
-        kusama = Kusama()
-        kusama.connect(network=network)
-        mocker.patch("ksmutils.core.Kusama.get_nonce", return_value=46)
-        # victor, seller_address, trade_value, fee_value, other_signatories
-
 
 class TestNonceManager:
+    def test_get_mempool_nonce(self, network, mocker):
+        kusama = Kusama(
+            arbitrator_key="5c65b9f9f75f95d70b84577ab07e22f7400d394ca3c8bcb227fb6d42920d9b50"
+        )
+        kusama.connect(network=network)
+
+        mocker.patch(
+            "ksmutils.core.Kusama.get_pending_extrinsics",
+            return_value=mocked_returns.pending_extrinsics_1,
+        )
+
+        nonce = kusama.get_mempool_nonce(
+            "E8MtJbGYirK5gw2syuB1G843rhQ454NwTVQXYYvvPtdQqQh"
+        )
+        assert nonce == 54
+
+        nonce = kusama.get_mempool_nonce(kusama.arbitrator_address)
+        assert nonce == -1
+
     def test_arbitrator_nonce(self, network, mocker):
         kusama = Kusama(
             arbitrator_key="5c65b9f9f75f95d70b84577ab07e22f7400d394ca3c8bcb227fb6d42920d9b50"
         )
         kusama.connect(network=network)
 
+        mocker.patch("ksmutils.core.NonceManager.get_mempool_nonce", return_value=-1)
+
         mocker.patch("ksmutils.core.Kusama.get_nonce", return_value=2)
         result = kusama.arbitrator_nonce()
 
         assert result == 2
+
+        mocker.patch("ksmutils.core.NonceManager.get_mempool_nonce", return_value=3)
+
+        result = kusama.arbitrator_nonce()
+        assert result == 3
 
 
 class TestWrapperMethods:

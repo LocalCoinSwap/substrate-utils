@@ -26,8 +26,23 @@ class NonceManager:
     in asyncronous environments where ordering is important
     """
 
+    def get_mempool_nonce(self, address):
+        logger.warning("called")
+        account_id = ss58_decode(address)
+
+        pending_extrinsics = self.get_pending_extrinsics()
+        nonce = -1
+
+        for idx, extrinsic in enumerate(pending_extrinsics):
+            if extrinsic.get("account_id") == account_id:
+                nonce = max(extrinsic.get("nonce", nonce), nonce)
+        return nonce
+
     def arbitrator_nonce(self):
-        return self.get_nonce(self.arbitrator_address)
+        mempool_nonce = self.get_mempool_nonce(self.arbitrator_address)
+        if mempool_nonce == -1:
+            return self.get_nonce(self.arbitrator_address)
+        return mempool_nonce
 
 
 class Kusama(NonceManager):
@@ -181,6 +196,20 @@ class Kusama(NonceManager):
             if event.get("extrinsic_idx") == extrinsinc_index:
                 extrinsic_events.append(event)
         return extrinsic_events
+
+    def get_pending_extrinsics(self):
+        decoded_extrinsics = []
+        extrinsics = self.network.node_rpc_call("author_pendingExtrinsics", [])[
+            "result"
+        ]
+
+        for idx, extrinsic in enumerate(extrinsics):
+            extrinsic_decoder = ExtrinsicsDecoder(
+                data=ScaleBytes(extrinsic), metadata=self.metadata
+            )
+            decoded_extrinsics.append(extrinsic_decoder.decode())
+
+        return decoded_extrinsics
 
     def get_escrow_address(self, buyer_address, seller_address, threshold=2):
         """
