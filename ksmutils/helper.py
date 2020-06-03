@@ -22,7 +22,7 @@ def get_prefix(escrow_address):
     account_id = ss58_decode(escrow_address, 2)
     storage_key = bytearray(xxhash.xxh64(bytes.fromhex(account_id), seed=0).digest())
     storage_key.reverse()
-    return module_prefix + storage_key.hex() + account_id
+    return f"{module_prefix}{storage_key.hex()}{account_id}"
 
 
 def hash_call(call):
