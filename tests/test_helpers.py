@@ -11,9 +11,16 @@ from ksmutils.helper import transfer_signature_payload
 from ksmutils.helper import unsigned_approve_as_multi_construction
 from ksmutils.helper import unsigned_as_multi_construction
 from ksmutils.helper import unsigned_transfer_construction
+from ksmutils.helper import xx128
 
 
 class TestSignaturePayloads:
+    def test_xx128(self):
+        assert (
+            xx128("Utility") + xx128("Multisigs")
+            == "d5e1a2fa16732ce6906189438c0a82c63cd15a3fd6e04e47bee3922dbfa92c8d"
+        )
+
     def test_get_prefix(self):
         escrow_address = "HFXXfXavDuKhLLBhFQTat2aaRQ5CMMw9mwswHzWi76m6iLt"
         expected_result = (

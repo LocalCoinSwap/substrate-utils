@@ -17,16 +17,12 @@ def xx128(word):
     return f"{a.hex()}{b.hex()}"
 
 
-def account_id_prefix(account_id):
-    storage_key = bytearray(xxhash.xxh64(bytes.fromhex(account_id), seed=0).digest())
-    storage_key.reverse()
-    return storage_key.hex()
-
-
 def get_prefix(escrow_address):
     module_prefix = xx128("Utility") + xx128("Multisigs")
     account_id = ss58_decode(escrow_address, 2)
-    return module_prefix + account_id_prefix(account_id) + account_id
+    storage_key = bytearray(xxhash.xxh64(bytes.fromhex(account_id), seed=0).digest())
+    storage_key.reverse()
+    return module_prefix + storage_key.hex() + account_id
 
 
 def hash_call(call):

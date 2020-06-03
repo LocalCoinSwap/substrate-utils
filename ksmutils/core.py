@@ -525,9 +525,6 @@ class Kusama(NonceManager):
         prefix = f"0x{helper.get_prefix(escrow_address)}"
         getkeys_response = self.network.node_rpc_call("state_getKeys", [prefix])
 
-        def blake(x):
-            return blake2b(bytes.fromhex(x), digest_size=16).digest().hex()
-
         if not getkeys_response.get("result", False):
             response["status"] = "error getting unfinished escrows"
             response["details"] = getkeys_response
