@@ -516,3 +516,29 @@ class Kusama(NonceManager):
         events = self.get_extrinsic_events(block_hash, timepoint[1])
         success = self.is_transaction_success(type, events)
         return tx_hash, timepoint, success
+
+    def diagnose(self, escrow_address):
+        """
+        Get details of all unfinished multisigs from an address
+        """
+        response = {}
+        prefix = f"0x{helper.get_prefix(escrow_address)}"
+        getkeys_response = self.network.node_rpc_call("state_getKeys", [prefix])
+
+        if not getkeys_response.get("result", False):
+            response["status"] = "error getting unfinished escrows"
+            response["details"] = getkeys_response
+            return response
+
+        for item in getkeys_response["result"]:
+            storage_result = self.network.node_rpc_call("state_getStorage", [item])[
+                "result"
+            ]
+            return_decoder = ScaleDecoder.get_decoder_class(
+                "Multisig<BlockNumber, BalanceOf, AccountId>",
+                ScaleBytes(storage_result),
+                metadata=self.metadata,
+            )
+            response[item[178:]] = return_decoder.decode()
+        response["status"] = "unfinised escrows found"
+        return response
