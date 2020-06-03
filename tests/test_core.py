@@ -24,6 +24,20 @@ class TestNoNetwork:
 
 
 class TestGetMethods:
+    def test_diagnose(self, network):
+        kusama = Kusama()
+        kusama.connect(network=network)
+        escrow_address = "HFXXfXavDuKhLLBhFQTat2aaRQ5CMMw9mwswHzWi76m6iLt"
+        result = kusama.diagnose(escrow_address)
+        assert result
+
+    def test_bad_address_diagnose(self, network):
+        kusama = Kusama()
+        kusama.connect(network=network)
+        escrow_address = "EifTqgEMBpjRD3WnV9jmdN3ArMj1JGKXAKw2eeHCSLw1Bkg"
+        result = kusama.diagnose(escrow_address)
+        assert result["status"] == "error getting unfinished escrows"
+
     def test_get_balance(self, network):
         kusama = Kusama()
         kusama.connect(network=network)

@@ -4,7 +4,29 @@ Helper functions - all functions in this file are pure with no side effects
 from hashlib import blake2b
 
 import sr25519
+import xxhash
 from scalecodec.base import ScaleDecoder
+from scalecodec.utils.ss58 import ss58_decode
+
+
+def xx128(word):
+    a = bytearray(xxhash.xxh64(word, seed=0).digest())
+    b = bytearray(xxhash.xxh64(word, seed=1).digest())
+    a.reverse()
+    b.reverse()
+    return f"{a.hex()}{b.hex()}"
+
+
+def account_id_prefix(account_id):
+    storage_key = bytearray(xxhash.xxh64(bytes.fromhex(account_id), seed=0).digest())
+    storage_key.reverse()
+    return storage_key.hex()
+
+
+def get_prefix(escrow_address):
+    module_prefix = xx128("Utility") + xx128("Multisigs")
+    account_id = ss58_decode(escrow_address, 2)
+    return module_prefix + account_id_prefix(account_id) + account_id
 
 
 def hash_call(call):
