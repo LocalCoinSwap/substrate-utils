@@ -190,10 +190,19 @@ class TestGetMethods:
         assert len(result) > 0
 
     def test_escrow_payloads(self, network, mocker):
-        kusama = Kusama()
+        kusama = Kusama(
+            arbitrator_key="5c65b9f9f75f95d70b84577ab07e22f7400d394ca3c8bcb227fb6d42920d9b50"
+        )
         kusama.connect(network=network)
+        seller_address = "D2bHQwFcQj11SvtkjULEdKhK4WAeP6MThXgosMHjW9DrmbE"
+        escrow_address = "CofvaLbP3m8PLeNRQmLVPWmTT7jGgAXTwyT69k2wkfPxJ9V"
+        trade_value = 9900000000
+        fee_value = 100000000
         mocker.patch("ksmutils.core.Kusama.get_nonce", return_value=46)
-        # seller_address, escrow_address, trade_value, fee_value
+        result = kusama.escrow_payloads(
+            seller_address, escrow_address, trade_value, fee_value
+        )
+        assert len(result) == 3
 
 
 class TestNonceManager:
