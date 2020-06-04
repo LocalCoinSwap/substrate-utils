@@ -9,7 +9,7 @@ from scalecodec.base import ScaleDecoder
 from scalecodec.utils.ss58 import ss58_decode
 
 
-def xx128(word):
+def xx128(word: str) -> str:
     a = bytearray(xxhash.xxh64(word, seed=0).digest())
     b = bytearray(xxhash.xxh64(word, seed=1).digest())
     a.reverse()
@@ -17,7 +17,7 @@ def xx128(word):
     return f"{a.hex()}{b.hex()}"
 
 
-def get_prefix(escrow_address):
+def get_prefix(escrow_address: str) -> str:
     module_prefix = xx128("Utility") + xx128("Multisigs")
     account_id = ss58_decode(escrow_address, 2)
     storage_key = bytearray(xxhash.xxh64(bytes.fromhex(account_id), seed=0).digest())
