@@ -144,7 +144,7 @@ class TestGetMethods:
         )
 
     def test__get_extrinsix_index(self, kusama):
-        assert kusama._get_extrinsix_index([], "") == -1
+        assert kusama._get_extrinsic_index([], "") == -1
 
     def test_get_pending_extrinsics(self, kusama, mocker):
         pending_extrinsics = {

@@ -3,13 +3,18 @@ Helper functions - all functions in this file are pure with no side effects
 """
 from hashlib import blake2b
 
+import scalecodec
 import sr25519
 import xxhash
 from scalecodec.base import ScaleDecoder
+from scalecodec.metadata import MetadataDecoder
 from scalecodec.utils.ss58 import ss58_decode
 
 
 def xx128(word: str) -> str:
+    """
+    Returns a xxh128 hash on provided word
+    """
     a = bytearray(xxhash.xxh64(word, seed=0).digest())
     b = bytearray(xxhash.xxh64(word, seed=1).digest())
     a.reverse()
@@ -18,6 +23,9 @@ def xx128(word: str) -> str:
 
 
 def get_prefix(escrow_address: str) -> str:
+    """
+    Returns prefix containing the account ID of the address provided
+    """
     module_prefix = xx128("Utility") + xx128("Multisigs")
     account_id = ss58_decode(escrow_address, 2)
     storage_key = bytearray(xxhash.xxh64(bytes.fromhex(account_id), seed=0).digest())
@@ -25,14 +33,22 @@ def get_prefix(escrow_address: str) -> str:
     return f"{module_prefix}{storage_key.hex()}{account_id}"
 
 
-def hash_call(call):
+def hash_call(call: "scalecodec.types.Call") -> str:
+    """
+    Returns a hashed call
+    """
     call = bytes.fromhex(str(call.data)[2:])
     return f"0x{blake2b(call, digest_size=32).digest().hex()}"
 
 
 def transfer_signature_payload(
-    metadata, address, value, nonce, genesis_hash, spec_version
-):
+    metadata: "MetadataDecoder",
+    address: str,
+    value: int,
+    nonce: int,
+    genesis_hash: str,
+    spec_version: int,
+) -> str:
     """
     Turn parameters gathered through side effects into unsigned transfer string
     """
@@ -60,16 +76,16 @@ def transfer_signature_payload(
 
 
 def approve_as_multi_signature_payload(
-    metadata,
-    spec_version,
-    genesis_hash,
-    nonce,
-    to_address,
-    amount,
-    other_signatories,
-    threshold=2,
+    metadata: "MetadataDecoder",
+    spec_version: int,
+    genesis_hash: str,
+    nonce: int,
+    to_address: str,
+    amount: int,
+    other_signatories: list,
+    threshold: int = 2,
     tip=0,
-):
+) -> str:
     """
     Turn parameters gathered through side effects into unsigned approve_as_multi string
     """
@@ -111,17 +127,17 @@ def approve_as_multi_signature_payload(
 
 
 def as_multi_signature_payload(
-    metadata,
-    spec_version,
-    genesis_hash,
-    nonce,
-    to_address,
-    amount,
-    other_signatories,
-    timepoint,
-    threshold=2,
-    tip=0,
-):
+    metadata: "MetadataDecoder",
+    spec_version: int,
+    genesis_hash: str,
+    nonce: int,
+    to_address: str,
+    amount: int,
+    other_signatories: list,
+    timepoint: tuple,
+    threshold: int = 2,
+    tip: int = 0,
+) -> str:
     """
     Turn parameters gathered through side effects into unsigned as_multi string
     """
@@ -163,15 +179,15 @@ def as_multi_signature_payload(
 
 
 def _extrinsic_construction(
-    metadata,
-    account_id,
-    signature,
-    call_function,
-    call_module,
-    call_arguments,
-    nonce,
-    tip=0,
-):
+    metadata: "MetadataDecoder",
+    account_id: str,
+    signature: str,
+    call_function: str,
+    call_module: str,
+    call_arguments: dict,
+    nonce: int,
+    tip: int = 0,
+) -> str:
     """
     Turn parameters gathered through side effects into extrinsic object
     """
@@ -193,8 +209,14 @@ def _extrinsic_construction(
 
 
 def unsigned_transfer_construction(
-    metadata, account_id, signature, nonce, to_address, amount, tip=0
-):
+    metadata: "MetadataDecoder",
+    account_id: str,
+    signature: str,
+    nonce: int,
+    to_address: str,
+    amount: int,
+    tip: int = 0,
+) -> str:
     """
     Turn parameters gathered through side effects into a transfer extrinsic object
     """
@@ -214,16 +236,16 @@ def unsigned_transfer_construction(
 
 
 def unsigned_approve_as_multi_construction(
-    metadata,
-    account_id,
-    signature,
-    nonce,
-    to_address,
-    amount,
+    metadata: "MetadataDecoder",
+    account_id: str,
+    signature: str,
+    nonce: int,
+    to_address: str,
+    amount: int,
     other_signatories,
-    threshold=2,
-    tip=0,
-):
+    threshold: int = 2,
+    tip: int = 0,
+) -> str:
     """
     Turn parameters gathered through side effects into an approve_as_multi extrinsic object
     """
@@ -257,17 +279,17 @@ def unsigned_approve_as_multi_construction(
 
 
 def unsigned_as_multi_construction(
-    metadata,
-    account_id,
-    signature,
-    nonce,
-    to_address,
-    amount,
-    timepoint,
-    other_signatories,
-    threshold=2,
-    tip=0,
-):
+    metadata: "MetadataDecoder",
+    account_id: str,
+    signature: str,
+    nonce: int,
+    to_address: str,
+    amount: int,
+    timepoint: tuple,
+    other_signatories: list,
+    threshold: int = 2,
+    tip: int = 0,
+) -> str:
     """
     Turn parameters gathered through side effects into an as_multi extrinsic object
     """
@@ -299,7 +321,7 @@ def unsigned_as_multi_construction(
     )
 
 
-def sign_payload(keypair, payload):
+def sign_payload(keypair: tuple, payload: str) -> str:
     """
     Sign payload with keypair and return a signed hex string
     """
