@@ -84,7 +84,7 @@ def approve_as_multi_signature_payload(
     amount: int,
     other_signatories: list,
     threshold: int = 2,
-    tip=0,
+    tip: int = 0,
 ) -> str:
     """
     Turn parameters gathered through side effects into unsigned approve_as_multi string
