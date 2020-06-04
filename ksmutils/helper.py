@@ -3,9 +3,11 @@ Helper functions - all functions in this file are pure with no side effects
 """
 from hashlib import blake2b
 
+import scalecodec
 import sr25519
 import xxhash
 from scalecodec.base import ScaleDecoder
+from scalecodec.metadata import MetadataDecoder
 from scalecodec.utils.ss58 import ss58_decode
 
 
@@ -31,7 +33,7 @@ def get_prefix(escrow_address: str) -> str:
     return f"{module_prefix}{storage_key.hex()}{account_id}"
 
 
-def hash_call(call: scalecodec.types.Call) -> str:
+def hash_call(call: "scalecodec.types.Call") -> str:
     """
     Returns a hashed call
     """
