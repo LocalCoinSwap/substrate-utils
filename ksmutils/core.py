@@ -27,7 +27,6 @@ class NonceManager:
     """
 
     def get_mempool_nonce(self, address):
-        logger.warning("called")
         account_id = ss58_decode(address)
 
         pending_extrinsics = self.get_pending_extrinsics()
