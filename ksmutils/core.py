@@ -26,7 +26,10 @@ class NonceManager:
     in asyncronous environments where ordering is important
     """
 
-    def get_mempool_nonce(self, address):
+    def get_mempool_nonce(self, address: str) -> int:
+        """
+        Returns the nonce of any pending extrinsics for a given address
+        """
         account_id = ss58_decode(address)
 
         pending_extrinsics = self.get_pending_extrinsics()
@@ -37,7 +40,10 @@ class NonceManager:
                 nonce = max(extrinsic.get("nonce", nonce), nonce)
         return nonce
 
-    def arbitrator_nonce(self):
+    def arbitrator_nonce(self) -> int:
+        """
+        Returns the nonce of any pending extrinsics for the arbitrator
+        """
         mempool_nonce = self.get_mempool_nonce(self.arbitrator_address)
         if mempool_nonce == -1:
             return self.get_nonce(self.arbitrator_address)
@@ -56,6 +62,9 @@ class Kusama(NonceManager):
             self.setup_arbitrator(arbitrator_key)
 
     def connect(self, *, node_url: str = "", network: "Network" = None):
+        """
+        Connect to a Substrate node and instantiate necessary constants for chain communication
+        """
         node_url = self.node_url if not node_url else node_url
         if not network:
             network = Network(node_url=node_url)
@@ -72,12 +81,15 @@ class Kusama(NonceManager):
         self.spec_version = self.get_spec_version()
         self.genesis_hash = self.get_genesis_hash()
 
-    def setup_arbitrator(self, arbitrator_key):
+    def setup_arbitrator(self, arbitrator_key: str):
+        """
+        Set up constants required for arbitrator functionality
+        """
         self.keypair = sr25519.pair_from_seed(bytes.fromhex(arbitrator_key))
         self.arbitrator_account_id = self.keypair[0].hex()
         self.arbitrator_address = ss58_encode(self.keypair[0], 2)
 
-    def check_version(self):
+    def check_version(self) -> int:
         """
         Make sure the versioning of the Kusama blockchain has not been
         updated since the last developer verification of the codebase
@@ -85,19 +97,32 @@ class Kusama(NonceManager):
         version = self.network.node_rpc_call("state_getRuntimeVersion", [])
         return version["result"]["specVersion"]
 
-    def get_metadata(self):
+    def get_metadata(self) -> "MetadataDecoder":
+        """
+        Returns decoded chain metadata
+        """
         raw_metadata = self.network.node_rpc_call("state_getMetadata", [None])["result"]
         metadata = MetadataDecoder(ScaleBytes(raw_metadata))
         metadata.decode()
         return metadata
 
-    def get_spec_version(self):
+    def get_spec_version(self) -> int:
+        """
+        Returns the blockchain version
+        """
         return BLOCKCHAIN_VERSION
 
-    def get_genesis_hash(self):
+    def get_genesis_hash(self) -> str:
+        """
+        Returns the chain's genesis block hash
+        """
         return self.network.node_rpc_call("chain_getBlockHash", [0])["result"]
 
-    def _get_address_info(self, address):
+    def _get_address_info(self, address: str) -> dict:
+        """
+        Returns information associated with provided address
+        """
+        # Storage key obtained via
         # xxHash128(System) + xxHash128(Account)
         storage_key = (
             "0x26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da9"
@@ -118,15 +143,24 @@ class Kusama(NonceManager):
         )
         return return_decoder.decode()
 
-    def get_balance(self, address):
+    def get_balance(self, address: str) -> int:
+        """
+        Returns the free balance associated with provided address
+        """
         result = self._get_address_info(address)
         return result["data"]["free"]
 
-    def get_nonce(self, address):
+    def get_nonce(self, address: str) -> int:
+        """
+        Returns the nonce associated with provided address
+        """
         result = self._get_address_info(address)
         return result["nonce"]
 
-    def get_block(self, block_hash):
+    def get_block(self, block_hash: str) -> dict:
+        """
+        Returns the block information associated with provided block hash
+        """
         response = self.network.node_rpc_call("chain_getBlock", [block_hash])["result"]
 
         response["block"]["header"]["number"] = int(
@@ -142,7 +176,10 @@ class Kusama(NonceManager):
 
         return response
 
-    def get_events(self, block_hash):
+    def get_events(self, block_hash: str) -> list:
+        """
+        Returns events broadcasted within the provided block
+        """
         # If there's one more function where we have to do ths, let's add the helper function
         # xxHash128(System) + xxHash128(Events)
         storage_hash = (
@@ -158,19 +195,30 @@ class Kusama(NonceManager):
         )
         return return_decoder.decode()
 
-    def _get_extrinsix_index(self, block_extrinsics, extrinsic_hash):
+    def _get_extrinsic_index(self, block_extrinsics: list, extrinsic_hash: str) -> int:
+        """
+        Returns the index of a provided extrinsic
+        """
         for idx, extrinsics in enumerate(block_extrinsics):
             ehash = extrinsics.get("extrinsic_hash")
             if ehash == extrinsic_hash:
                 return idx
         return -1
 
-    def get_extrinsic_hash(self, final_transaction):
+    def get_extrinsic_hash(self, final_transaction: str) -> str:
+        """
+        Returns the extrinsic hash for a provided complete extrinsic
+        """
         return (
             blake2b(bytes.fromhex(final_transaction[2:]), digest_size=32).digest().hex()
         )
 
-    def get_extrinsic_timepoint(self, node_response, final_transaction):
+    def get_extrinsic_timepoint(
+        self, node_response: dict, final_transaction: str
+    ) -> tuple:
+        """
+        Returns the timepoint of a provided extrinsic
+        """
         if not node_response:
             raise Exception("node_response is empty")
 
@@ -182,13 +230,16 @@ class Kusama(NonceManager):
 
         block = self.get_block(finalized_hash)
         block_number = block.get("block").get("header").get("number")
-        extrinsic_index = self._get_extrinsix_index(
+        extrinsic_index = self._get_extrinsic_index(
             block.get("block").get("extrinsics"), extrinsic_hash
         )
 
         return (block_number, extrinsic_index)
 
-    def get_extrinsic_events(self, block_hash, extrinsinc_index):
+    def get_extrinsic_events(self, block_hash: str, extrinsinc_index: int) -> list:
+        """
+        Returns events triggered by provided extrinsic
+        """
         events = self.get_events(block_hash)
         extrinsic_events = []
         for event in events:
@@ -196,7 +247,10 @@ class Kusama(NonceManager):
                 extrinsic_events.append(event)
         return extrinsic_events
 
-    def get_pending_extrinsics(self):
+    def get_pending_extrinsics(self) -> list:
+        """
+        Returns decoded pending extrinsics
+        """
         decoded_extrinsics = []
         extrinsics = self.network.node_rpc_call("author_pendingExtrinsics", [])[
             "result"
@@ -210,7 +264,9 @@ class Kusama(NonceManager):
 
         return decoded_extrinsics
 
-    def get_escrow_address(self, buyer_address, seller_address, threshold=2):
+    def get_escrow_address(
+        self, buyer_address: str, seller_address: str, threshold: int = 2
+    ) -> str:
         """
         Returns an escrow address for multisignature transactions
         """
@@ -223,9 +279,9 @@ class Kusama(NonceManager):
         multi_sig_address = ss58_encode(multi_sig_account_id.value.replace("0x", ""), 2)
         return multi_sig_address
 
-    def transfer_payload(self, from_address, to_address, value):
+    def transfer_payload(self, from_address: str, to_address: str, value: int) -> str:
         """
-        Get signature payloads for a regular transfer
+        Returns signature payloads for a regular transfer
         """
         nonce = self.get_nonce(from_address)
         return helper.transfer_signature_payload(
@@ -238,10 +294,10 @@ class Kusama(NonceManager):
         )
 
     def approve_as_multi_payload(
-        self, from_address, to_address, value, other_signatories
-    ):
+        self, from_address: str, to_address: str, value: int, other_signatories: list
+    ) -> tuple:
         """
-        Get signature payloads for approve_as_multi
+        Returns signature payloads for approve_as_multi
         """
         nonce = self.get_nonce(from_address)
         approve_as_multi_payload = helper.approve_as_multi_signature_payload(
@@ -256,10 +312,15 @@ class Kusama(NonceManager):
         return approve_as_multi_payload, nonce
 
     def as_multi_payload(
-        self, from_address, to_address, value, other_signatories, timepoint=None,
-    ):
+        self,
+        from_address: str,
+        to_address: str,
+        value: int,
+        other_signatories: list,
+        timepoint: tuple = None,
+    ) -> tuple:
         """
-        Get signature payloads for as_multi
+        Returns signature payloads for as_multi
         """
         nonce = self.get_nonce(from_address)
         as_multi_payload = helper.as_multi_signature_payload(
@@ -274,9 +335,11 @@ class Kusama(NonceManager):
         )
         return as_multi_payload, nonce
 
-    def escrow_payloads(self, seller_address, escrow_address, trade_value, fee_value):
+    def escrow_payloads(
+        self, seller_address: str, escrow_address: str, trade_value: int, fee_value: int
+    ) -> tuple:
         """
-        Get signature payloads for funding the multisig escrow,
+        Returns signature payloads for funding the multisig escrow,
         and sending the fee to the arbitrator
         """
         nonce = self.get_nonce(seller_address)
@@ -298,7 +361,13 @@ class Kusama(NonceManager):
         )
         return escrow_payload, fee_payload, nonce
 
-    def release_escrow(self, buyer_address, trade_value, timepoint, other_signatories):
+    def release_escrow(
+        self,
+        buyer_address: str,
+        trade_value: int,
+        timepoint: tuple,
+        other_signatories: list,
+    ) -> str:
         """
         Return final arbitrator as_multi transaction for releasing escrow
         """
@@ -327,8 +396,13 @@ class Kusama(NonceManager):
         return release_transaction
 
     def cancellation(
-        self, seller_address, trade_value, fee_value, other_signatories, timepoint
-    ):
+        self,
+        seller_address: str,
+        trade_value: int,
+        fee_value: int,
+        other_signatories: list,
+        timepoint: tuple,
+    ) -> tuple:
         """
         Return signed and ready transactions for the fee return and escrow return
         """
@@ -385,13 +459,13 @@ class Kusama(NonceManager):
 
     def resolve_dispute(
         self,
-        victor,
-        seller_address,
-        trade_value,
-        fee_value,
-        other_signatories,
+        victor: str,
+        seller_address: str,
+        trade_value: int,
+        fee_value: int,
+        other_signatories: list,
         welfare_value: int = 1000000000,
-    ):
+    ) -> tuple:
         """
         If sellers wins then return cancellation logic
         If buyer wins then return ready approveAsMulti and ready buyer replenishment
@@ -443,7 +517,10 @@ class Kusama(NonceManager):
         )
         return release_transaction, welfare_transaction
 
-    def get_block_hash(self, node_response):
+    def get_block_hash(self, node_response: dict) -> str:
+        """
+        Returns the block hash of a provided node responce
+        """
         return (
             node_response[max(node_response.keys())]
             .get("params", {})
@@ -451,29 +528,32 @@ class Kusama(NonceManager):
             .get("finalized")
         )
 
-    def is_transaction_success(self, transaction_type, events):
-        successfull = False
+    def is_transaction_success(self, transaction_type: str, events: list) -> bool:
+        """
+        Returns if the a transaction according to the provided events and transaction type
+        """
+        successful = False
         event_names = []
         for event in events:
             event_names.append(event["event_id"])
-        successfull = (
+        successful = (
             True
             if transaction_type == "transfer" and "Transfer" in event_names
-            else successfull
+            else successful
         )
-        successfull = (
+        successful = (
             True
             if transaction_type == "approve_as_multi" and "NewMultisig" in event_names
-            else successfull
+            else successful
         )
-        successfull = (
+        successful = (
             True
             if transaction_type == "as_multi" and "MultisigExecuted" in event_names
-            else successfull
+            else successful
         )
-        return successfull
+        return successful
 
-    def publish(self, type, params):
+    def publish(self, type: str, params: list) -> tuple:
         """
         Raw extrinsic broadcast
         """
@@ -502,7 +582,7 @@ class Kusama(NonceManager):
             transaction = helper.unsigned_as_multi_construction(self.metadata, *params)
             return self.broadcast(type, transaction)
 
-    def broadcast(self, type, transaction):
+    def broadcast(self, type: str, transaction: str) -> tuple:
         """
         Utility function to broadcast complete final transactions
         """
@@ -516,9 +596,9 @@ class Kusama(NonceManager):
         success = self.is_transaction_success(type, events)
         return tx_hash, timepoint, success
 
-    def diagnose(self, escrow_address):
+    def diagnose(self, escrow_address: str) -> dict:
         """
-        Get details of all unfinished multisigs from an address
+        Returns details of all unfinished multisigs from an address
         """
         response = {}
         prefix = f"0x{helper.get_prefix(escrow_address)}"
