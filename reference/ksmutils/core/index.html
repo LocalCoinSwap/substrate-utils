@@ -638,6 +638,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#ancestors-in-mro_1" class="md-nav__link">
+    Ancestors (in MRO)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#descendants" class="md-nav__link">
     Descendants
   </a>
@@ -662,6 +669,20 @@
           <li class="md-nav__item">
   <a href="#get_mempool_nonce_1" class="md-nav__link">
     get_mempool_nonce
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_nonce_1" class="md-nav__link">
+    get_nonce
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_pending_extrinsics_1" class="md-nav__link">
+    get_pending_extrinsics
   </a>
   
 </li>
@@ -1030,6 +1051,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#ancestors-in-mro_1" class="md-nav__link">
+    Ancestors (in MRO)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#descendants" class="md-nav__link">
     Descendants
   </a>
@@ -1054,6 +1082,20 @@
           <li class="md-nav__item">
   <a href="#get_mempool_nonce_1" class="md-nav__link">
     get_mempool_nonce
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_nonce_1" class="md-nav__link">
+    get_nonce
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_pending_extrinsics_1" class="md-nav__link">
+    get_pending_extrinsics
   </a>
   
 </li>
@@ -1095,6 +1137,10 @@
                 <h1 id="module-ksmutilscore">Module ksmutils.core</h1>
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">logging</span>
 
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span>
+
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
+
 <span class="kn">from</span> <span class="nn">hashlib</span> <span class="kn">import</span> <span class="n">blake2b</span>
 
 <span class="kn">import</span> <span class="nn">sr25519</span>
@@ -1125,15 +1171,27 @@
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<span class="k">class</span> <span class="nc">NonceManager</span><span class="p">:</span>
+<span class="k">class</span> <span class="nc">NonceManager</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="sd">    Extending this class allows a user to build in advanced nonce management</span>
+<span class="sd">    Abstract Class: Extending this class allows a user to build advanced</span>
 
-<span class="sd">    in asyncronous environments where ordering is important</span>
+<span class="sd">    nonce management in asyncronous environments where ordering is important</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@abstractmethod</span>
+
+    <span class="k">def</span> <span class="nf">get_pending_extrinsics</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Not implemented&quot;</span><span class="p">)</span>
+
+    <span class="nd">@abstractmethod</span>
+
+    <span class="k">def</span> <span class="nf">get_nonce</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Not implemented&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">get_mempool_nonce</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 
@@ -1164,6 +1222,10 @@
 <span class="sd">        Returns the nonce of any pending extrinsics for the arbitrator</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">arbitrator_address</span><span class="p">:</span>
+
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Did you forget to setup artitrator address?&quot;</span><span class="p">)</span>
 
         <span class="n">mempool_nonce</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_mempool_nonce</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">arbitrator_address</span><span class="p">)</span>
 
@@ -2213,8 +2275,8 @@
 </code></pre></div>
 
 
-<p>Extending this class allows a user to build in advanced nonce management
-in asyncronous environments where ordering is important</p>
+<p>Abstract Class: Extending this class allows a user to build advanced
+nonce management in asyncronous environments where ordering is important</p>
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="n">Kusama</span><span class="p">(</span><span class="n">NonceManager</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
 
 <span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">__init__</span><span class="p">(</span><span class="w"></span>
@@ -3240,6 +3302,7 @@ in asyncronous environments where ordering is important</p>
 <h4 id="ancestors-in-mro">Ancestors (in MRO)</h4>
 <ul>
 <li>ksmutils.core.NonceManager</li>
+<li>abc.ABC</li>
 </ul>
 <h4 id="methods">Methods</h4>
 <h5 id="approve_as_multi_payload">approve_as_multi_payload</h5>
@@ -3306,6 +3369,10 @@ in asyncronous environments where ordering is important</p>
 <span class="ss">        Returns the nonce of any pending extrinsics for the arbitrator</span>
 
 <span class="ss">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="k">not</span> <span class="k">self</span><span class="p">.</span><span class="n">arbitrator_address</span><span class="p">:</span>
+
+            <span class="n">raise</span> <span class="k">Exception</span><span class="p">(</span><span class="ss">&quot;Did you forget to setup artitrator address?&quot;</span><span class="p">)</span>
 
         <span class="n">mempool_nonce</span> <span class="o">=</span> <span class="k">self</span><span class="p">.</span><span class="n">get_mempool_nonce</span><span class="p">(</span><span class="k">self</span><span class="p">.</span><span class="n">arbitrator_address</span><span class="p">)</span>
 
@@ -4605,60 +4672,80 @@ If buyer wins then return ready approveAsMulti and ready buyer replenishment</p>
 </code></pre></div>
 
 
-<p>Extending this class allows a user to build in advanced nonce management
-in asyncronous environments where ordering is important</p>
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="n">NonceManager:</span>
+<p>Abstract Class: Extending this class allows a user to build advanced
+nonce management in asyncronous environments where ordering is important</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="n">NonceManager</span><span class="p">(</span><span class="n">ABC</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
 
-    <span class="s">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="ss">&quot;&quot;&quot;</span>
 
-<span class="s">    Extending this class allows a user to build in advanced nonce management</span>
+<span class="ss">    Abstract Class: Extending this class allows a user to build advanced</span>
 
-<span class="s">    in asyncronous environments where ordering is important</span>
+<span class="ss">    nonce management in asyncronous environments where ordering is important</span>
 
-<span class="s">    &quot;&quot;&quot;</span>
+<span class="ss">    &quot;&quot;&quot;</span><span class="w"></span>
 
-    <span class="n">def</span> <span class="n">get_mempool_nonce</span>(<span class="nb">self</span>, <span class="n">address:</span> <span class="n">str</span>) -&gt; <span class="n">int:</span>
+<span class="w">    </span><span class="nv">@abstractmethod</span><span class="w"></span>
 
-        <span class="s">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">get_pending_extrinsics</span><span class="p">(</span><span class="n">self</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nl">list</span><span class="p">:</span><span class="w"></span>
 
-<span class="s">        Returns the nonce of any pending extrinsics for a given address</span>
+<span class="w">        </span><span class="n">raise</span><span class="w"> </span><span class="n">NotImplementedError</span><span class="p">(</span><span class="ss">&quot;Not implemented&quot;</span><span class="p">)</span><span class="w"></span>
 
-<span class="s">        &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="nv">@abstractmethod</span><span class="w"></span>
 
-        <span class="n">account_id</span> = <span class="n">ss58_decode</span>(<span class="n">address</span>)
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">get_nonce</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="nl">address</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">int</span><span class="err">:</span><span class="w"></span>
 
-        <span class="n">pending_extrinsics</span> = <span class="nb">self</span>.<span class="n">get_pending_extrinsics</span>()
+<span class="w">        </span><span class="n">raise</span><span class="w"> </span><span class="n">NotImplementedError</span><span class="p">(</span><span class="ss">&quot;Not implemented&quot;</span><span class="p">)</span><span class="w"></span>
 
-        <span class="n">nonce</span> = -<span class="mi">1</span>
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">get_mempool_nonce</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="nl">address</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">int</span><span class="err">:</span><span class="w"></span>
 
-        <span class="k">for</span> <span class="n">idx</span>, <span class="n">extrinsic</span> <span class="nb">in</span> <span class="n">enumerate</span>(<span class="n">pending_extrinsics</span>):
+<span class="w">        </span><span class="ss">&quot;&quot;&quot;</span>
 
-            <span class="k">if</span> <span class="n">extrinsic</span>.<span class="nb">get</span>(<span class="s">&quot;account_id&quot;</span>) == <span class="n">account_id:</span>
+<span class="ss">        Returns the nonce of any pending extrinsics for a given address</span>
 
-                <span class="n">nonce</span> = <span class="nb">max</span>(<span class="n">extrinsic</span>.<span class="nb">get</span>(<span class="s">&quot;nonce&quot;</span>, <span class="n">nonce</span>), <span class="n">nonce</span>)
+<span class="ss">        &quot;&quot;&quot;</span><span class="w"></span>
 
-        <span class="k">return</span> <span class="n">nonce</span>
+<span class="w">        </span><span class="n">account_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ss58_decode</span><span class="p">(</span><span class="n">address</span><span class="p">)</span><span class="w"></span>
 
-    <span class="n">def</span> <span class="n">arbitrator_nonce</span>(<span class="nb">self</span>) -&gt; <span class="n">int:</span>
+<span class="w">        </span><span class="n">pending_extrinsics</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">get_pending_extrinsics</span><span class="p">()</span><span class="w"></span>
 
-        <span class="s">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="n">nonce</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="w"></span>
 
-<span class="s">        Returns the nonce of any pending extrinsics for the arbitrator</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">idx</span><span class="p">,</span><span class="w"> </span><span class="n">extrinsic</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">enumerate</span><span class="p">(</span><span class="n">pending_extrinsics</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
 
-<span class="s">        &quot;&quot;&quot;</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">extrinsic</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="ss">&quot;account_id&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nl">account_id</span><span class="p">:</span><span class="w"></span>
 
-        <span class="n">mempool_nonce</span> = <span class="nb">self</span>.<span class="n">get_mempool_nonce</span>(<span class="nb">self</span>.<span class="n">arbitrator_address</span>)
+<span class="w">                </span><span class="n">nonce</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">max</span><span class="p">(</span><span class="n">extrinsic</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="ss">&quot;nonce&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">nonce</span><span class="p">),</span><span class="w"> </span><span class="n">nonce</span><span class="p">)</span><span class="w"></span>
 
-        <span class="k">if</span> <span class="n">mempool_nonce</span> == -<span class="mi">1</span>:
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">nonce</span><span class="w"></span>
 
-            <span class="k">return</span> <span class="nb">self</span>.<span class="n">get_nonce</span>(<span class="nb">self</span>.<span class="n">arbitrator_address</span>)
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">arbitrator_nonce</span><span class="p">(</span><span class="n">self</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">int</span><span class="err">:</span><span class="w"></span>
 
-        <span class="k">return</span> <span class="n">mempool_nonce</span>
+<span class="w">        </span><span class="ss">&quot;&quot;&quot;</span>
+
+<span class="ss">        Returns the nonce of any pending extrinsics for the arbitrator</span>
+
+<span class="ss">        &quot;&quot;&quot;</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="nl">arbitrator_address</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">raise</span><span class="w"> </span><span class="k">Exception</span><span class="p">(</span><span class="ss">&quot;Did you forget to setup artitrator address?&quot;</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">mempool_nonce</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">get_mempool_nonce</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">arbitrator_address</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">mempool_nonce</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">get_nonce</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">arbitrator_address</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">mempool_nonce</span><span class="w"></span>
 </code></pre></div>
 
 
 </details>
 <hr />
+<h4 id="ancestors-in-mro_1">Ancestors (in MRO)</h4>
+<ul>
+<li>abc.ABC</li>
+</ul>
 <h4 id="descendants">Descendants</h4>
 <ul>
 <li>ksmutils.core.Kusama</li>
@@ -4679,6 +4766,10 @@ in asyncronous environments where ordering is important</p>
 <span class="ss">        Returns the nonce of any pending extrinsics for the arbitrator</span>
 
 <span class="ss">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="k">not</span> <span class="k">self</span><span class="p">.</span><span class="n">arbitrator_address</span><span class="p">:</span>
+
+            <span class="n">raise</span> <span class="k">Exception</span><span class="p">(</span><span class="ss">&quot;Did you forget to setup artitrator address?&quot;</span><span class="p">)</span>
 
         <span class="n">mempool_nonce</span> <span class="o">=</span> <span class="k">self</span><span class="p">.</span><span class="n">get_mempool_nonce</span><span class="p">(</span><span class="k">self</span><span class="p">.</span><span class="n">arbitrator_address</span><span class="p">)</span>
 
@@ -4721,6 +4812,39 @@ in asyncronous environments where ordering is important</p>
                 <span class="n">nonce</span> <span class="o">=</span> <span class="k">max</span><span class="p">(</span><span class="n">extrinsic</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="ss">&quot;nonce&quot;</span><span class="p">,</span> <span class="n">nonce</span><span class="p">),</span> <span class="n">nonce</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">nonce</span>
+</code></pre></div>
+
+
+</details>
+<h5 id="get_nonce_1">get_nonce</h5>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">get_nonce</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">address</span><span class="p">:</span> <span class="nb">str</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span>
+</code></pre></div>
+
+
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="nv">@abstractmethod</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">get_nonce</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="nl">address</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">int</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">raise</span><span class="w"> </span><span class="n">NotImplementedError</span><span class="p">(</span><span class="ss">&quot;Not implemented&quot;</span><span class="p">)</span><span class="w"></span>
+</code></pre></div>
+
+
+</details>
+<h5 id="get_pending_extrinsics_1">get_pending_extrinsics</h5>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">get_pending_extrinsics</span><span class="p">(</span>
+    <span class="bp">self</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span>
+</code></pre></div>
+
+
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="nv">@abstractmethod</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">get_pending_extrinsics</span><span class="p">(</span><span class="n">self</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nl">list</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">raise</span><span class="w"> </span><span class="n">NotImplementedError</span><span class="p">(</span><span class="ss">&quot;Not implemented&quot;</span><span class="p">)</span><span class="w"></span>
 </code></pre></div>
 
 
