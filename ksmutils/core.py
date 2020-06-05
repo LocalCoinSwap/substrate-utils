@@ -1,4 +1,6 @@
 import logging
+from abc import ABC
+from abc import abstractmethod
 from hashlib import blake2b
 
 import sr25519
@@ -20,11 +22,20 @@ BLOCKCHAIN_VERSION = 1062
 logger = logging.getLogger(__name__)
 
 
-class NonceManager:
+class NonceManager(ABC):
     """
-    Extending this class allows a user to build in advanced nonce management
-    in asyncronous environments where ordering is important
+
+    Abstract Class: Extending this class allows a user to build advanced
+    nonce management in asyncronous environments where ordering is important
     """
+
+    @abstractmethod
+    def get_pending_extrinsics(self) -> list:
+        raise NotImplementedError("Not implemented")
+
+    @abstractmethod
+    def get_nonce(self, address: str) -> int:
+        raise NotImplementedError("Not implemented")
 
     def get_mempool_nonce(self, address: str) -> int:
         """
@@ -44,6 +55,9 @@ class NonceManager:
         """
         Returns the nonce of any pending extrinsics for the arbitrator
         """
+        if not self.arbitrator_address:
+            raise Exception("Did you forget to setup artitrator address?")
+
         mempool_nonce = self.get_mempool_nonce(self.arbitrator_address)
         if mempool_nonce == -1:
             return self.get_nonce(self.arbitrator_address)

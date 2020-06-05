@@ -4,6 +4,7 @@ import pytest
 
 from . import mocked_returns
 from ksmutils import Kusama
+from ksmutils.core import NonceManager
 
 
 class TestVersionEndpoint:
@@ -175,6 +176,25 @@ class TestGetMethods:
 
 
 class TestNonceManager:
+    def test_abstract_methods(self):
+        class FakeNonceManager(NonceManager):
+            def get_pending_extrinsics(self) -> list:
+                super().get_pending_extrinsics()
+
+            def get_nonce(self, address: str) -> int:
+                super().get_nonce(address)
+
+        nonce_manager = FakeNonceManager()
+        with pytest.raises(NotImplementedError) as excinfo:
+            nonce_manager.get_pending_extrinsics()
+
+        assert "Not implemented" in str(excinfo.value)
+
+        with pytest.raises(NotImplementedError) as excinfo:
+            nonce_manager.get_nonce("E8MtJbGYirK5gw2syuB1G843rhQ454NwTVQXYYvvPtdQqQh")
+
+        assert "Not implemented" in str(excinfo.value)
+
     def test_get_mempool_nonce(self, kusama, mocker):
         mocker.patch(
             "ksmutils.core.Kusama.get_pending_extrinsics",
@@ -201,6 +221,14 @@ class TestNonceManager:
 
         result = kusama.arbitrator_nonce()
         assert result == 3
+
+    def test_arbitrator_nonce_raises_exception(self, kusama, mocker):
+
+        mocker.patch.object(kusama, "arbitrator_address", None)
+        with pytest.raises(Exception) as excinfo:
+            kusama.arbitrator_nonce()
+
+        assert "Did you forget to setup artitrator address?" in str(excinfo.value)
 
 
 class TestWrapperMethods:

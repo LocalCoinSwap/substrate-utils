@@ -19,7 +19,7 @@ URL = "https://github.com/LocalCoinSwap/kusama-utils/"
 EMAIL = "nathan@localcoinswap.com"
 AUTHOR = "Nathan Worsley"
 REQUIRES_PYTHON = ">=3.7.0"
-VERSION = "0.0.3"
+VERSION = "0.0.4"
 
 REQUIRED = [
     "websockets==8.1",
