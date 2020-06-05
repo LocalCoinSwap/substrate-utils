@@ -1,5 +1,5 @@
 class TestBasicConnection:
-    def test_basic_connection(self, network):
+    def test_basic_connection(self, kusama):
         storage_key = (
             "0x26aa394eea5630e07c48ae0c9558cef780d41e5e16056765bc8461851072c9d7"
         )
@@ -7,9 +7,9 @@ class TestBasicConnection:
         test_block = (
             "0x9371a6742726810f20ef7e26c53a141270d76e50b2c636baa4a0a1f5961f33ef"
         )
-        result = network.node_rpc_call("state_getStorage", [storage_key, test_block])[
-            "result"
-        ]
+        result = kusama.network.node_rpc_call(
+            "state_getStorage", [storage_key, test_block]
+        )["result"]
 
         expected_result = (
             "0x1800000000000000c0257a09000000000200000001000000000000ca9a3b000000000200000"
