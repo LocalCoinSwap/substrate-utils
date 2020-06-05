@@ -413,6 +413,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#get_prefix" class="md-nav__link">
+    get_prefix
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#hash_call" class="md-nav__link">
     hash_call
   </a>
@@ -454,6 +461,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#xx128" class="md-nav__link">
+    xx128
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -478,18 +492,6 @@
   <li class="md-nav__item">
     <a href="../" title="Index" class="md-nav__link">
       Index
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../manager/" title="Manager" class="md-nav__link">
-      Manager
     </a>
   </li>
 
@@ -571,6 +573,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#get_prefix" class="md-nav__link">
+    get_prefix
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#hash_call" class="md-nav__link">
     hash_call
   </a>
@@ -612,6 +621,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#xx128" class="md-nav__link">
+    xx128
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -646,11 +662,61 @@
 
 <span class="kn">from</span> <span class="nn">hashlib</span> <span class="kn">import</span> <span class="n">blake2b</span>
 
+<span class="kn">import</span> <span class="nn">scalecodec</span>
+
 <span class="kn">import</span> <span class="nn">sr25519</span>
+
+<span class="kn">import</span> <span class="nn">xxhash</span>
 
 <span class="kn">from</span> <span class="nn">scalecodec.base</span> <span class="kn">import</span> <span class="n">ScaleDecoder</span>
 
-<span class="k">def</span> <span class="nf">hash_call</span><span class="p">(</span><span class="n">call</span><span class="p">):</span>
+<span class="kn">from</span> <span class="nn">scalecodec.metadata</span> <span class="kn">import</span> <span class="n">MetadataDecoder</span>
+
+<span class="kn">from</span> <span class="nn">scalecodec.utils.ss58</span> <span class="kn">import</span> <span class="n">ss58_decode</span>
+
+<span class="k">def</span> <span class="nf">xx128</span><span class="p">(</span><span class="n">word</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Returns a xxh128 hash on provided word</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">a</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">(</span><span class="n">xxhash</span><span class="o">.</span><span class="n">xxh64</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">digest</span><span class="p">())</span>
+
+    <span class="n">b</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">(</span><span class="n">xxhash</span><span class="o">.</span><span class="n">xxh64</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">digest</span><span class="p">())</span>
+
+    <span class="n">a</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+
+    <span class="n">b</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;{a.hex()}{b.hex()}&quot;</span>
+
+<span class="k">def</span> <span class="nf">get_prefix</span><span class="p">(</span><span class="n">escrow_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Returns prefix containing the account ID of the address provided</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">module_prefix</span> <span class="o">=</span> <span class="n">xx128</span><span class="p">(</span><span class="s2">&quot;Utility&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">xx128</span><span class="p">(</span><span class="s2">&quot;Multisigs&quot;</span><span class="p">)</span>
+
+    <span class="n">account_id</span> <span class="o">=</span> <span class="n">ss58_decode</span><span class="p">(</span><span class="n">escrow_address</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">storage_key</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">(</span><span class="n">xxhash</span><span class="o">.</span><span class="n">xxh64</span><span class="p">(</span><span class="nb">bytes</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="n">account_id</span><span class="p">),</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">digest</span><span class="p">())</span>
+
+    <span class="n">storage_key</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;{module_prefix}{storage_key.hex()}{account_id}&quot;</span>
+
+<span class="k">def</span> <span class="nf">hash_call</span><span class="p">(</span><span class="n">call</span><span class="p">:</span> <span class="s2">&quot;scalecodec.types.Call&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Returns a hashed call</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">call</span> <span class="o">=</span> <span class="nb">bytes</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">call</span><span class="o">.</span><span class="n">data</span><span class="p">)[</span><span class="mi">2</span><span class="p">:])</span>
 
@@ -658,9 +724,19 @@
 
 <span class="k">def</span> <span class="nf">transfer_signature_payload</span><span class="p">(</span>
 
-    <span class="n">metadata</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">nonce</span><span class="p">,</span> <span class="n">genesis_hash</span><span class="p">,</span> <span class="n">spec_version</span>
+    <span class="n">metadata</span><span class="p">:</span> <span class="s2">&quot;MetadataDecoder&quot;</span><span class="p">,</span>
 
-<span class="p">):</span>
+    <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+
+    <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+
+    <span class="n">nonce</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+
+    <span class="n">genesis_hash</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+
+    <span class="n">spec_version</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
 
@@ -712,25 +788,31 @@
 
 <span class="k">def</span> <span class="nf">approve_as_multi_signature_payload</span><span class="p">(</span>
 
-    <span class="n">metadata</span><span class="p">,</span>
+    <span class="n">metadata</span><span class="p">:</span> <span class="s2">&quot;MetadataDecoder&quot;</span><span class="p">,</span>
 
-    <span class="n">spec_version</span><span class="p">,</span>
+    <span class="n">spec_version</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
 
-    <span class="n">genesis_hash</span><span class="p">,</span>
+    <span class="n">genesis_hash</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
 
-    <span class="n">nonce</span><span class="p">,</span>
+    <span class="n">nonce</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
 
-    <span class="n">to_address</span><span class="p">,</span>
+    <span class="n">to_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
 
-    <span class="n">amount</span><span class="p">,</span>
+    <span class="n">amount</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
 
-    <span class="n">other_signatories</span><span class="p">,</span>
+    <span class="n">other_signatories</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
 
-    <span class="n">threshold</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
 
-    <span class="n">tip</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">tip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
 
-<span class="p">):</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Turn parameters gathered through side effects into unsigned approve_as_multi string</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">transfer</span> <span class="o">=</span> <span class="n">ScaleDecoder</span><span class="o">.</span><span class="n">get_decoder_class</span><span class="p">(</span><span class="s2">&quot;Call&quot;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
 
@@ -802,27 +884,33 @@
 
 <span class="k">def</span> <span class="nf">as_multi_signature_payload</span><span class="p">(</span>
 
-    <span class="n">metadata</span><span class="p">,</span>
+    <span class="n">metadata</span><span class="p">:</span> <span class="s2">&quot;MetadataDecoder&quot;</span><span class="p">,</span>
 
-    <span class="n">spec_version</span><span class="p">,</span>
+    <span class="n">spec_version</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
 
-    <span class="n">genesis_hash</span><span class="p">,</span>
+    <span class="n">genesis_hash</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
 
-    <span class="n">nonce</span><span class="p">,</span>
+    <span class="n">nonce</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
 
-    <span class="n">to_address</span><span class="p">,</span>
+    <span class="n">to_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
 
-    <span class="n">amount</span><span class="p">,</span>
+    <span class="n">amount</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
 
-    <span class="n">other_signatories</span><span class="p">,</span>
+    <span class="n">other_signatories</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
 
-    <span class="n">timepoint</span><span class="p">,</span>
+    <span class="n">timepoint</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span>
 
-    <span class="n">threshold</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
 
-    <span class="n">tip</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">tip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
 
-<span class="p">):</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Turn parameters gathered through side effects into unsigned as_multi string</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">transfer</span> <span class="o">=</span> <span class="n">ScaleDecoder</span><span class="o">.</span><span class="n">get_decoder_class</span><span class="p">(</span><span class="s2">&quot;Call&quot;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
 
@@ -894,23 +982,29 @@
 
 <span class="k">def</span> <span class="nf">_extrinsic_construction</span><span class="p">(</span>
 
-    <span class="n">metadata</span><span class="p">,</span>
+    <span class="n">metadata</span><span class="p">:</span> <span class="s2">&quot;MetadataDecoder&quot;</span><span class="p">,</span>
 
-    <span class="n">account_id</span><span class="p">,</span>
+    <span class="n">account_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
 
-    <span class="n">signature</span><span class="p">,</span>
+    <span class="n">signature</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
 
-    <span class="n">call_function</span><span class="p">,</span>
+    <span class="n">call_function</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
 
-    <span class="n">call_module</span><span class="p">,</span>
+    <span class="n">call_module</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
 
-    <span class="n">call_arguments</span><span class="p">,</span>
+    <span class="n">call_arguments</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
 
-    <span class="n">nonce</span><span class="p">,</span>
+    <span class="n">nonce</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
 
-    <span class="n">tip</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">tip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
 
-<span class="p">):</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Turn parameters gathered through side effects into extrinsic object</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">extrinsic</span> <span class="o">=</span> <span class="n">ScaleDecoder</span><span class="o">.</span><span class="n">get_decoder_class</span><span class="p">(</span><span class="s2">&quot;Extrinsic&quot;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
 
@@ -944,9 +1038,27 @@
 
 <span class="k">def</span> <span class="nf">unsigned_transfer_construction</span><span class="p">(</span>
 
-    <span class="n">metadata</span><span class="p">,</span> <span class="n">account_id</span><span class="p">,</span> <span class="n">signature</span><span class="p">,</span> <span class="n">nonce</span><span class="p">,</span> <span class="n">to_address</span><span class="p">,</span> <span class="n">amount</span><span class="p">,</span> <span class="n">tip</span><span class="o">=</span><span class="mi">0</span>
+    <span class="n">metadata</span><span class="p">:</span> <span class="s2">&quot;MetadataDecoder&quot;</span><span class="p">,</span>
 
-<span class="p">):</span>
+    <span class="n">account_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+
+    <span class="n">signature</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+
+    <span class="n">nonce</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+
+    <span class="n">to_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+
+    <span class="n">amount</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+
+    <span class="n">tip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Turn parameters gathered through side effects into a transfer extrinsic object</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">call_function</span> <span class="o">=</span> <span class="s2">&quot;transfer&quot;</span>
 
@@ -976,25 +1088,31 @@
 
 <span class="k">def</span> <span class="nf">unsigned_approve_as_multi_construction</span><span class="p">(</span>
 
-    <span class="n">metadata</span><span class="p">,</span>
+    <span class="n">metadata</span><span class="p">:</span> <span class="s2">&quot;MetadataDecoder&quot;</span><span class="p">,</span>
 
-    <span class="n">account_id</span><span class="p">,</span>
+    <span class="n">account_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
 
-    <span class="n">signature</span><span class="p">,</span>
+    <span class="n">signature</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
 
-    <span class="n">nonce</span><span class="p">,</span>
+    <span class="n">nonce</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
 
-    <span class="n">to_address</span><span class="p">,</span>
+    <span class="n">to_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
 
-    <span class="n">amount</span><span class="p">,</span>
+    <span class="n">amount</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
 
     <span class="n">other_signatories</span><span class="p">,</span>
 
-    <span class="n">threshold</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
 
-    <span class="n">tip</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">tip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
 
-<span class="p">):</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Turn parameters gathered through side effects into an approve_as_multi extrinsic object</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">call_function</span> <span class="o">=</span> <span class="s2">&quot;approve_as_multi&quot;</span>
 
@@ -1050,27 +1168,33 @@
 
 <span class="k">def</span> <span class="nf">unsigned_as_multi_construction</span><span class="p">(</span>
 
-    <span class="n">metadata</span><span class="p">,</span>
+    <span class="n">metadata</span><span class="p">:</span> <span class="s2">&quot;MetadataDecoder&quot;</span><span class="p">,</span>
 
-    <span class="n">account_id</span><span class="p">,</span>
+    <span class="n">account_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
 
-    <span class="n">signature</span><span class="p">,</span>
+    <span class="n">signature</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
 
-    <span class="n">nonce</span><span class="p">,</span>
+    <span class="n">nonce</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
 
-    <span class="n">to_address</span><span class="p">,</span>
+    <span class="n">to_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
 
-    <span class="n">amount</span><span class="p">,</span>
+    <span class="n">amount</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
 
-    <span class="n">timepoint</span><span class="p">,</span>
+    <span class="n">timepoint</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span>
 
-    <span class="n">other_signatories</span><span class="p">,</span>
+    <span class="n">other_signatories</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
 
-    <span class="n">threshold</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
 
-    <span class="n">tip</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">tip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
 
-<span class="p">):</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Turn parameters gathered through side effects into an as_multi extrinsic object</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">call_function</span> <span class="o">=</span> <span class="s2">&quot;as_multi&quot;</span>
 
@@ -1124,7 +1248,13 @@
 
     <span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">sign_payload</span><span class="p">(</span><span class="n">keypair</span><span class="p">,</span> <span class="n">payload</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">sign_payload</span><span class="p">(</span><span class="n">keypair</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">payload</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Sign payload with keypair and return a signed hex string</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="n">payload</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;0x&quot;</span><span class="p">:</span>
 
@@ -1140,40 +1270,47 @@
 <h2 id="functions">Functions</h2>
 <h3 id="approve_as_multi_signature_payload">approve_as_multi_signature_payload</h3>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">approve_as_multi_signature_payload</span><span class="p">(</span>
-    <span class="n">metadata</span><span class="p">,</span>
-    <span class="n">spec_version</span><span class="p">,</span>
-    <span class="n">genesis_hash</span><span class="p">,</span>
-    <span class="n">nonce</span><span class="p">,</span>
-    <span class="n">to_address</span><span class="p">,</span>
-    <span class="n">amount</span><span class="p">,</span>
-    <span class="n">other_signatories</span><span class="p">,</span>
-    <span class="n">threshold</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-    <span class="n">tip</span><span class="o">=</span><span class="mi">0</span>
-<span class="p">)</span>
+    <span class="n">metadata</span><span class="p">:</span> <span class="s1">&#39;MetadataDecoder&#39;</span><span class="p">,</span>
+    <span class="n">spec_version</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">genesis_hash</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">nonce</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">to_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">amount</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">other_signatories</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+    <span class="n">threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="n">tip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
 </code></pre></div>
 
 
+<p>Turn parameters gathered through side effects into unsigned approve_as_multi string</p>
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span> <span class="n">approve_as_multi_signature_payload</span><span class="p">(</span>
 
-    <span class="n">metadata</span><span class="p">,</span>
+    <span class="n">metadata</span><span class="p">:</span> <span class="ss">&quot;MetadataDecoder&quot;</span><span class="p">,</span>
 
-    <span class="n">spec_version</span><span class="p">,</span>
+    <span class="n">spec_version</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
 
-    <span class="n">genesis_hash</span><span class="p">,</span>
+    <span class="n">genesis_hash</span><span class="p">:</span> <span class="n">str</span><span class="p">,</span>
 
-    <span class="n">nonce</span><span class="p">,</span>
+    <span class="n">nonce</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
 
-    <span class="n">to_address</span><span class="p">,</span>
+    <span class="n">to_address</span><span class="p">:</span> <span class="n">str</span><span class="p">,</span>
 
-    <span class="n">amount</span><span class="p">,</span>
+    <span class="n">amount</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
 
-    <span class="n">other_signatories</span><span class="p">,</span>
+    <span class="n">other_signatories</span><span class="p">:</span> <span class="n">list</span><span class="p">,</span>
 
-    <span class="n">threshold</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
 
-    <span class="n">tip</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">tip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
 
-<span class="p">):</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">str</span><span class="p">:</span>
+
+    <span class="ss">&quot;&quot;&quot;</span>
+
+<span class="ss">    Turn parameters gathered through side effects into unsigned approve_as_multi string</span>
+
+<span class="ss">    &quot;&quot;&quot;</span>
 
     <span class="n">transfer</span> <span class="o">=</span> <span class="n">ScaleDecoder</span><span class="p">.</span><span class="n">get_decoder_class</span><span class="p">(</span><span class="ss">&quot;Call&quot;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
 
@@ -1248,43 +1385,50 @@
 </details>
 <h3 id="as_multi_signature_payload">as_multi_signature_payload</h3>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">as_multi_signature_payload</span><span class="p">(</span>
-    <span class="n">metadata</span><span class="p">,</span>
-    <span class="n">spec_version</span><span class="p">,</span>
-    <span class="n">genesis_hash</span><span class="p">,</span>
-    <span class="n">nonce</span><span class="p">,</span>
-    <span class="n">to_address</span><span class="p">,</span>
-    <span class="n">amount</span><span class="p">,</span>
-    <span class="n">other_signatories</span><span class="p">,</span>
-    <span class="n">timepoint</span><span class="p">,</span>
-    <span class="n">threshold</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-    <span class="n">tip</span><span class="o">=</span><span class="mi">0</span>
-<span class="p">)</span>
+    <span class="n">metadata</span><span class="p">:</span> <span class="s1">&#39;MetadataDecoder&#39;</span><span class="p">,</span>
+    <span class="n">spec_version</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">genesis_hash</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">nonce</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">to_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">amount</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">other_signatories</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+    <span class="n">timepoint</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span>
+    <span class="n">threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="n">tip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
 </code></pre></div>
 
 
+<p>Turn parameters gathered through side effects into unsigned as_multi string</p>
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span> <span class="n">as_multi_signature_payload</span><span class="p">(</span>
 
-    <span class="n">metadata</span><span class="p">,</span>
+    <span class="n">metadata</span><span class="p">:</span> <span class="ss">&quot;MetadataDecoder&quot;</span><span class="p">,</span>
 
-    <span class="n">spec_version</span><span class="p">,</span>
+    <span class="n">spec_version</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
 
-    <span class="n">genesis_hash</span><span class="p">,</span>
+    <span class="n">genesis_hash</span><span class="p">:</span> <span class="n">str</span><span class="p">,</span>
 
-    <span class="n">nonce</span><span class="p">,</span>
+    <span class="n">nonce</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
 
-    <span class="n">to_address</span><span class="p">,</span>
+    <span class="n">to_address</span><span class="p">:</span> <span class="n">str</span><span class="p">,</span>
 
-    <span class="n">amount</span><span class="p">,</span>
+    <span class="n">amount</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
 
-    <span class="n">other_signatories</span><span class="p">,</span>
+    <span class="n">other_signatories</span><span class="p">:</span> <span class="n">list</span><span class="p">,</span>
 
-    <span class="n">timepoint</span><span class="p">,</span>
+    <span class="n">timepoint</span><span class="p">:</span> <span class="n">tuple</span><span class="p">,</span>
 
-    <span class="n">threshold</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
 
-    <span class="n">tip</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">tip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
 
-<span class="p">):</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">str</span><span class="p">:</span>
+
+    <span class="ss">&quot;&quot;&quot;</span>
+
+<span class="ss">    Turn parameters gathered through side effects into unsigned as_multi string</span>
+
+<span class="ss">    &quot;&quot;&quot;</span>
 
     <span class="n">transfer</span> <span class="o">=</span> <span class="n">ScaleDecoder</span><span class="p">.</span><span class="n">get_decoder_class</span><span class="p">(</span><span class="ss">&quot;Call&quot;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
 
@@ -1357,14 +1501,50 @@
 
 
 </details>
-<h3 id="hash_call">hash_call</h3>
-<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">hash_call</span><span class="p">(</span>
-    <span class="n">call</span>
-<span class="p">)</span>
+<h3 id="get_prefix">get_prefix</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">get_prefix</span><span class="p">(</span>
+    <span class="n">escrow_address</span><span class="p">:</span> <span class="nb">str</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
 </code></pre></div>
 
 
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span> <span class="n">hash_call</span><span class="p">(</span><span class="k">call</span><span class="p">):</span>
+<p>Returns prefix containing the account ID of the address provided</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span> <span class="n">get_prefix</span><span class="p">(</span><span class="n">escrow_address</span><span class="p">:</span> <span class="n">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">str</span><span class="p">:</span>
+
+    <span class="ss">&quot;&quot;&quot;</span>
+
+<span class="ss">    Returns prefix containing the account ID of the address provided</span>
+
+<span class="ss">    &quot;&quot;&quot;</span>
+
+    <span class="n">module_prefix</span> <span class="o">=</span> <span class="n">xx128</span><span class="p">(</span><span class="ss">&quot;Utility&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">xx128</span><span class="p">(</span><span class="ss">&quot;Multisigs&quot;</span><span class="p">)</span>
+
+    <span class="n">account_id</span> <span class="o">=</span> <span class="n">ss58_decode</span><span class="p">(</span><span class="n">escrow_address</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">storage_key</span> <span class="o">=</span> <span class="n">bytearray</span><span class="p">(</span><span class="n">xxhash</span><span class="p">.</span><span class="n">xxh64</span><span class="p">(</span><span class="n">bytes</span><span class="p">.</span><span class="n">fromhex</span><span class="p">(</span><span class="n">account_id</span><span class="p">),</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">).</span><span class="n">digest</span><span class="p">())</span>
+
+    <span class="n">storage_key</span><span class="p">.</span><span class="n">reverse</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">f</span><span class="ss">&quot;{module_prefix}{storage_key.hex()}{account_id}&quot;</span>
+</code></pre></div>
+
+
+</details>
+<h3 id="hash_call">hash_call</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">hash_call</span><span class="p">(</span>
+    <span class="n">call</span><span class="p">:</span> <span class="s1">&#39;scalecodec.types.Call&#39;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</code></pre></div>
+
+
+<p>Returns a hashed call</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span> <span class="n">hash_call</span><span class="p">(</span><span class="k">call</span><span class="p">:</span> <span class="ss">&quot;scalecodec.types.Call&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">str</span><span class="p">:</span>
+
+    <span class="ss">&quot;&quot;&quot;</span>
+
+<span class="ss">    Returns a hashed call</span>
+
+<span class="ss">    &quot;&quot;&quot;</span>
 
     <span class="k">call</span> <span class="o">=</span> <span class="n">bytes</span><span class="p">.</span><span class="n">fromhex</span><span class="p">(</span><span class="n">str</span><span class="p">(</span><span class="k">call</span><span class="p">.</span><span class="k">data</span><span class="p">)[</span><span class="mi">2</span><span class="p">:])</span>
 
@@ -1375,13 +1555,20 @@
 </details>
 <h3 id="sign_payload">sign_payload</h3>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">sign_payload</span><span class="p">(</span>
-    <span class="n">keypair</span><span class="p">,</span>
-    <span class="n">payload</span>
-<span class="p">)</span>
+    <span class="n">keypair</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span>
+    <span class="n">payload</span><span class="p">:</span> <span class="nb">str</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
 </code></pre></div>
 
 
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span> <span class="n">sign_payload</span><span class="p">(</span><span class="n">keypair</span><span class="p">,</span> <span class="n">payload</span><span class="p">):</span>
+<p>Sign payload with keypair and return a signed hex string</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span> <span class="n">sign_payload</span><span class="p">(</span><span class="n">keypair</span><span class="p">:</span> <span class="n">tuple</span><span class="p">,</span> <span class="n">payload</span><span class="p">:</span> <span class="n">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">str</span><span class="p">:</span>
+
+    <span class="ss">&quot;&quot;&quot;</span>
+
+<span class="ss">    Sign payload with keypair and return a signed hex string</span>
+
+<span class="ss">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="n">payload</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="ss">&quot;0x&quot;</span><span class="p">:</span>
 
@@ -1396,22 +1583,32 @@
 </details>
 <h3 id="transfer_signature_payload">transfer_signature_payload</h3>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">transfer_signature_payload</span><span class="p">(</span>
-    <span class="n">metadata</span><span class="p">,</span>
-    <span class="n">address</span><span class="p">,</span>
-    <span class="n">value</span><span class="p">,</span>
-    <span class="n">nonce</span><span class="p">,</span>
-    <span class="n">genesis_hash</span><span class="p">,</span>
-    <span class="n">spec_version</span>
-<span class="p">)</span>
+    <span class="n">metadata</span><span class="p">:</span> <span class="s1">&#39;MetadataDecoder&#39;</span><span class="p">,</span>
+    <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">nonce</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">genesis_hash</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">spec_version</span><span class="p">:</span> <span class="nb">int</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
 </code></pre></div>
 
 
 <p>Turn parameters gathered through side effects into unsigned transfer string</p>
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span> <span class="n">transfer_signature_payload</span><span class="p">(</span>
 
-    <span class="n">metadata</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">nonce</span><span class="p">,</span> <span class="n">genesis_hash</span><span class="p">,</span> <span class="n">spec_version</span>
+    <span class="n">metadata</span><span class="p">:</span> <span class="ss">&quot;MetadataDecoder&quot;</span><span class="p">,</span>
 
-<span class="p">):</span>
+    <span class="n">address</span><span class="p">:</span> <span class="n">str</span><span class="p">,</span>
+
+    <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+
+    <span class="n">nonce</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+
+    <span class="n">genesis_hash</span><span class="p">:</span> <span class="n">str</span><span class="p">,</span>
+
+    <span class="n">spec_version</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">str</span><span class="p">:</span>
 
     <span class="ss">&quot;&quot;&quot;</span>
 
@@ -1466,40 +1663,47 @@
 </details>
 <h3 id="unsigned_approve_as_multi_construction">unsigned_approve_as_multi_construction</h3>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">unsigned_approve_as_multi_construction</span><span class="p">(</span>
-    <span class="n">metadata</span><span class="p">,</span>
-    <span class="n">account_id</span><span class="p">,</span>
-    <span class="n">signature</span><span class="p">,</span>
-    <span class="n">nonce</span><span class="p">,</span>
-    <span class="n">to_address</span><span class="p">,</span>
-    <span class="n">amount</span><span class="p">,</span>
+    <span class="n">metadata</span><span class="p">:</span> <span class="s1">&#39;MetadataDecoder&#39;</span><span class="p">,</span>
+    <span class="n">account_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">signature</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">nonce</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">to_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">amount</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">other_signatories</span><span class="p">,</span>
-    <span class="n">threshold</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-    <span class="n">tip</span><span class="o">=</span><span class="mi">0</span>
-<span class="p">)</span>
+    <span class="n">threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="n">tip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
 </code></pre></div>
 
 
+<p>Turn parameters gathered through side effects into an approve_as_multi extrinsic object</p>
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span> <span class="n">unsigned_approve_as_multi_construction</span><span class="p">(</span>
 
-    <span class="n">metadata</span><span class="p">,</span>
+    <span class="n">metadata</span><span class="p">:</span> <span class="ss">&quot;MetadataDecoder&quot;</span><span class="p">,</span>
 
-    <span class="n">account_id</span><span class="p">,</span>
+    <span class="n">account_id</span><span class="p">:</span> <span class="n">str</span><span class="p">,</span>
 
-    <span class="n">signature</span><span class="p">,</span>
+    <span class="n">signature</span><span class="p">:</span> <span class="n">str</span><span class="p">,</span>
 
-    <span class="n">nonce</span><span class="p">,</span>
+    <span class="n">nonce</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
 
-    <span class="n">to_address</span><span class="p">,</span>
+    <span class="n">to_address</span><span class="p">:</span> <span class="n">str</span><span class="p">,</span>
 
-    <span class="n">amount</span><span class="p">,</span>
+    <span class="n">amount</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
 
     <span class="n">other_signatories</span><span class="p">,</span>
 
-    <span class="n">threshold</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
 
-    <span class="n">tip</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">tip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
 
-<span class="p">):</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">str</span><span class="p">:</span>
+
+    <span class="ss">&quot;&quot;&quot;</span>
+
+<span class="ss">    Turn parameters gathered through side effects into an approve_as_multi extrinsic object</span>
+
+<span class="ss">    &quot;&quot;&quot;</span>
 
     <span class="n">call_function</span> <span class="o">=</span> <span class="ss">&quot;approve_as_multi&quot;</span>
 
@@ -1558,43 +1762,50 @@
 </details>
 <h3 id="unsigned_as_multi_construction">unsigned_as_multi_construction</h3>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">unsigned_as_multi_construction</span><span class="p">(</span>
-    <span class="n">metadata</span><span class="p">,</span>
-    <span class="n">account_id</span><span class="p">,</span>
-    <span class="n">signature</span><span class="p">,</span>
-    <span class="n">nonce</span><span class="p">,</span>
-    <span class="n">to_address</span><span class="p">,</span>
-    <span class="n">amount</span><span class="p">,</span>
-    <span class="n">timepoint</span><span class="p">,</span>
-    <span class="n">other_signatories</span><span class="p">,</span>
-    <span class="n">threshold</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-    <span class="n">tip</span><span class="o">=</span><span class="mi">0</span>
-<span class="p">)</span>
+    <span class="n">metadata</span><span class="p">:</span> <span class="s1">&#39;MetadataDecoder&#39;</span><span class="p">,</span>
+    <span class="n">account_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">signature</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">nonce</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">to_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">amount</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">timepoint</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span>
+    <span class="n">other_signatories</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+    <span class="n">threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="n">tip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
 </code></pre></div>
 
 
+<p>Turn parameters gathered through side effects into an as_multi extrinsic object</p>
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span> <span class="n">unsigned_as_multi_construction</span><span class="p">(</span>
 
-    <span class="n">metadata</span><span class="p">,</span>
+    <span class="n">metadata</span><span class="p">:</span> <span class="ss">&quot;MetadataDecoder&quot;</span><span class="p">,</span>
 
-    <span class="n">account_id</span><span class="p">,</span>
+    <span class="n">account_id</span><span class="p">:</span> <span class="n">str</span><span class="p">,</span>
 
-    <span class="n">signature</span><span class="p">,</span>
+    <span class="n">signature</span><span class="p">:</span> <span class="n">str</span><span class="p">,</span>
 
-    <span class="n">nonce</span><span class="p">,</span>
+    <span class="n">nonce</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
 
-    <span class="n">to_address</span><span class="p">,</span>
+    <span class="n">to_address</span><span class="p">:</span> <span class="n">str</span><span class="p">,</span>
 
-    <span class="n">amount</span><span class="p">,</span>
+    <span class="n">amount</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
 
-    <span class="n">timepoint</span><span class="p">,</span>
+    <span class="n">timepoint</span><span class="p">:</span> <span class="n">tuple</span><span class="p">,</span>
 
-    <span class="n">other_signatories</span><span class="p">,</span>
+    <span class="n">other_signatories</span><span class="p">:</span> <span class="n">list</span><span class="p">,</span>
 
-    <span class="n">threshold</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
 
-    <span class="n">tip</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">tip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
 
-<span class="p">):</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">str</span><span class="p">:</span>
+
+    <span class="ss">&quot;&quot;&quot;</span>
+
+<span class="ss">    Turn parameters gathered through side effects into an as_multi extrinsic object</span>
+
+<span class="ss">    &quot;&quot;&quot;</span>
 
     <span class="n">call_function</span> <span class="o">=</span> <span class="ss">&quot;as_multi&quot;</span>
 
@@ -1653,22 +1864,41 @@
 </details>
 <h3 id="unsigned_transfer_construction">unsigned_transfer_construction</h3>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">unsigned_transfer_construction</span><span class="p">(</span>
-    <span class="n">metadata</span><span class="p">,</span>
-    <span class="n">account_id</span><span class="p">,</span>
-    <span class="n">signature</span><span class="p">,</span>
-    <span class="n">nonce</span><span class="p">,</span>
-    <span class="n">to_address</span><span class="p">,</span>
-    <span class="n">amount</span><span class="p">,</span>
-    <span class="n">tip</span><span class="o">=</span><span class="mi">0</span>
-<span class="p">)</span>
+    <span class="n">metadata</span><span class="p">:</span> <span class="s1">&#39;MetadataDecoder&#39;</span><span class="p">,</span>
+    <span class="n">account_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">signature</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">nonce</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">to_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">amount</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">tip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
 </code></pre></div>
 
 
+<p>Turn parameters gathered through side effects into a transfer extrinsic object</p>
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span> <span class="n">unsigned_transfer_construction</span><span class="p">(</span>
 
-    <span class="n">metadata</span><span class="p">,</span> <span class="n">account_id</span><span class="p">,</span> <span class="n">signature</span><span class="p">,</span> <span class="n">nonce</span><span class="p">,</span> <span class="n">to_address</span><span class="p">,</span> <span class="n">amount</span><span class="p">,</span> <span class="n">tip</span><span class="o">=</span><span class="mi">0</span>
+    <span class="n">metadata</span><span class="p">:</span> <span class="ss">&quot;MetadataDecoder&quot;</span><span class="p">,</span>
 
-<span class="p">):</span>
+    <span class="n">account_id</span><span class="p">:</span> <span class="n">str</span><span class="p">,</span>
+
+    <span class="n">signature</span><span class="p">:</span> <span class="n">str</span><span class="p">,</span>
+
+    <span class="n">nonce</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+
+    <span class="n">to_address</span><span class="p">:</span> <span class="n">str</span><span class="p">,</span>
+
+    <span class="n">amount</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+
+    <span class="n">tip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">str</span><span class="p">:</span>
+
+    <span class="ss">&quot;&quot;&quot;</span>
+
+<span class="ss">    Turn parameters gathered through side effects into a transfer extrinsic object</span>
+
+<span class="ss">    &quot;&quot;&quot;</span>
 
     <span class="n">call_function</span> <span class="o">=</span> <span class="ss">&quot;transfer&quot;</span>
 
@@ -1695,6 +1925,35 @@
         <span class="n">tip</span><span class="p">,</span>
 
     <span class="p">)</span>
+</code></pre></div>
+
+
+</details>
+<h3 id="xx128">xx128</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">xx128</span><span class="p">(</span>
+    <span class="n">word</span><span class="p">:</span> <span class="nb">str</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</code></pre></div>
+
+
+<p>Returns a xxh128 hash on provided word</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code><span class="n">def</span> <span class="n">xx128</span><span class="p">(</span><span class="n">word</span><span class="p">:</span> <span class="n">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">str</span><span class="p">:</span>
+
+    <span class="ss">&quot;&quot;&quot;</span>
+
+<span class="ss">    Returns a xxh128 hash on provided word</span>
+
+<span class="ss">    &quot;&quot;&quot;</span>
+
+    <span class="n">a</span> <span class="o">=</span> <span class="n">bytearray</span><span class="p">(</span><span class="n">xxhash</span><span class="p">.</span><span class="n">xxh64</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">).</span><span class="n">digest</span><span class="p">())</span>
+
+    <span class="n">b</span> <span class="o">=</span> <span class="n">bytearray</span><span class="p">(</span><span class="n">xxhash</span><span class="p">.</span><span class="n">xxh64</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">).</span><span class="n">digest</span><span class="p">())</span>
+
+    <span class="n">a</span><span class="p">.</span><span class="n">reverse</span><span class="p">()</span>
+
+    <span class="n">b</span><span class="p">.</span><span class="n">reverse</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">f</span><span class="ss">&quot;{a.hex()}{b.hex()}&quot;</span>
 </code></pre></div>
 
 

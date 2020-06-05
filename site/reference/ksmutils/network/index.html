@@ -386,18 +386,6 @@
           
           
 
-
-  <li class="md-nav__item">
-    <a href="../manager/" title="Manager" class="md-nav__link">
-      Manager
-    </a>
-  </li>
-
-        
-          
-          
-          
-
   
 
 
@@ -613,8 +601,6 @@
 
 <span class="kn">import</span> <span class="nn">websockets</span>
 
-<span class="n">_INSTANCE</span> <span class="o">=</span> <span class="bp">None</span>
-
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="k">class</span> <span class="nc">Network</span><span class="p">:</span>
@@ -627,17 +613,11 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">node_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;wss://kusama-rpc.polkadot.io/&quot;</span><span class="p">):</span>
 
-        <span class="k">global</span> <span class="n">_INSTANCE</span>
-
-        <span class="k">assert</span> <span class="n">_INSTANCE</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">,</span> <span class="s2">&quot;Network is a singleton!&quot;</span>
-
-        <span class="n">_INSTANCE</span> <span class="o">=</span> <span class="bp">self</span>
-
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Instantiating network connection to {node_url}&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">node_url</span> <span class="o">=</span> <span class="n">node_url</span>
 
-    <span class="k">def</span> <span class="nf">node_rpc_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">watch</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">node_rpc_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">watch</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span><span class="p">):</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;node_rpc_call for {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">method</span><span class="p">))</span>
 
@@ -653,7 +633,7 @@
 
         <span class="k">return</span> <span class="n">execution</span>
 
-    <span class="n">async</span> <span class="k">def</span> <span class="nf">_node_rpc_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">loop_limit</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="n">async</span> <span class="k">def</span> <span class="nf">_node_rpc_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">loop_limit</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span><span class="p">):</span>
 
         <span class="sd">&quot;&quot;&quot;</span>
 
@@ -759,17 +739,11 @@
 
     <span class="n">def</span> <span class="n">__init__</span>(<span class="nb">self</span>, *, <span class="n">node_url:</span> <span class="n">str</span> = <span class="s">&quot;wss://kusama-rpc.polkadot.io/&quot;</span>):
 
-        <span class="n">global</span> <span class="n">_INSTANCE</span>
-
-        <span class="n">assert</span> <span class="n">_INSTANCE</span> <span class="k">is</span> <span class="n">None</span>, <span class="s">&quot;Network is a singleton!&quot;</span>
-
-        <span class="n">_INSTANCE</span> = <span class="nb">self</span>
-
         <span class="n">logger</span>.<span class="n">info</span>(<span class="nb">f</span><span class="s">&quot;Instantiating network connection to {node_url}&quot;</span>)
 
         <span class="nb">self</span>.<span class="n">node_url</span> = <span class="n">node_url</span>
 
-    <span class="n">def</span> <span class="n">node_rpc_call</span>(<span class="nb">self</span>, <span class="k">method</span>, <span class="nb">params</span>, <span class="nb">watch</span>=<span class="nb">False</span>):
+    <span class="n">def</span> <span class="n">node_rpc_call</span>(<span class="nb">self</span>, <span class="k">method</span>, <span class="nb">params</span>, <span class="n">watch:</span> <span class="n">bool</span> = <span class="nb">False</span>):
 
         <span class="n">logger</span>.<span class="n">info</span>(<span class="s">&quot;node_rpc_call for {}&quot;</span>.<span class="nb">format</span>(<span class="k">method</span>))
 
@@ -785,7 +759,7 @@
 
         <span class="k">return</span> <span class="n">execution</span>
 
-    <span class="n">async</span> <span class="n">def</span> <span class="n">_node_rpc_call</span>(<span class="nb">self</span>, <span class="k">method</span>, <span class="nb">params</span>, *, <span class="n">loop_limit</span>=<span class="nb">False</span>):
+    <span class="n">async</span> <span class="n">def</span> <span class="n">_node_rpc_call</span>(<span class="nb">self</span>, <span class="k">method</span>, <span class="nb">params</span>, *, <span class="n">loop_limit:</span> <span class="n">bool</span> = <span class="nb">False</span>):
 
         <span class="s">&quot;&quot;&quot;</span>
 
@@ -873,12 +847,12 @@
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">method</span><span class="p">,</span>
     <span class="n">params</span><span class="p">,</span>
-    <span class="n">watch</span><span class="o">=</span><span class="kc">False</span>
+    <span class="n">watch</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="p">)</span>
 </code></pre></div>
 
 
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="n">node_rpc_call</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="k">method</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">watch</span><span class="o">=</span><span class="k">False</span><span class="p">):</span>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="n">node_rpc_call</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="k">method</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">watch</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="k">False</span><span class="p">):</span>
 
         <span class="n">logger</span><span class="p">.</span><span class="n">info</span><span class="p">(</span><span class="ss">&quot;node_rpc_call for {}&quot;</span><span class="p">.</span><span class="n">format</span><span class="p">(</span><span class="k">method</span><span class="p">))</span>
 
@@ -918,7 +892,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../manager/" title="Manager" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../" title="Index" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -927,7 +901,7 @@
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Manager
+                Index
               </span>
             </div>
           </a>
