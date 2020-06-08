@@ -136,7 +136,7 @@ class Kusama(NonceManager):
         """
         Returns information associated with provided address
         """
-        # Storage key obtained via
+        # Storage key:
         # xxHash128(System) + xxHash128(Account)
         storage_key = (
             "0x26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da9"
@@ -194,7 +194,7 @@ class Kusama(NonceManager):
         """
         Returns events broadcasted within the provided block
         """
-        # If there's one more function where we have to do ths, let's add the helper function
+        # Storage key:
         # xxHash128(System) + xxHash128(Events)
         storage_hash = (
             "0x26aa394eea5630e07c48ae0c9558cef780d41e5e16056765bc8461851072c9d7"
@@ -420,10 +420,6 @@ class Kusama(NonceManager):
         """
         Return signed and ready transactions for the fee return and escrow return
         """
-
-        # TODO: Why are we doing this btw?
-        # I removed `assert fee_value <= trade_value * 0.01`
-        # and added an exception like this but still
         if fee_value > trade_value * 0.01:
             raise Exception("Fee should not be more than 1% of trade value")
 
@@ -482,7 +478,7 @@ class Kusama(NonceManager):
     ) -> tuple:
         """
         If sellers wins then return cancellation logic
-        If buyer wins then return ready approveAsMulti and ready buyer replenishment
+        If buyer wins then return ready approveAsMulti and ready buyer welfare transfer
         """
         nonce = self.arbitrator_nonce()
 

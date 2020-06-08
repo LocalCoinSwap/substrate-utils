@@ -19,13 +19,13 @@ class Network:
     def node_rpc_call(self, method, params, watch: bool = False):
         logger.info("node_rpc_call for {}".format(method))
         execution = (
-            asyncio.run(self._node_rpc_call(method, params, loop_limit=False))
+            asyncio.run(self._node_rpc_call(method, params, loop_limit=0))
             if watch
             else asyncio.run(self._node_rpc_call(method, params, loop_limit=1))[0]
         )
         return execution
 
-    async def _node_rpc_call(self, method, params, *, loop_limit: bool = False):
+    async def _node_rpc_call(self, method, params, *, loop_limit: int = 0):
         """
         Generic method for node RPC calls. It's important to set loop_limit to 1 if
         you are not pushing transactions or you will get an infinite loop
