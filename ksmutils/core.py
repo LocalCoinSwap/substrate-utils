@@ -17,7 +17,7 @@ from . import helper
 from .network import Network
 
 # Hardcode this because we WANT things to break if it changes
-BLOCKCHAIN_VERSION = 1062
+BLOCKCHAIN_VERSION = 2005
 
 logger = logging.getLogger(__name__)
 
