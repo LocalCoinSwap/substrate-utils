@@ -100,7 +100,7 @@ def approve_as_multi_signature_payload(
     )
     approve_as_multi.encode(
         {
-            "call_module": "Utility",
+            "call_module": "Multisig",
             "call_function": "approve_as_multi",
             "call_args": {
                 "call_hash": hash_call(transfer),
@@ -152,7 +152,7 @@ def as_multi_signature_payload(
     )
     as_multi.encode(
         {
-            "call_module": "Utility",
+            "call_module": "Multisig",
             "call_function": "as_multi",
             "call_args": {
                 "call": transfer.serialize(),
