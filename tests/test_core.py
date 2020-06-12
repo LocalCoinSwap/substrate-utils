@@ -15,8 +15,8 @@ class TestVersionEndpoint:
 class TestNoNetwork:
     def test_connect_no_network(self, mocker):
         mocker.patch("ksmutils.network.Network.__init__", return_value=None)
-        mocker.patch("ksmutils.core.Kusama.check_version", return_value=2007)
         mocker.patch("ksmutils.core.Kusama.get_metadata")
+        mocker.patch("ksmutils.core.Kusama.runtime_info")
         mocker.patch("ksmutils.core.Kusama.get_spec_version")
         mocker.patch("ksmutils.core.Kusama.get_genesis_hash")
         kusama = Kusama()

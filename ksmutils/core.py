@@ -16,9 +16,6 @@ from scalecodec.utils.ss58 import ss58_encode
 from . import helper
 from .network import Network
 
-# Hardcode this because we WANT things to break if it changes
-BLOCKCHAIN_VERSION = 2007
-
 logger = logging.getLogger(__name__)
 
 
@@ -84,7 +81,7 @@ class Kusama(NonceManager):
             network = Network(node_url=node_url)
 
         self.network = network
-        assert self.check_version() == BLOCKCHAIN_VERSION
+        self.runtime_info()
 
         RuntimeConfiguration().update_type_registry(
             load_type_registry_preset("default")
@@ -103,13 +100,14 @@ class Kusama(NonceManager):
         self.arbitrator_account_id = self.keypair[0].hex()
         self.arbitrator_address = ss58_encode(self.keypair[0], 2)
 
-    def check_version(self) -> int:
+    def runtime_info(self) -> int:
         """
-        Make sure the versioning of the Kusama blockchain has not been
-        updated since the last developer verification of the codebase
+        Check the current
         """
-        version = self.network.node_rpc_call("state_getRuntimeVersion", [])
-        return version["result"]["specVersion"]
+        result = self.network.node_rpc_call("state_getRuntimeVersion", [])
+        self.spec_version = result["result"]["specVersion"]
+        self.transaction_version = result["result"]["transactionVersion"]
+        return result["result"]
 
     def get_metadata(self) -> "MetadataDecoder":
         """
@@ -124,7 +122,7 @@ class Kusama(NonceManager):
         """
         Returns the blockchain version
         """
-        return BLOCKCHAIN_VERSION
+        return self.spec_version
 
     def get_genesis_hash(self) -> str:
         """
