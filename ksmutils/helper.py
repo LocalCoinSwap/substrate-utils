@@ -250,7 +250,7 @@ def unsigned_approve_as_multi_construction(
     Turn parameters gathered through side effects into an approve_as_multi extrinsic object
     """
     call_function = "approve_as_multi"
-    call_module = "Utility"
+    call_module = "Multisig"
     transfer = ScaleDecoder.get_decoder_class("Call", metadata=metadata)
     transfer.encode(
         {
@@ -294,7 +294,7 @@ def unsigned_as_multi_construction(
     Turn parameters gathered through side effects into an as_multi extrinsic object
     """
     call_function = "as_multi"
-    call_module = "Utility"
+    call_module = "Multisig"
     transfer = ScaleDecoder.get_decoder_class("Call", metadata=metadata)
     transfer.encode(
         {
