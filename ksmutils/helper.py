@@ -68,6 +68,7 @@ def transfer_signature_payload(
             "nonce": nonce,
             "tip": 0,
             "specVersion": spec_version,
+            "transactionVersion": 1,
             "genesisHash": genesis_hash,
             "blockHash": genesis_hash,
         }
@@ -118,6 +119,7 @@ def approve_as_multi_signature_payload(
             "nonce": nonce,
             "tip": tip,
             "specVersion": spec_version,
+            "transactionVersion": 1,
             "genesisHash": genesis_hash,
             "blockHash": genesis_hash,
         }
@@ -170,6 +172,7 @@ def as_multi_signature_payload(
             "nonce": nonce,
             "tip": tip,
             "specVersion": spec_version,
+            "transactionVersion": 1,
             "genesisHash": genesis_hash,
             "blockHash": genesis_hash,
         }
