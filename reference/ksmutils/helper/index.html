@@ -700,7 +700,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">module_prefix</span> <span class="o">=</span> <span class="n">xx128</span><span class="p">(</span><span class="s2">&quot;Utility&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">xx128</span><span class="p">(</span><span class="s2">&quot;Multisigs&quot;</span><span class="p">)</span>
+    <span class="n">module_prefix</span> <span class="o">=</span> <span class="n">xx128</span><span class="p">(</span><span class="s2">&quot;Multisig&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">xx128</span><span class="p">(</span><span class="s2">&quot;Multisigs&quot;</span><span class="p">)</span>
 
     <span class="n">account_id</span> <span class="o">=</span> <span class="n">ss58_decode</span><span class="p">(</span><span class="n">escrow_address</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 
@@ -735,6 +735,8 @@
     <span class="n">genesis_hash</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
 
     <span class="n">spec_version</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+
+    <span class="n">transaction_version</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
 
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 
@@ -776,6 +778,8 @@
 
             <span class="s2">&quot;specVersion&quot;</span><span class="p">:</span> <span class="n">spec_version</span><span class="p">,</span>
 
+            <span class="s2">&quot;transactionVersion&quot;</span><span class="p">:</span> <span class="n">transaction_version</span><span class="p">,</span>
+
             <span class="s2">&quot;genesisHash&quot;</span><span class="p">:</span> <span class="n">genesis_hash</span><span class="p">,</span>
 
             <span class="s2">&quot;blockHash&quot;</span><span class="p">:</span> <span class="n">genesis_hash</span><span class="p">,</span>
@@ -805,6 +809,8 @@
     <span class="n">threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
 
     <span class="n">tip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+
+    <span class="n">transaction_version</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
 
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 
@@ -836,7 +842,7 @@
 
         <span class="p">{</span>
 
-            <span class="s2">&quot;call_module&quot;</span><span class="p">:</span> <span class="s2">&quot;Utility&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;call_module&quot;</span><span class="p">:</span> <span class="s2">&quot;Multisig&quot;</span><span class="p">,</span>
 
             <span class="s2">&quot;call_function&quot;</span><span class="p">:</span> <span class="s2">&quot;approve_as_multi&quot;</span><span class="p">,</span>
 
@@ -872,6 +878,8 @@
 
             <span class="s2">&quot;specVersion&quot;</span><span class="p">:</span> <span class="n">spec_version</span><span class="p">,</span>
 
+            <span class="s2">&quot;transactionVersion&quot;</span><span class="p">:</span> <span class="n">transaction_version</span><span class="p">,</span>
+
             <span class="s2">&quot;genesisHash&quot;</span><span class="p">:</span> <span class="n">genesis_hash</span><span class="p">,</span>
 
             <span class="s2">&quot;blockHash&quot;</span><span class="p">:</span> <span class="n">genesis_hash</span><span class="p">,</span>
@@ -904,6 +912,8 @@
 
     <span class="n">tip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
 
+    <span class="n">transaction_version</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
@@ -934,7 +944,7 @@
 
         <span class="p">{</span>
 
-            <span class="s2">&quot;call_module&quot;</span><span class="p">:</span> <span class="s2">&quot;Utility&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;call_module&quot;</span><span class="p">:</span> <span class="s2">&quot;Multisig&quot;</span><span class="p">,</span>
 
             <span class="s2">&quot;call_function&quot;</span><span class="p">:</span> <span class="s2">&quot;as_multi&quot;</span><span class="p">,</span>
 
@@ -969,6 +979,8 @@
             <span class="s2">&quot;tip&quot;</span><span class="p">:</span> <span class="n">tip</span><span class="p">,</span>
 
             <span class="s2">&quot;specVersion&quot;</span><span class="p">:</span> <span class="n">spec_version</span><span class="p">,</span>
+
+            <span class="s2">&quot;transactionVersion&quot;</span><span class="p">:</span> <span class="n">transaction_version</span><span class="p">,</span>
 
             <span class="s2">&quot;genesisHash&quot;</span><span class="p">:</span> <span class="n">genesis_hash</span><span class="p">,</span>
 
@@ -1116,7 +1128,7 @@
 
     <span class="n">call_function</span> <span class="o">=</span> <span class="s2">&quot;approve_as_multi&quot;</span>
 
-    <span class="n">call_module</span> <span class="o">=</span> <span class="s2">&quot;Utility&quot;</span>
+    <span class="n">call_module</span> <span class="o">=</span> <span class="s2">&quot;Multisig&quot;</span>
 
     <span class="n">transfer</span> <span class="o">=</span> <span class="n">ScaleDecoder</span><span class="o">.</span><span class="n">get_decoder_class</span><span class="p">(</span><span class="s2">&quot;Call&quot;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
 
@@ -1198,7 +1210,7 @@
 
     <span class="n">call_function</span> <span class="o">=</span> <span class="s2">&quot;as_multi&quot;</span>
 
-    <span class="n">call_module</span> <span class="o">=</span> <span class="s2">&quot;Utility&quot;</span>
+    <span class="n">call_module</span> <span class="o">=</span> <span class="s2">&quot;Multisig&quot;</span>
 
     <span class="n">transfer</span> <span class="o">=</span> <span class="n">ScaleDecoder</span><span class="o">.</span><span class="n">get_decoder_class</span><span class="p">(</span><span class="s2">&quot;Call&quot;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
 
@@ -1278,7 +1290,8 @@
     <span class="n">amount</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">other_signatories</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
     <span class="n">threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
-    <span class="n">tip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">tip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">transaction_version</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
 </code></pre></div>
 
@@ -1303,6 +1316,8 @@
     <span class="n">threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
 
     <span class="n">tip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+
+    <span class="n">transaction_version</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
 
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">str</span><span class="p">:</span>
 
@@ -1334,7 +1349,7 @@
 
         <span class="err">{</span>
 
-            <span class="ss">&quot;call_module&quot;</span><span class="p">:</span> <span class="ss">&quot;Utility&quot;</span><span class="p">,</span>
+            <span class="ss">&quot;call_module&quot;</span><span class="p">:</span> <span class="ss">&quot;Multisig&quot;</span><span class="p">,</span>
 
             <span class="ss">&quot;call_function&quot;</span><span class="p">:</span> <span class="ss">&quot;approve_as_multi&quot;</span><span class="p">,</span>
 
@@ -1370,6 +1385,8 @@
 
             <span class="ss">&quot;specVersion&quot;</span><span class="p">:</span> <span class="n">spec_version</span><span class="p">,</span>
 
+            <span class="ss">&quot;transactionVersion&quot;</span><span class="p">:</span> <span class="n">transaction_version</span><span class="p">,</span>
+
             <span class="ss">&quot;genesisHash&quot;</span><span class="p">:</span> <span class="n">genesis_hash</span><span class="p">,</span>
 
             <span class="ss">&quot;blockHash&quot;</span><span class="p">:</span> <span class="n">genesis_hash</span><span class="p">,</span>
@@ -1394,7 +1411,8 @@
     <span class="n">other_signatories</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
     <span class="n">timepoint</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span>
     <span class="n">threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
-    <span class="n">tip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">tip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">transaction_version</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
 </code></pre></div>
 
@@ -1421,6 +1439,8 @@
     <span class="n">threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
 
     <span class="n">tip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+
+    <span class="n">transaction_version</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
 
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">str</span><span class="p">:</span>
 
@@ -1452,7 +1472,7 @@
 
         <span class="err">{</span>
 
-            <span class="ss">&quot;call_module&quot;</span><span class="p">:</span> <span class="ss">&quot;Utility&quot;</span><span class="p">,</span>
+            <span class="ss">&quot;call_module&quot;</span><span class="p">:</span> <span class="ss">&quot;Multisig&quot;</span><span class="p">,</span>
 
             <span class="ss">&quot;call_function&quot;</span><span class="p">:</span> <span class="ss">&quot;as_multi&quot;</span><span class="p">,</span>
 
@@ -1488,6 +1508,8 @@
 
             <span class="ss">&quot;specVersion&quot;</span><span class="p">:</span> <span class="n">spec_version</span><span class="p">,</span>
 
+            <span class="ss">&quot;transactionVersion&quot;</span><span class="p">:</span> <span class="n">transaction_version</span><span class="p">,</span>
+
             <span class="ss">&quot;genesisHash&quot;</span><span class="p">:</span> <span class="n">genesis_hash</span><span class="p">,</span>
 
             <span class="ss">&quot;blockHash&quot;</span><span class="p">:</span> <span class="n">genesis_hash</span><span class="p">,</span>
@@ -1517,7 +1539,7 @@
 
 <span class="ss">    &quot;&quot;&quot;</span>
 
-    <span class="n">module_prefix</span> <span class="o">=</span> <span class="n">xx128</span><span class="p">(</span><span class="ss">&quot;Utility&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">xx128</span><span class="p">(</span><span class="ss">&quot;Multisigs&quot;</span><span class="p">)</span>
+    <span class="n">module_prefix</span> <span class="o">=</span> <span class="n">xx128</span><span class="p">(</span><span class="ss">&quot;Multisig&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">xx128</span><span class="p">(</span><span class="ss">&quot;Multisigs&quot;</span><span class="p">)</span>
 
     <span class="n">account_id</span> <span class="o">=</span> <span class="n">ss58_decode</span><span class="p">(</span><span class="n">escrow_address</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 
@@ -1588,7 +1610,8 @@
     <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">nonce</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">genesis_hash</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">spec_version</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">spec_version</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">transaction_version</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
 </code></pre></div>
 
@@ -1607,6 +1630,8 @@
     <span class="n">genesis_hash</span><span class="p">:</span> <span class="n">str</span><span class="p">,</span>
 
     <span class="n">spec_version</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+
+    <span class="n">transaction_version</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
 
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">str</span><span class="p">:</span>
 
@@ -1647,6 +1672,8 @@
             <span class="ss">&quot;tip&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
 
             <span class="ss">&quot;specVersion&quot;</span><span class="p">:</span> <span class="n">spec_version</span><span class="p">,</span>
+
+            <span class="ss">&quot;transactionVersion&quot;</span><span class="p">:</span> <span class="n">transaction_version</span><span class="p">,</span>
 
             <span class="ss">&quot;genesisHash&quot;</span><span class="p">:</span> <span class="n">genesis_hash</span><span class="p">,</span>
 
@@ -1707,7 +1734,7 @@
 
     <span class="n">call_function</span> <span class="o">=</span> <span class="ss">&quot;approve_as_multi&quot;</span>
 
-    <span class="n">call_module</span> <span class="o">=</span> <span class="ss">&quot;Utility&quot;</span>
+    <span class="n">call_module</span> <span class="o">=</span> <span class="ss">&quot;Multisig&quot;</span>
 
     <span class="n">transfer</span> <span class="o">=</span> <span class="n">ScaleDecoder</span><span class="p">.</span><span class="n">get_decoder_class</span><span class="p">(</span><span class="ss">&quot;Call&quot;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
 
@@ -1809,7 +1836,7 @@
 
     <span class="n">call_function</span> <span class="o">=</span> <span class="ss">&quot;as_multi&quot;</span>
 
-    <span class="n">call_module</span> <span class="o">=</span> <span class="ss">&quot;Utility&quot;</span>
+    <span class="n">call_module</span> <span class="o">=</span> <span class="ss">&quot;Multisig&quot;</span>
 
     <span class="n">transfer</span> <span class="o">=</span> <span class="n">ScaleDecoder</span><span class="p">.</span><span class="n">get_decoder_class</span><span class="p">(</span><span class="ss">&quot;Call&quot;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
 

@@ -452,13 +452,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#check_version" class="md-nav__link">
-    check_version
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#connect" class="md-nav__link">
     connect
   </a>
@@ -601,6 +594,13 @@
           <li class="md-nav__item">
   <a href="#resolve_dispute" class="md-nav__link">
     resolve_dispute
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#runtime_info" class="md-nav__link">
+    runtime_info
   </a>
   
 </li>
@@ -865,13 +865,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#check_version" class="md-nav__link">
-    check_version
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#connect" class="md-nav__link">
     connect
   </a>
@@ -1014,6 +1007,13 @@
           <li class="md-nav__item">
   <a href="#resolve_dispute" class="md-nav__link">
     resolve_dispute
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#runtime_info" class="md-nav__link">
+    runtime_info
   </a>
   
 </li>
@@ -1165,10 +1165,6 @@
 
 <span class="kn">from</span> <span class="nn">.network</span> <span class="kn">import</span> <span class="n">Network</span>
 
-<span class="c1"># Hardcode this because we WANT things to break if it changes</span>
-
-<span class="n">BLOCKCHAIN_VERSION</span> <span class="o">=</span> <span class="mi">1062</span>
-
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="k">class</span> <span class="nc">NonceManager</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
@@ -1271,7 +1267,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">network</span> <span class="o">=</span> <span class="n">network</span>
 
-        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_version</span><span class="p">()</span> <span class="o">==</span> <span class="n">BLOCKCHAIN_VERSION</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">runtime_info</span><span class="p">()</span>
 
         <span class="n">RuntimeConfiguration</span><span class="p">()</span><span class="o">.</span><span class="n">update_type_registry</span><span class="p">(</span>
 
@@ -1301,19 +1297,21 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">arbitrator_address</span> <span class="o">=</span> <span class="n">ss58_encode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">keypair</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">check_version</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">runtime_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 
         <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="sd">        Make sure the versioning of the Kusama blockchain has not been</span>
-
-<span class="sd">        updated since the last developer verification of the codebase</span>
+<span class="sd">        Check the current</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">node_rpc_call</span><span class="p">(</span><span class="s2">&quot;state_getRuntimeVersion&quot;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">node_rpc_call</span><span class="p">(</span><span class="s2">&quot;state_getRuntimeVersion&quot;</span><span class="p">,</span> <span class="p">[])</span>
 
-        <span class="k">return</span> <span class="n">version</span><span class="p">[</span><span class="s2">&quot;result&quot;</span><span class="p">][</span><span class="s2">&quot;specVersion&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spec_version</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;result&quot;</span><span class="p">][</span><span class="s2">&quot;specVersion&quot;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">transaction_version</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;result&quot;</span><span class="p">][</span><span class="s2">&quot;transactionVersion&quot;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;result&quot;</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">get_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;MetadataDecoder&quot;</span><span class="p">:</span>
 
@@ -1339,7 +1337,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">return</span> <span class="n">BLOCKCHAIN_VERSION</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">spec_version</span>
 
     <span class="k">def</span> <span class="nf">get_genesis_hash</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 
@@ -1359,7 +1357,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="c1"># Storage key obtained via</span>
+        <span class="c1"># Storage key:</span>
 
         <span class="c1"># xxHash128(System) + xxHash128(Account)</span>
 
@@ -1455,7 +1453,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="c1"># If there&#39;s one more function where we have to do ths, let&#39;s add the helper function</span>
+        <span class="c1"># Storage key:</span>
 
         <span class="c1"># xxHash128(System) + xxHash128(Events)</span>
 
@@ -1863,12 +1861,6 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="c1"># TODO: Why are we doing this btw?</span>
-
-        <span class="c1"># I removed `assert fee_value &lt;= trade_value * 0.01`</span>
-
-        <span class="c1"># and added an exception like this but still</span>
-
         <span class="k">if</span> <span class="n">fee_value</span> <span class="o">&gt;</span> <span class="n">trade_value</span> <span class="o">*</span> <span class="mf">0.01</span><span class="p">:</span>
 
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Fee should not be more than 1</span><span class="si">% o</span><span class="s2">f trade value&quot;</span><span class="p">)</span>
@@ -1975,7 +1967,7 @@
 
 <span class="sd">        If sellers wins then return cancellation logic</span>
 
-<span class="sd">        If buyer wins then return ready approveAsMulti and ready buyer replenishment</span>
+<span class="sd">        If buyer wins then return ready approveAsMulti and ready buyer welfare transfer</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -2257,10 +2249,6 @@
 
 </details>
 <h2 id="variables">Variables</h2>
-<div class="codehilite"><pre><span></span><code><span class="n">BLOCKCHAIN_VERSION</span>
-</code></pre></div>
-
-
 <div class="codehilite"><pre><span></span><code><span class="n">logger</span>
 </code></pre></div>
 
@@ -2313,7 +2301,7 @@ nonce management in asyncronous environments where ordering is important</p>
 
 <span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">network</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">network</span><span class="w"></span>
 
-<span class="w">        </span><span class="n">assert</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">check_version</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">BLOCKCHAIN_VERSION</span><span class="w"></span>
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">runtime_info</span><span class="p">()</span><span class="w"></span>
 
 <span class="w">        </span><span class="n">RuntimeConfiguration</span><span class="p">().</span><span class="n">update_type_registry</span><span class="p">(</span><span class="w"></span>
 
@@ -2343,19 +2331,21 @@ nonce management in asyncronous environments where ordering is important</p>
 
 <span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">arbitrator_address</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ss58_encode</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">keypair</span><span class="o">[</span><span class="n">0</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"></span>
 
-<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">check_version</span><span class="p">(</span><span class="n">self</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">int</span><span class="err">:</span><span class="w"></span>
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">runtime_info</span><span class="p">(</span><span class="n">self</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">int</span><span class="err">:</span><span class="w"></span>
 
 <span class="w">        </span><span class="ss">&quot;&quot;&quot;</span>
 
-<span class="ss">        Make sure the versioning of the Kusama blockchain has not been</span>
-
-<span class="ss">        updated since the last developer verification of the codebase</span>
+<span class="ss">        Check the current</span>
 
 <span class="ss">        &quot;&quot;&quot;</span><span class="w"></span>
 
-<span class="w">        </span><span class="n">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">network</span><span class="p">.</span><span class="n">node_rpc_call</span><span class="p">(</span><span class="ss">&quot;state_getRuntimeVersion&quot;</span><span class="p">,</span><span class="w"> </span><span class="err">[]</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="k">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">network</span><span class="p">.</span><span class="n">node_rpc_call</span><span class="p">(</span><span class="ss">&quot;state_getRuntimeVersion&quot;</span><span class="p">,</span><span class="w"> </span><span class="err">[]</span><span class="p">)</span><span class="w"></span>
 
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">version</span><span class="o">[</span><span class="n">&quot;result&quot;</span><span class="o">][</span><span class="n">&quot;specVersion&quot;</span><span class="o">]</span><span class="w"></span>
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">spec_version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">result</span><span class="o">[</span><span class="n">&quot;result&quot;</span><span class="o">][</span><span class="n">&quot;specVersion&quot;</span><span class="o">]</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">transaction_version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">result</span><span class="o">[</span><span class="n">&quot;result&quot;</span><span class="o">][</span><span class="n">&quot;transactionVersion&quot;</span><span class="o">]</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">result</span><span class="o">[</span><span class="n">&quot;result&quot;</span><span class="o">]</span><span class="w"></span>
 
 <span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">get_metadata</span><span class="p">(</span><span class="n">self</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="ss">&quot;MetadataDecoder&quot;</span><span class="err">:</span><span class="w"></span>
 
@@ -2381,7 +2371,7 @@ nonce management in asyncronous environments where ordering is important</p>
 
 <span class="ss">        &quot;&quot;&quot;</span><span class="w"></span>
 
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">BLOCKCHAIN_VERSION</span><span class="w"></span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">spec_version</span><span class="w"></span>
 
 <span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">get_genesis_hash</span><span class="p">(</span><span class="n">self</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nf">str</span><span class="err">:</span><span class="w"></span>
 
@@ -2401,7 +2391,7 @@ nonce management in asyncronous environments where ordering is important</p>
 
 <span class="ss">        &quot;&quot;&quot;</span><span class="w"></span>
 
-<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="n">Storage</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="n">obtained</span><span class="w"> </span><span class="n">via</span><span class="w"></span>
+<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="n">Storage</span><span class="w"> </span><span class="k">key</span><span class="err">:</span><span class="w"></span>
 
 <span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="n">xxHash128</span><span class="p">(</span><span class="k">System</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">xxHash128</span><span class="p">(</span><span class="n">Account</span><span class="p">)</span><span class="w"></span>
 
@@ -2497,7 +2487,7 @@ nonce management in asyncronous environments where ordering is important</p>
 
 <span class="ss">        &quot;&quot;&quot;</span><span class="w"></span>
 
-<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="k">If</span><span class="w"> </span><span class="n">there</span><span class="s1">&#39;s one more function where we have to do ths, let&#39;</span><span class="n">s</span><span class="w"> </span><span class="k">add</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">helper</span><span class="w"> </span><span class="k">function</span><span class="w"></span>
+<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="n">Storage</span><span class="w"> </span><span class="k">key</span><span class="err">:</span><span class="w"></span>
 
 <span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="n">xxHash128</span><span class="p">(</span><span class="k">System</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">xxHash128</span><span class="p">(</span><span class="n">Events</span><span class="p">)</span><span class="w"></span>
 
@@ -2905,12 +2895,6 @@ nonce management in asyncronous environments where ordering is important</p>
 
 <span class="ss">        &quot;&quot;&quot;</span><span class="w"></span>
 
-<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="nl">TODO</span><span class="p">:</span><span class="w"> </span><span class="n">Why</span><span class="w"> </span><span class="k">are</span><span class="w"> </span><span class="n">we</span><span class="w"> </span><span class="n">doing</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">btw</span><span class="vm">?</span><span class="w"></span>
-
-<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="n">I</span><span class="w"> </span><span class="n">removed</span><span class="w"> </span><span class="err">`</span><span class="n">assert</span><span class="w"> </span><span class="n">fee_value</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">trade_value</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">0.01</span><span class="err">`</span><span class="w"></span>
-
-<span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">added</span><span class="w"> </span><span class="n">an</span><span class="w"> </span><span class="k">exception</span><span class="w"> </span><span class="ow">like</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">but</span><span class="w"> </span><span class="n">still</span><span class="w"></span>
-
 <span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">fee_value</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">trade_value</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">0.01</span><span class="err">:</span><span class="w"></span>
 
 <span class="w">            </span><span class="n">raise</span><span class="w"> </span><span class="k">Exception</span><span class="p">(</span><span class="ss">&quot;Fee should not be more than 1% of trade value&quot;</span><span class="p">)</span><span class="w"></span>
@@ -3017,7 +3001,7 @@ nonce management in asyncronous environments where ordering is important</p>
 
 <span class="ss">        If sellers wins then return cancellation logic</span>
 
-<span class="ss">        If buyer wins then return ready approveAsMulti and ready buyer replenishment</span>
+<span class="ss">        If buyer wins then return ready approveAsMulti and ready buyer welfare transfer</span>
 
 <span class="ss">        &quot;&quot;&quot;</span><span class="w"></span>
 
@@ -3521,12 +3505,6 @@ nonce management in asyncronous environments where ordering is important</p>
 
 <span class="ss">        &quot;&quot;&quot;</span>
 
-        <span class="o">#</span> <span class="n">TODO</span><span class="p">:</span> <span class="n">Why</span> <span class="k">are</span> <span class="n">we</span> <span class="n">doing</span> <span class="n">this</span> <span class="n">btw</span><span class="o">?</span>
-
-        <span class="o">#</span> <span class="n">I</span> <span class="n">removed</span> <span class="o">`</span><span class="n">assert</span> <span class="n">fee_value</span> <span class="o">&lt;=</span> <span class="n">trade_value</span> <span class="o">*</span> <span class="mi">0</span><span class="p">.</span><span class="mi">01</span><span class="o">`</span>
-
-        <span class="o">#</span> <span class="k">and</span> <span class="n">added</span> <span class="n">an</span> <span class="k">exception</span> <span class="k">like</span> <span class="n">this</span> <span class="n">but</span> <span class="n">still</span>
-
         <span class="k">if</span> <span class="n">fee_value</span> <span class="o">&gt;</span> <span class="n">trade_value</span> <span class="o">*</span> <span class="mi">0</span><span class="p">.</span><span class="mi">01</span><span class="p">:</span>
 
             <span class="n">raise</span> <span class="k">Exception</span><span class="p">(</span><span class="ss">&quot;Fee should not be more than 1% of trade value&quot;</span><span class="p">)</span>
@@ -3614,32 +3592,6 @@ nonce management in asyncronous environments where ordering is important</p>
 
 
 </details>
-<h5 id="check_version">check_version</h5>
-<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">check_version</span><span class="p">(</span>
-    <span class="bp">self</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span>
-</code></pre></div>
-
-
-<p>Make sure the versioning of the Kusama blockchain has not been
-updated since the last developer verification of the codebase</p>
-<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="n">check_version</span><span class="p">(</span><span class="k">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-
-        <span class="ss">&quot;&quot;&quot;</span>
-
-<span class="ss">        Make sure the versioning of the Kusama blockchain has not been</span>
-
-<span class="ss">        updated since the last developer verification of the codebase</span>
-
-<span class="ss">        &quot;&quot;&quot;</span>
-
-        <span class="k">version</span> <span class="o">=</span> <span class="k">self</span><span class="p">.</span><span class="n">network</span><span class="p">.</span><span class="n">node_rpc_call</span><span class="p">(</span><span class="ss">&quot;state_getRuntimeVersion&quot;</span><span class="p">,</span> <span class="p">[])</span>
-
-        <span class="k">return</span> <span class="k">version</span><span class="p">[</span><span class="ss">&quot;result&quot;</span><span class="p">][</span><span class="ss">&quot;specVersion&quot;</span><span class="p">]</span>
-</code></pre></div>
-
-
-</details>
 <h5 id="connect">connect</h5>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">connect</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
@@ -3667,7 +3619,7 @@ updated since the last developer verification of the codebase</p>
 
         <span class="k">self</span><span class="p">.</span><span class="n">network</span> <span class="o">=</span> <span class="n">network</span>
 
-        <span class="n">assert</span> <span class="k">self</span><span class="p">.</span><span class="n">check_version</span><span class="p">()</span> <span class="o">==</span> <span class="n">BLOCKCHAIN_VERSION</span>
+        <span class="k">self</span><span class="p">.</span><span class="n">runtime_info</span><span class="p">()</span>
 
         <span class="n">RuntimeConfiguration</span><span class="p">().</span><span class="n">update_type_registry</span><span class="p">(</span>
 
@@ -3963,7 +3915,7 @@ and sending the fee to the arbitrator</p>
 
 <span class="ss">        &quot;&quot;&quot;</span>
 
-        <span class="o">#</span> <span class="k">If</span> <span class="n">there</span><span class="s1">&#39;s one more function where we have to do ths, let&#39;</span><span class="n">s</span> <span class="k">add</span> <span class="n">the</span> <span class="n">helper</span> <span class="k">function</span>
+        <span class="o">#</span> <span class="k">Storage</span> <span class="k">key</span><span class="p">:</span>
 
         <span class="o">#</span> <span class="n">xxHash128</span><span class="p">(</span><span class="k">System</span><span class="p">)</span> <span class="o">+</span> <span class="n">xxHash128</span><span class="p">(</span><span class="n">Events</span><span class="p">)</span>
 
@@ -4259,7 +4211,7 @@ and sending the fee to the arbitrator</p>
 
 <span class="ss">        &quot;&quot;&quot;</span>
 
-        <span class="k">return</span> <span class="n">BLOCKCHAIN_VERSION</span>
+        <span class="k">return</span> <span class="k">self</span><span class="p">.</span><span class="n">spec_version</span>
 </code></pre></div>
 
 
@@ -4483,7 +4435,7 @@ and sending the fee to the arbitrator</p>
 
 
 <p>If sellers wins then return cancellation logic
-If buyer wins then return ready approveAsMulti and ready buyer replenishment</p>
+If buyer wins then return ready approveAsMulti and ready buyer welfare transfer</p>
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="n">resolve_dispute</span><span class="p">(</span>
 
         <span class="k">self</span><span class="p">,</span>
@@ -4506,7 +4458,7 @@ If buyer wins then return ready approveAsMulti and ready buyer replenishment</p>
 
 <span class="ss">        If sellers wins then return cancellation logic</span>
 
-<span class="ss">        If buyer wins then return ready approveAsMulti and ready buyer replenishment</span>
+<span class="ss">        If buyer wins then return ready approveAsMulti and ready buyer welfare transfer</span>
 
 <span class="ss">        &quot;&quot;&quot;</span>
 
@@ -4593,6 +4545,33 @@ If buyer wins then return ready approveAsMulti and ready buyer replenishment</p>
         <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">release_transaction</span><span class="p">,</span> <span class="n">welfare_transaction</span>
+</code></pre></div>
+
+
+</details>
+<h5 id="runtime_info">runtime_info</h5>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">runtime_info</span><span class="p">(</span>
+    <span class="bp">self</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span>
+</code></pre></div>
+
+
+<p>Check the current</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="n">runtime_info</span><span class="p">(</span><span class="k">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+
+        <span class="ss">&quot;&quot;&quot;</span>
+
+<span class="ss">        Check the current</span>
+
+<span class="ss">        &quot;&quot;&quot;</span>
+
+        <span class="k">result</span> <span class="o">=</span> <span class="k">self</span><span class="p">.</span><span class="n">network</span><span class="p">.</span><span class="n">node_rpc_call</span><span class="p">(</span><span class="ss">&quot;state_getRuntimeVersion&quot;</span><span class="p">,</span> <span class="p">[])</span>
+
+        <span class="k">self</span><span class="p">.</span><span class="n">spec_version</span> <span class="o">=</span> <span class="k">result</span><span class="p">[</span><span class="ss">&quot;result&quot;</span><span class="p">][</span><span class="ss">&quot;specVersion&quot;</span><span class="p">]</span>
+
+        <span class="k">self</span><span class="p">.</span><span class="n">transaction_version</span> <span class="o">=</span> <span class="k">result</span><span class="p">[</span><span class="ss">&quot;result&quot;</span><span class="p">][</span><span class="ss">&quot;transactionVersion&quot;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="k">result</span><span class="p">[</span><span class="ss">&quot;result&quot;</span><span class="p">]</span>
 </code></pre></div>
 
 
