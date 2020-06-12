@@ -32,5 +32,5 @@ kusama = Kusama(
 ```python
 
 kusama.connect()
-assert kusama.check_version() == 1062 
+kusama.runtime_info()
 ```

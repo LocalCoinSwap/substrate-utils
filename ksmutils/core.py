@@ -16,9 +16,6 @@ from scalecodec.utils.ss58 import ss58_encode
 from . import helper
 from .network import Network
 
-# Hardcode this because we WANT things to break if it changes
-BLOCKCHAIN_VERSION = 1062
-
 logger = logging.getLogger(__name__)
 
 
@@ -84,7 +81,7 @@ class Kusama(NonceManager):
             network = Network(node_url=node_url)
 
         self.network = network
-        assert self.check_version() == BLOCKCHAIN_VERSION
+        self.runtime_info()
 
         RuntimeConfiguration().update_type_registry(
             load_type_registry_preset("default")
@@ -103,13 +100,14 @@ class Kusama(NonceManager):
         self.arbitrator_account_id = self.keypair[0].hex()
         self.arbitrator_address = ss58_encode(self.keypair[0], 2)
 
-    def check_version(self) -> int:
+    def runtime_info(self) -> int:
         """
-        Make sure the versioning of the Kusama blockchain has not been
-        updated since the last developer verification of the codebase
+        Check the current
         """
-        version = self.network.node_rpc_call("state_getRuntimeVersion", [])
-        return version["result"]["specVersion"]
+        result = self.network.node_rpc_call("state_getRuntimeVersion", [])
+        self.spec_version = result["result"]["specVersion"]
+        self.transaction_version = result["result"]["transactionVersion"]
+        return result["result"]
 
     def get_metadata(self) -> "MetadataDecoder":
         """
@@ -124,7 +122,7 @@ class Kusama(NonceManager):
         """
         Returns the blockchain version
         """
-        return BLOCKCHAIN_VERSION
+        return self.spec_version
 
     def get_genesis_hash(self) -> str:
         """
@@ -136,7 +134,7 @@ class Kusama(NonceManager):
         """
         Returns information associated with provided address
         """
-        # Storage key obtained via
+        # Storage key:
         # xxHash128(System) + xxHash128(Account)
         storage_key = (
             "0x26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da9"
@@ -194,7 +192,7 @@ class Kusama(NonceManager):
         """
         Returns events broadcasted within the provided block
         """
-        # If there's one more function where we have to do ths, let's add the helper function
+        # Storage key:
         # xxHash128(System) + xxHash128(Events)
         storage_hash = (
             "0x26aa394eea5630e07c48ae0c9558cef780d41e5e16056765bc8461851072c9d7"
@@ -420,10 +418,6 @@ class Kusama(NonceManager):
         """
         Return signed and ready transactions for the fee return and escrow return
         """
-
-        # TODO: Why are we doing this btw?
-        # I removed `assert fee_value <= trade_value * 0.01`
-        # and added an exception like this but still
         if fee_value > trade_value * 0.01:
             raise Exception("Fee should not be more than 1% of trade value")
 
@@ -482,7 +476,7 @@ class Kusama(NonceManager):
     ) -> tuple:
         """
         If sellers wins then return cancellation logic
-        If buyer wins then return ready approveAsMulti and ready buyer replenishment
+        If buyer wins then return ready approveAsMulti and ready buyer welfare transfer
         """
         nonce = self.arbitrator_nonce()
 

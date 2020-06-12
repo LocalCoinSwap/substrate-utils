@@ -26,7 +26,7 @@ def get_prefix(escrow_address: str) -> str:
     """
     Returns prefix containing the account ID of the address provided
     """
-    module_prefix = xx128("Utility") + xx128("Multisigs")
+    module_prefix = xx128("Multisig") + xx128("Multisigs")
     account_id = ss58_decode(escrow_address, 2)
     storage_key = bytearray(xxhash.xxh64(bytes.fromhex(account_id), seed=0).digest())
     storage_key.reverse()
@@ -48,6 +48,7 @@ def transfer_signature_payload(
     nonce: int,
     genesis_hash: str,
     spec_version: int,
+    transaction_version: int = 1,
 ) -> str:
     """
     Turn parameters gathered through side effects into unsigned transfer string
@@ -68,6 +69,7 @@ def transfer_signature_payload(
             "nonce": nonce,
             "tip": 0,
             "specVersion": spec_version,
+            "transactionVersion": transaction_version,
             "genesisHash": genesis_hash,
             "blockHash": genesis_hash,
         }
@@ -85,6 +87,7 @@ def approve_as_multi_signature_payload(
     other_signatories: list,
     threshold: int = 2,
     tip: int = 0,
+    transaction_version: int = 1,
 ) -> str:
     """
     Turn parameters gathered through side effects into unsigned approve_as_multi string
@@ -100,7 +103,7 @@ def approve_as_multi_signature_payload(
     )
     approve_as_multi.encode(
         {
-            "call_module": "Utility",
+            "call_module": "Multisig",
             "call_function": "approve_as_multi",
             "call_args": {
                 "call_hash": hash_call(transfer),
@@ -118,6 +121,7 @@ def approve_as_multi_signature_payload(
             "nonce": nonce,
             "tip": tip,
             "specVersion": spec_version,
+            "transactionVersion": transaction_version,
             "genesisHash": genesis_hash,
             "blockHash": genesis_hash,
         }
@@ -137,6 +141,7 @@ def as_multi_signature_payload(
     timepoint: tuple,
     threshold: int = 2,
     tip: int = 0,
+    transaction_version: int = 1,
 ) -> str:
     """
     Turn parameters gathered through side effects into unsigned as_multi string
@@ -152,7 +157,7 @@ def as_multi_signature_payload(
     )
     as_multi.encode(
         {
-            "call_module": "Utility",
+            "call_module": "Multisig",
             "call_function": "as_multi",
             "call_args": {
                 "call": transfer.serialize(),
@@ -170,6 +175,7 @@ def as_multi_signature_payload(
             "nonce": nonce,
             "tip": tip,
             "specVersion": spec_version,
+            "transactionVersion": transaction_version,
             "genesisHash": genesis_hash,
             "blockHash": genesis_hash,
         }
@@ -250,7 +256,7 @@ def unsigned_approve_as_multi_construction(
     Turn parameters gathered through side effects into an approve_as_multi extrinsic object
     """
     call_function = "approve_as_multi"
-    call_module = "Utility"
+    call_module = "Multisig"
     transfer = ScaleDecoder.get_decoder_class("Call", metadata=metadata)
     transfer.encode(
         {
@@ -294,7 +300,7 @@ def unsigned_as_multi_construction(
     Turn parameters gathered through side effects into an as_multi extrinsic object
     """
     call_function = "as_multi"
-    call_module = "Utility"
+    call_module = "Multisig"
     transfer = ScaleDecoder.get_decoder_class("Call", metadata=metadata)
     transfer.encode(
         {
