@@ -8,6 +8,7 @@ import sys
 from shutil import rmtree
 
 from setuptools import Command
+from setuptools import find_packages
 from setuptools import setup
 
 # Package meta-data.
@@ -19,7 +20,7 @@ URL = "https://github.com/LocalCoinSwap/kusama-utils/"
 EMAIL = "nathan@localcoinswap.com"
 AUTHOR = "Nathan Worsley"
 REQUIRES_PYTHON = ">=3.7.0"
-VERSION = "0.0.6"
+VERSION = "0.0.7"
 
 REQUIRED = [
     "websockets==8.1",
@@ -109,7 +110,7 @@ setup(
     author_email=EMAIL,
     python_requires=REQUIRES_PYTHON,
     url=URL,
-    py_modules=["ksmutils"],
+    packages=find_packages(exclude=["tests", "*.tests", "*.tests.*", "tests.*"]),
     install_requires=REQUIRED,
     extras_require=EXTRAS,
     include_package_data=True,
