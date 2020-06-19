@@ -527,7 +527,7 @@ class Kusama(NonceManager):
 
     def get_block_hash(self, node_response: dict) -> str:
         """
-        Returns the block hash of a provided node responce
+        Returns the block hash of a provided node response
         """
         return (
             node_response[max(node_response.keys())]
