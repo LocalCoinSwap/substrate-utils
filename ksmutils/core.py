@@ -597,15 +597,18 @@ class Kusama(NonceManager):
         node_response = self.network.node_rpc_call(
             "author_submitAndWatchExtrinsic", [transaction], watch=True
         )
-        if "error" not in str(node_response):
-            tx_hash = self.get_extrinsic_hash(transaction)
-            block_hash = self.get_block_hash(node_response)
-            timepoint = self.get_extrinsic_timepoint(node_response, transaction)
-            events = self.get_extrinsic_events(block_hash, timepoint[1])
-            success = self.is_transaction_success(type, events)
-            return tx_hash, timepoint, success, None
-        elif "error" in str(node_response):
-            return None, None, False, node_response
+        if "error" in str(node_response):
+            return False, node_response
+        tx_hash = self.get_extrinsic_hash(transaction)
+        block_hash = self.get_block_hash(node_response)
+        timepoint = self.get_extrinsic_timepoint(node_response, transaction)
+        events = self.get_extrinsic_events(block_hash, timepoint[1])
+        success = self.is_transaction_success(type, events)
+        response = {
+            "tx_hash": tx_hash,
+            "timepoint": timepoint,
+        }
+        return success, response
 
     def diagnose(self, escrow_address: str) -> dict:
         """
