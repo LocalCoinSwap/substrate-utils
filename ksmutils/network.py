@@ -58,9 +58,12 @@ class Network:
                     looping = (
                         False
                         if (
-                            "params" in result
-                            and type(result["params"]["result"]) is dict
-                            and "finalized" in result["params"]["result"]
+                            (
+                                "params" in result
+                                and type(result["params"]["result"]) is dict
+                                and "finalized" in result["params"]["result"]
+                            )
+                            or ("error" in result)
                         )
                         else looping
                     )

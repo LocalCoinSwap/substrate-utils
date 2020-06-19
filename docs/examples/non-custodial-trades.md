@@ -36,7 +36,7 @@ fee_signature = sign_payload(keypair, fee_payload)
 
 ### Construct and broadcast the transactions
 ```python
-escrow_tx_hash, escrow_timepoint, success = kusama.publish(
+success, response = kusama.publish(
     'transfer',
     [seller_address,
     escrow_signature,
@@ -45,7 +45,7 @@ escrow_tx_hash, escrow_timepoint, success = kusama.publish(
     trade_value]
     )
 assert success
-fee_tx_hash, fee_timepoint, success = kusama.publish(
+success, response = kusama.publish(
     'fee_transfer',
     [seller_address,
     fee_signature,
@@ -69,7 +69,7 @@ approve_as_multi_payload, nonce = kusama.approve_as_multi_payload(
 approve_as_multi_signature = sign_payload(keypair, approve_as_multi_payload)
 
 # Construct and broadcast seller approve_as_multi
-tx_hash, timepoint, success = kusama.publish(
+success, response = kusama.publish(
     'approve_as_multi', [
         seller_address,
         approve_as_multi_signature,
@@ -81,6 +81,10 @@ tx_hash, timepoint, success = kusama.publish(
         )
 assert success
 
+# If successful the response contains both the tx_hash and timepoint
+tx_hash = response['tx_hash']
+timepoint = response['timepoint']
+
 # Get arbitrator release escrow transaction and broadcast it
 as_multi = kusama.release_escrow(
     buyer_address,
@@ -88,7 +92,7 @@ as_multi = kusama.release_escrow(
     timepoint,
     [seller_address, buyer_address]
     )
-tx_hash, timepoint, success = kusama.broadcast('as_multi', as_multi)
+success, response = kusama.broadcast('as_multi', as_multi)
 assert success
 ```
 
@@ -102,7 +106,7 @@ approve_as_multi_payload, nonce = kusama.approve_as_multi_payload(
     [buyer_address, kusama.arbitrator_address]
     )
 approve_as_multi_signature = sign_payload(keypair, approve_as_multi_payload)
-tx_hash, timepoint, success = kusama.publish(
+success, response = kusama.publish(
     'approve_as_multi',
     [
         seller_address,
@@ -121,12 +125,12 @@ revert, fee_revert = kusama.cancellation(
     trade_value,
     fee_value,
     [seller_address, buyer_address],
-    timepoint
+    response['timepoint']
     )
 
-tx_hash, timepoint, success = kusama.broadcast('as_multi', revert)
+success, response = kusama.broadcast('as_multi', revert)
 assert success
-tx_hash, timepoint, success = kusama.broadcast('transfer', fee_revert)
+success, response = kusama.broadcast('transfer', fee_revert)
 assert success
 ```
 
@@ -144,10 +148,10 @@ release_transaction, welfare_transaction = kusama.resolve_dispute(
     [buyer_address, seller_address]
     )
 
-tx_hash, escrow_timepoint, success = kusama.broadcast(
+success, escrow_responce = kusama.broadcast(
     'as_multi', release_transaction)
 assert success
-tx_hash, timepoint, success = kusama.broadcast(
+success, response = kusama.broadcast(
     'transfer', welfare_transaction)
 assert success
 
@@ -159,7 +163,7 @@ as_multi_payload, nonce = kusama.approve_as_multi_payload(
     [buyer_address, kusama.arbitrator_address]
     )
 as_multi_signature = sign_payload(keypair, as_multi_payload)
-tx_hash, timepoint, success = kusama.publish(
+success, response = kusama.publish(
     'as_multi',
     [
         seller_address,
@@ -168,7 +172,7 @@ tx_hash, timepoint, success = kusama.publish(
         seller_address,
         trade_value,
         [buyer_address, kusama.arbitrator_address],
-        escrow_timepoint
+        escrow_responce['timepoint']
     ]
     )
 assert success
@@ -204,12 +208,12 @@ keypair = sr25519.pair_from_seed(bytes.fromhex(seller_key))
 escrow_signature = sign_payload(keypair, escrow_payload)
 fee_signature = sign_payload(keypair, fee_payload)
 
-escrow_tx_hash, escrow_timepoint, success = kusama.publish(
+success, response = kusama.publish(
     'transfer',
     [seller_address, escrow_signature, nonce, escrow_address, trade_value]
     )
 assert success
-fee_tx_hash, fee_timepoint, success = kusama.publish(
+success, response = kusama.publish(
     'fee_transfer',
     [seller_address, fee_signature, nonce + 1, fee_value]
     )
@@ -228,7 +232,7 @@ approve_as_multi_signature = sign_payload(
     keypair, approve_as_multi_payload)
 
 # Construct and broadcast seller approve_as_multi
-tx_hash, timepoint, success = kusama.publish(
+success, response = kusama.publish(
     'approve_as_multi',
     [
         seller_address,
@@ -245,9 +249,9 @@ assert success
 as_multi = kusama.release_escrow(
     buyer_address,
     trade_value,
-    timepoint,
+    response['timepoint'],
     [seller_address, buyer_address]
     )
-tx_hash, timepoint, success = kusama.broadcast('as_multi', as_multi)
+success, response= kusama.broadcast('as_multi', as_multi)
 assert success
 ```
