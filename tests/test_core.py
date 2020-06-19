@@ -248,7 +248,7 @@ class TestWrapperMethods:
         mocker.patch("ksmutils.core.Kusama.is_transaction_success", return_value=True)
 
         result = kusama.broadcast("t", "tx")
-        assert result == ("a", (1, 2), True)
+        assert result == ("a", (1, 2), True, None)
 
     def test_publish(self, kusama, mocker):
         arbitrator_key = (
