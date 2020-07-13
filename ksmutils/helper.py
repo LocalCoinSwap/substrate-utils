@@ -149,8 +149,8 @@ def as_multi_signature_payload(
     """
     Turn parameters gathered through side effects into unsigned as_multi string
     """
-    transfer = ScaleDecoder.get_decoder_class("Call", metadata=metadata)
     as_multi = ScaleDecoder.get_decoder_class("Call", metadata=metadata)
+    transfer = ScaleDecoder.get_decoder_class("OpaqueCall", metadata=metadata)
     transfer.encode(
         {
             "call_module": "Balances",
@@ -163,7 +163,7 @@ def as_multi_signature_payload(
             "call_module": "Multisig",
             "call_function": "as_multi",
             "call_args": {
-                "call": transfer.serialize(),
+                "call": str(transfer),
                 "maybe_timepoint": {"height": timepoint[0], "index": timepoint[1]},
                 "other_signatories": sorted(other_signatories),
                 "threshold": threshold,
@@ -309,7 +309,7 @@ def unsigned_as_multi_construction(
     """
     call_function = "as_multi"
     call_module = "Multisig"
-    transfer = ScaleDecoder.get_decoder_class("Call", metadata=metadata)
+    transfer = ScaleDecoder.get_decoder_class("OpaqueCall", metadata=metadata)
     transfer.encode(
         {
             "call_module": "Balances",
@@ -318,7 +318,7 @@ def unsigned_as_multi_construction(
         }
     )
     call_arguments = {
-        "call": transfer.serialize(),
+        "call": str(transfer),
         "maybe_timepoint": {"height": timepoint[0], "index": timepoint[1]},
         "other_signatories": sorted(other_signatories),
         "threshold": threshold,

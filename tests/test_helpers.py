@@ -59,7 +59,7 @@ class TestSignaturePayloads:
             amount,
             other_signatories,
         )
-        assert len(result) == 356 and result[0:2] == "0x"
+        assert len(result) == 372 and result[0:2] == "0x"
 
     def test_as_multi_payload(self):
         """
@@ -84,7 +84,7 @@ class TestSignaturePayloads:
             other_signatories,
             timepoint,
         )
-        assert len(result) == 388 and result[0:2] == "0x"
+        assert len(result) == 632 and result[0:2] == "0x"
 
 
 class TestPayloadConstruction:
@@ -141,7 +141,7 @@ class TestPayloadConstruction:
             amount,
             other_signatories,
         )
-        assert len(result) == 412 and result[0:2] == "0x"
+        assert len(result) == 428 and result[0:2] == "0x"
 
     def test_as_multi_construction(self):
         """
@@ -173,7 +173,7 @@ class TestPayloadConstruction:
             timepoint,
             other_signatories,
         )
-        assert len(result) == 444 and result[0:2] == "0x"
+        assert len(result) == 688 and result[0:2] == "0x"
 
     def test_sign_payload(self):
         payload = (
