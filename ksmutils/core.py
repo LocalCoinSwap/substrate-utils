@@ -114,9 +114,17 @@ class Kusama(NonceManager):
         Returns decoded chain metadata
         """
         raw_metadata = self.network.node_rpc_call("state_getMetadata", [None])["result"]
+        self.raw_metadata = raw_metadata
         metadata = MetadataDecoder(ScaleBytes(raw_metadata))
         metadata.decode()
         return metadata
+
+    def dump_metadata(self, filename: str = "metadata.txt") -> None:
+        """
+        Dump the raw metadata to a file in root directory
+        """
+        with open(filename, "w") as f:
+            f.write(self.raw_metadata)
 
     def get_spec_version(self) -> int:
         """

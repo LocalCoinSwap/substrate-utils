@@ -163,7 +163,7 @@ def as_multi_signature_payload(
             "call_module": "Multisig",
             "call_function": "as_multi",
             "call_args": {
-                "call": str(transfer),
+                "call": transfer.value,
                 "maybe_timepoint": {"height": timepoint[0], "index": timepoint[1]},
                 "other_signatories": sorted(other_signatories),
                 "threshold": threshold,
@@ -318,7 +318,7 @@ def unsigned_as_multi_construction(
         }
     )
     call_arguments = {
-        "call": str(transfer),
+        "call": transfer.value,
         "maybe_timepoint": {"height": timepoint[0], "index": timepoint[1]},
         "other_signatories": sorted(other_signatories),
         "threshold": threshold,

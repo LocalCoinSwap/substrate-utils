@@ -84,7 +84,7 @@ class TestSignaturePayloads:
             other_signatories,
             timepoint,
         )
-        assert len(result) == 632 and result[0:2] == "0x"
+        assert len(result) == 408 and result[0:2] == "0x"
 
 
 class TestPayloadConstruction:
@@ -173,7 +173,7 @@ class TestPayloadConstruction:
             timepoint,
             other_signatories,
         )
-        assert len(result) == 688 and result[0:2] == "0x"
+        assert len(result) == 464 and result[0:2] == "0x"
 
     def test_sign_payload(self):
         payload = (
