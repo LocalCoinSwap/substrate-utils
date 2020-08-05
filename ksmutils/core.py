@@ -151,10 +151,15 @@ class Kusama(NonceManager):
         account_id = ss58_decode(address, 2)
         hashed_address = f"{blake2b(bytes.fromhex(account_id), digest_size=16).digest().hex()}{account_id}"
         storage_hash = storage_key + hashed_address
-
         result = self.network.node_rpc_call("state_getStorageAt", [storage_hash, None])[
             "result"
         ]
+        if not result:
+            result = (
+                "0x00000000000000000000000000000000000000000000000000000"
+                "0000000000000000000000000000000000000000000000000000000"
+                "000000000000000000000000000000"
+            )
 
         return_decoder = ScaleDecoder.get_decoder_class(
             "AccountInfo<Index, AccountData>",
