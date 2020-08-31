@@ -236,7 +236,7 @@ class TestWrapperMethods:
     # function which are already testd,
     # a better way would be to test if that other function
     # gets called ONCE, can't figure out how to do this without unittest
-    def test_broadcast(self, kusama, mocker):
+    def test_broadcast_success(self, kusama, mocker):
         mocker.patch("ksmutils.network.Network.node_rpc_call")
 
         mocker.patch("ksmutils.core.Kusama.get_extrinsic_hash", return_value="a")
@@ -247,8 +247,40 @@ class TestWrapperMethods:
         mocker.patch("ksmutils.core.Kusama.get_extrinsic_events", return_value=[])
         mocker.patch("ksmutils.core.Kusama.is_transaction_success", return_value=True)
 
+        result = kusama.broadcast(
+            "transfer",
+            "0x3502840c85dc20f15e3d8328b6a162d47ce43771fe6925f0effb8b878bcd1ff28d8f1201986ad54af2d5d8a56df8c6b6674c9d2021b96c9bff3b5f0b292dcfdcbe2e7a2d49f59cfd836df9b070a9de1200285f7023266e7fb055d685fb1277216c67d8830088000400dee35cf94a50737fc2f3c60439e8bae056aabdcde99de4f2d37a5f5957bcec4b0700e40b5403",
+        )
+
+        assert result == (True, {"tx_hash": "a", "timepoint": (1, 2)})
+
+    def test_broadcast_fail(self, kusama, mocker):
+        """
+        mocker.patch("ksmutils.network.Network.node_rpc_call")
+
+        mocker.patch("ksmutils.core.Kusama.get_extrinsic_hash", return_value=None)
+        mocker.patch("ksmutils.core.Kusama.get_block_hash")
+        mocker.patch(
+            "ksmutils.core.Kusama.get_extrinsic_timepoint", return_value=None
+        )
+        mocker.patch("ksmutils.core.Kusama.get_extrinsic_events", return_value=[])
+        mocker.patch("ksmutils.core.Kusama.is_transaction_success", return_value=False)
+        """
         result = kusama.broadcast("t", "tx")
-        assert result == ("a", (1, 2), True)
+        print(result)
+        assert result == (
+            False,
+            {
+                0: {
+                    "jsonrpc": "2.0",
+                    "error": {
+                        "code": -32602,
+                        "message": "Invalid params: 0x prefix is missing.",
+                    },
+                    "id": 1,
+                }
+            },
+        )
 
     def test_publish(self, kusama, mocker):
         arbitrator_key = (

@@ -48,7 +48,7 @@ def transfer_signature_payload(
     nonce: int,
     genesis_hash: str,
     spec_version: int,
-    transaction_version: int = 1,
+    transaction_version: int = 2,
 ) -> str:
     """
     Turn parameters gathered through side effects into unsigned transfer string
@@ -87,7 +87,8 @@ def approve_as_multi_signature_payload(
     other_signatories: list,
     threshold: int = 2,
     tip: int = 0,
-    transaction_version: int = 1,
+    transaction_version: int = 2,
+    max_weight: int = 0,
 ) -> str:
     """
     Turn parameters gathered through side effects into unsigned approve_as_multi string
@@ -110,6 +111,7 @@ def approve_as_multi_signature_payload(
                 "maybe_timepoint": None,
                 "other_signatories": sorted(other_signatories),
                 "threshold": threshold,
+                "max_weight": max_weight,
             },
         }
     )
@@ -141,13 +143,14 @@ def as_multi_signature_payload(
     timepoint: tuple,
     threshold: int = 2,
     tip: int = 0,
-    transaction_version: int = 1,
+    transaction_version: int = 2,
+    max_weight: int = 0,
 ) -> str:
     """
     Turn parameters gathered through side effects into unsigned as_multi string
     """
-    transfer = ScaleDecoder.get_decoder_class("Call", metadata=metadata)
     as_multi = ScaleDecoder.get_decoder_class("Call", metadata=metadata)
+    transfer = ScaleDecoder.get_decoder_class("OpaqueCall", metadata=metadata)
     transfer.encode(
         {
             "call_module": "Balances",
@@ -160,10 +163,12 @@ def as_multi_signature_payload(
             "call_module": "Multisig",
             "call_function": "as_multi",
             "call_args": {
-                "call": transfer.serialize(),
+                "call": transfer.value,
                 "maybe_timepoint": {"height": timepoint[0], "index": timepoint[1]},
                 "other_signatories": sorted(other_signatories),
                 "threshold": threshold,
+                "store_call": False,
+                "max_weight": max_weight,
             },
         }
     )
@@ -251,6 +256,7 @@ def unsigned_approve_as_multi_construction(
     other_signatories,
     threshold: int = 2,
     tip: int = 0,
+    max_weight: int = 0,
 ) -> str:
     """
     Turn parameters gathered through side effects into an approve_as_multi extrinsic object
@@ -271,6 +277,7 @@ def unsigned_approve_as_multi_construction(
         "maybe_timepoint": None,
         "other_signatories": sorted(other_signatories),
         "threshold": threshold,
+        "max_weight": max_weight,
     }
     return _extrinsic_construction(
         metadata,
@@ -295,13 +302,14 @@ def unsigned_as_multi_construction(
     other_signatories: list,
     threshold: int = 2,
     tip: int = 0,
+    max_weight: int = 0,
 ) -> str:
     """
     Turn parameters gathered through side effects into an as_multi extrinsic object
     """
     call_function = "as_multi"
     call_module = "Multisig"
-    transfer = ScaleDecoder.get_decoder_class("Call", metadata=metadata)
+    transfer = ScaleDecoder.get_decoder_class("OpaqueCall", metadata=metadata)
     transfer.encode(
         {
             "call_module": "Balances",
@@ -310,10 +318,12 @@ def unsigned_as_multi_construction(
         }
     )
     call_arguments = {
-        "call": transfer.serialize(),
+        "call": transfer.value,
         "maybe_timepoint": {"height": timepoint[0], "index": timepoint[1]},
         "other_signatories": sorted(other_signatories),
         "threshold": threshold,
+        "store_call": False,
+        "max_weight": max_weight,
     }
     return _extrinsic_construction(
         metadata,
@@ -335,3 +345,12 @@ def sign_payload(keypair: tuple, payload: str) -> str:
         payload = payload[2:]
     signature = sr25519.sign(keypair, bytes.fromhex(payload))
     return signature.hex()
+
+
+def hex_to_bytes(hex) -> bytes:
+    """
+    Generic hex to bytes conversion
+    """
+    if hex[0:2] == "0x":
+        hex = hex[2:]
+    return bytes.fromhex(hex)

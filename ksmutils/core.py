@@ -114,9 +114,17 @@ class Kusama(NonceManager):
         Returns decoded chain metadata
         """
         raw_metadata = self.network.node_rpc_call("state_getMetadata", [None])["result"]
+        self.raw_metadata = raw_metadata
         metadata = MetadataDecoder(ScaleBytes(raw_metadata))
         metadata.decode()
         return metadata
+
+    def dump_metadata(self, filename: str = "metadata.txt") -> None:
+        """
+        Dump the raw metadata to a file in root directory
+        """
+        with open(filename, "w") as f:
+            f.write(self.raw_metadata)
 
     def get_spec_version(self) -> int:
         """
@@ -143,10 +151,15 @@ class Kusama(NonceManager):
         account_id = ss58_decode(address, 2)
         hashed_address = f"{blake2b(bytes.fromhex(account_id), digest_size=16).digest().hex()}{account_id}"
         storage_hash = storage_key + hashed_address
-
         result = self.network.node_rpc_call("state_getStorageAt", [storage_hash, None])[
             "result"
         ]
+        if not result:
+            result = (
+                "0x00000000000000000000000000000000000000000000000000000"
+                "0000000000000000000000000000000000000000000000000000000"
+                "000000000000000000000000000000"
+            )
 
         return_decoder = ScaleDecoder.get_decoder_class(
             "AccountInfo<Index, AccountData>",
@@ -527,7 +540,7 @@ class Kusama(NonceManager):
 
     def get_block_hash(self, node_response: dict) -> str:
         """
-        Returns the block hash of a provided node responce
+        Returns the block hash of a provided node response
         """
         return (
             node_response[max(node_response.keys())]
@@ -597,12 +610,18 @@ class Kusama(NonceManager):
         node_response = self.network.node_rpc_call(
             "author_submitAndWatchExtrinsic", [transaction], watch=True
         )
+        if "error" in str(node_response):
+            return False, node_response
         tx_hash = self.get_extrinsic_hash(transaction)
         block_hash = self.get_block_hash(node_response)
         timepoint = self.get_extrinsic_timepoint(node_response, transaction)
         events = self.get_extrinsic_events(block_hash, timepoint[1])
         success = self.is_transaction_success(type, events)
-        return tx_hash, timepoint, success
+        response = {
+            "tx_hash": tx_hash,
+            "timepoint": timepoint,
+        }
+        return success, response
 
     def diagnose(self, escrow_address: str) -> dict:
         """
