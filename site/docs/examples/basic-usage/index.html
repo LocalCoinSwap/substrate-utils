@@ -341,6 +341,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#preparing-and-sending-a-generic-transfer" class="md-nav__link">
+    Preparing and sending a generic transfer
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -536,6 +543,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#preparing-and-sending-a-generic-transfer" class="md-nav__link">
+    Preparing and sending a generic transfer
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -594,6 +608,44 @@
 <h3 id="connecting-to-the-kusama-blockchain">Connecting to the Kusama blockchain</h3>
 <div class="codehilite"><pre><span></span><code><span class="n">kusama</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
 <span class="n">kusama</span><span class="o">.</span><span class="n">runtime_info</span><span class="p">()</span>
+</code></pre></div>
+
+
+<h3 id="preparing-and-sending-a-generic-transfer">Preparing and sending a generic transfer</h3>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">sr25519</span>
+<span class="kn">from</span> <span class="nn">ksmutils</span> <span class="kn">import</span> <span class="n">Kusama</span>
+<span class="kn">from</span> <span class="nn">ksmutils.helper</span> <span class="kn">import</span> <span class="n">hex_to_bytes</span>
+<span class="kn">from</span> <span class="nn">scalecodec.utils.ss58</span> <span class="kn">import</span> <span class="n">ss58_encode</span>
+
+<span class="n">kusama</span> <span class="o">=</span> <span class="n">Kusama</span><span class="p">()</span>
+<span class="n">kusama</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+
+<span class="n">sender_seed_hex</span> <span class="o">=</span> <span class="s2">&quot;&lt;SEED OF SENDER&gt;&quot;</span>
+<span class="n">to_address</span> <span class="o">=</span> <span class="s2">&quot;JELVFBo1GL82vvEtDqVZMd2NDTFgQC3oi8W2fV3Xtm6CLXX&quot;</span>
+<span class="n">value</span> <span class="o">=</span> <span class="mi">10000000000</span> <span class="c1"># 0.01 KSM in Planks</span>
+
+<span class="c1"># Prepare key</span>
+<span class="n">keypair</span> <span class="o">=</span> <span class="n">sr25519</span><span class="o">.</span><span class="n">pair_from_seed</span><span class="p">(</span><span class="n">hex_to_bytes</span><span class="p">(</span><span class="n">sender_seed_hex</span><span class="p">))</span>
+<span class="n">sender_address</span> <span class="o">=</span> <span class="n">ss58_encode</span><span class="p">(</span><span class="n">keypair</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span>
+
+<span class="c1"># Get transaction payload to sign and nonce</span>
+<span class="n">payload</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">transfer_payload</span><span class="p">(</span><span class="n">sender_address</span><span class="p">,</span> <span class="n">to_address</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+<span class="n">nonce</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">get_nonce</span><span class="p">(</span><span class="n">sender_address</span><span class="p">)</span>
+
+<span class="c1"># Sign payload</span>
+<span class="n">signed_payload</span> <span class="o">=</span> <span class="n">sr25519</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">keypair</span><span class="p">,</span> <span class="n">hex_to_bytes</span><span class="p">(</span><span class="n">payload</span><span class="p">))</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span>
+
+<span class="c1"># Broadcast payload</span>
+<span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
+    <span class="s1">&#39;transfer&#39;</span><span class="p">,</span>
+    <span class="p">[</span><span class="n">sender_address</span><span class="p">,</span>
+    <span class="n">signed_payload</span><span class="p">,</span>
+    <span class="n">nonce</span><span class="p">,</span>
+    <span class="n">to_address</span><span class="p">,</span>
+    <span class="n">value</span><span class="p">]</span>
+<span class="p">)</span>
+<span class="k">assert</span> <span class="n">success</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
 </code></pre></div>
                 
                   

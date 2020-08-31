@@ -515,8 +515,10 @@
                 <h1 id="local-development">Local Development</h1>
 <h2 id="checklist-before-publishing-the-package">Checklist before publishing the package</h2>
 <ul>
+<li>Install <code>pip install twine --dev</code></li>
 <li>Make sure to update <code>REQUIRED</code> and <code>EXTRAS</code> lists in <code>setup.py</code> based on what's required by the library and what's required only for development. To ease local development, we will continue to maintain <code>requirements.txt</code> which includes every package.</li>
 <li>Bump the version constant <code>VERSION</code> in <code>setup.py</code></li>
+<li>Commit the version bump change in setup.py (It is okay to not push, but commit is required)</li>
 <li>Run setup test<ul>
 <li><code>python setup.py test</code></li>
 </ul>
@@ -525,6 +527,7 @@
 <li><code>python setup.py upload</code></li>
 </ul>
 </li>
+<li>Enter PyPi credentials (note: you must be added to the project as a maintainer)</li>
 </ul>
 <h2 id="generating-documentation">Generating Documentation</h2>
 <ul>
