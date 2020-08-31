@@ -466,6 +466,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#dump_metadata" class="md-nav__link">
+    dump_metadata
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#escrow_payloads" class="md-nav__link">
     escrow_payloads
   </a>
@@ -874,6 +881,13 @@
           <li class="md-nav__item">
   <a href="#diagnose" class="md-nav__link">
     diagnose
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dump_metadata" class="md-nav__link">
+    dump_metadata
   </a>
   
 </li>
@@ -1323,11 +1337,25 @@
 
         <span class="n">raw_metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">node_rpc_call</span><span class="p">(</span><span class="s2">&quot;state_getMetadata&quot;</span><span class="p">,</span> <span class="p">[</span><span class="bp">None</span><span class="p">])[</span><span class="s2">&quot;result&quot;</span><span class="p">]</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw_metadata</span> <span class="o">=</span> <span class="n">raw_metadata</span>
+
         <span class="n">metadata</span> <span class="o">=</span> <span class="n">MetadataDecoder</span><span class="p">(</span><span class="n">ScaleBytes</span><span class="p">(</span><span class="n">raw_metadata</span><span class="p">))</span>
 
         <span class="n">metadata</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="n">metadata</span>
+
+    <span class="k">def</span> <span class="nf">dump_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;metadata.txt&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="bp">None</span><span class="p">:</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Dump the raw metadata to a file in root directory</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_metadata</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">get_spec_version</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 
@@ -1378,6 +1406,18 @@
             <span class="s2">&quot;result&quot;</span>
 
         <span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="p">:</span>
+
+            <span class="n">result</span> <span class="o">=</span> <span class="p">(</span>
+
+                <span class="s2">&quot;0x00000000000000000000000000000000000000000000000000000&quot;</span>
+
+                <span class="s2">&quot;0000000000000000000000000000000000000000000000000000000&quot;</span>
+
+                <span class="s2">&quot;000000000000000000000000000000&quot;</span>
+
+            <span class="p">)</span>
 
         <span class="n">return_decoder</span> <span class="o">=</span> <span class="n">ScaleDecoder</span><span class="o">.</span><span class="n">get_decoder_class</span><span class="p">(</span>
 
@@ -2059,7 +2099,7 @@
 
         <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="sd">        Returns the block hash of a provided node responce</span>
+<span class="sd">        Returns the block hash of a provided node response</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -2187,6 +2227,10 @@
 
         <span class="p">)</span>
 
+        <span class="k">if</span> <span class="s2">&quot;error&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">node_response</span><span class="p">):</span>
+
+            <span class="k">return</span> <span class="bp">False</span><span class="p">,</span> <span class="n">node_response</span>
+
         <span class="n">tx_hash</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_extrinsic_hash</span><span class="p">(</span><span class="n">transaction</span><span class="p">)</span>
 
         <span class="n">block_hash</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_block_hash</span><span class="p">(</span><span class="n">node_response</span><span class="p">)</span>
@@ -2197,7 +2241,15 @@
 
         <span class="n">success</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_transaction_success</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">events</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">tx_hash</span><span class="p">,</span> <span class="n">timepoint</span><span class="p">,</span> <span class="n">success</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="p">{</span>
+
+            <span class="s2">&quot;tx_hash&quot;</span><span class="p">:</span> <span class="n">tx_hash</span><span class="p">,</span>
+
+            <span class="s2">&quot;timepoint&quot;</span><span class="p">:</span> <span class="n">timepoint</span><span class="p">,</span>
+
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">success</span><span class="p">,</span> <span class="n">response</span>
 
     <span class="k">def</span> <span class="nf">diagnose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">escrow_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 
@@ -2357,11 +2409,25 @@ nonce management in asyncronous environments where ordering is important</p>
 
 <span class="w">        </span><span class="n">raw_metadata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">network</span><span class="p">.</span><span class="n">node_rpc_call</span><span class="p">(</span><span class="ss">&quot;state_getMetadata&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">[</span><span class="n">None</span><span class="o">]</span><span class="p">)</span><span class="o">[</span><span class="n">&quot;result&quot;</span><span class="o">]</span><span class="w"></span>
 
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">raw_metadata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">raw_metadata</span><span class="w"></span>
+
 <span class="w">        </span><span class="n">metadata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MetadataDecoder</span><span class="p">(</span><span class="n">ScaleBytes</span><span class="p">(</span><span class="n">raw_metadata</span><span class="p">))</span><span class="w"></span>
 
 <span class="w">        </span><span class="n">metadata</span><span class="p">.</span><span class="n">decode</span><span class="p">()</span><span class="w"></span>
 
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">metadata</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">dump_metadata</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="nl">filename</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ss">&quot;metadata.txt&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">None</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">        </span><span class="ss">&quot;&quot;&quot;</span>
+
+<span class="ss">        Dump the raw metadata to a file in root directory</span>
+
+<span class="ss">        &quot;&quot;&quot;</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">with</span><span class="w"> </span><span class="k">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;w&quot;</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nl">f</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="n">f</span><span class="p">.</span><span class="k">write</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">raw_metadata</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">get_spec_version</span><span class="p">(</span><span class="n">self</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">int</span><span class="err">:</span><span class="w"></span>
 
@@ -2412,6 +2478,18 @@ nonce management in asyncronous environments where ordering is important</p>
 <span class="n">            &quot;result&quot;</span>
 
 <span class="n">        </span><span class="o">]</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="k">result</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="k">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+
+<span class="w">                </span><span class="ss">&quot;0x00000000000000000000000000000000000000000000000000000&quot;</span><span class="w"></span>
+
+<span class="w">                </span><span class="ss">&quot;0000000000000000000000000000000000000000000000000000000&quot;</span><span class="w"></span>
+
+<span class="w">                </span><span class="ss">&quot;000000000000000000000000000000&quot;</span><span class="w"></span>
+
+<span class="w">            </span><span class="p">)</span><span class="w"></span>
 
 <span class="w">        </span><span class="n">return_decoder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ScaleDecoder</span><span class="p">.</span><span class="n">get_decoder_class</span><span class="p">(</span><span class="w"></span>
 
@@ -3093,7 +3171,7 @@ nonce management in asyncronous environments where ordering is important</p>
 
 <span class="w">        </span><span class="ss">&quot;&quot;&quot;</span>
 
-<span class="ss">        Returns the block hash of a provided node responce</span>
+<span class="ss">        Returns the block hash of a provided node response</span>
 
 <span class="ss">        &quot;&quot;&quot;</span><span class="w"></span>
 
@@ -3221,6 +3299,10 @@ nonce management in asyncronous environments where ordering is important</p>
 
 <span class="w">        </span><span class="p">)</span><span class="w"></span>
 
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="ss">&quot;error&quot;</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nf">str</span><span class="p">(</span><span class="n">node_response</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="k">False</span><span class="p">,</span><span class="w"> </span><span class="n">node_response</span><span class="w"></span>
+
 <span class="w">        </span><span class="n">tx_hash</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">get_extrinsic_hash</span><span class="p">(</span><span class="k">transaction</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">        </span><span class="n">block_hash</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">get_block_hash</span><span class="p">(</span><span class="n">node_response</span><span class="p">)</span><span class="w"></span>
@@ -3231,7 +3313,15 @@ nonce management in asyncronous environments where ordering is important</p>
 
 <span class="w">        </span><span class="n">success</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">is_transaction_success</span><span class="p">(</span><span class="n">type</span><span class="p">,</span><span class="w"> </span><span class="n">events</span><span class="p">)</span><span class="w"></span>
 
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">tx_hash</span><span class="p">,</span><span class="w"> </span><span class="n">timepoint</span><span class="p">,</span><span class="w"> </span><span class="n">success</span><span class="w"></span>
+<span class="w">        </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{</span><span class="w"></span>
+
+<span class="w">            </span><span class="ss">&quot;tx_hash&quot;</span><span class="err">:</span><span class="w"> </span><span class="n">tx_hash</span><span class="p">,</span><span class="w"></span>
+
+<span class="w">            </span><span class="ss">&quot;timepoint&quot;</span><span class="err">:</span><span class="w"> </span><span class="n">timepoint</span><span class="p">,</span><span class="w"></span>
+
+<span class="w">        </span><span class="err">}</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">success</span><span class="p">,</span><span class="w"> </span><span class="n">response</span><span class="w"></span>
 
 <span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">diagnose</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="nl">escrow_address</span><span class="p">:</span><span class="w"> </span><span class="nf">str</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nl">dict</span><span class="p">:</span><span class="w"></span>
 
@@ -3455,6 +3545,10 @@ nonce management in asyncronous environments where ordering is important</p>
 
 <span class="w">        </span><span class="p">)</span><span class="w"></span>
 
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="ss">&quot;error&quot;</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nf">str</span><span class="p">(</span><span class="n">node_response</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="k">False</span><span class="p">,</span><span class="w"> </span><span class="n">node_response</span><span class="w"></span>
+
 <span class="w">        </span><span class="n">tx_hash</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">get_extrinsic_hash</span><span class="p">(</span><span class="k">transaction</span><span class="p">)</span><span class="w"></span>
 
 <span class="w">        </span><span class="n">block_hash</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">get_block_hash</span><span class="p">(</span><span class="n">node_response</span><span class="p">)</span><span class="w"></span>
@@ -3465,7 +3559,15 @@ nonce management in asyncronous environments where ordering is important</p>
 
 <span class="w">        </span><span class="n">success</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">is_transaction_success</span><span class="p">(</span><span class="n">type</span><span class="p">,</span><span class="w"> </span><span class="n">events</span><span class="p">)</span><span class="w"></span>
 
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">tx_hash</span><span class="p">,</span><span class="w"> </span><span class="n">timepoint</span><span class="p">,</span><span class="w"> </span><span class="n">success</span><span class="w"></span>
+<span class="w">        </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{</span><span class="w"></span>
+
+<span class="w">            </span><span class="ss">&quot;tx_hash&quot;</span><span class="err">:</span><span class="w"> </span><span class="n">tx_hash</span><span class="p">,</span><span class="w"></span>
+
+<span class="w">            </span><span class="ss">&quot;timepoint&quot;</span><span class="err">:</span><span class="w"> </span><span class="n">timepoint</span><span class="p">,</span><span class="w"></span>
+
+<span class="w">        </span><span class="err">}</span><span class="w"></span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">success</span><span class="p">,</span><span class="w"> </span><span class="n">response</span><span class="w"></span>
 </code></pre></div>
 
 
@@ -3696,6 +3798,30 @@ nonce management in asyncronous environments where ordering is important</p>
 
 
 </details>
+<h5 id="dump_metadata">dump_metadata</h5>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">dump_metadata</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;metadata.txt&#39;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+
+<p>Dump the raw metadata to a file in root directory</p>
+<details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="n">dump_metadata</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="ss">&quot;metadata.txt&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="k">None</span><span class="p">:</span>
+
+        <span class="ss">&quot;&quot;&quot;</span>
+
+<span class="ss">        Dump the raw metadata to a file in root directory</span>
+
+<span class="ss">        &quot;&quot;&quot;</span>
+
+        <span class="k">with</span> <span class="k">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="ss">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+
+            <span class="n">f</span><span class="p">.</span><span class="k">write</span><span class="p">(</span><span class="k">self</span><span class="p">.</span><span class="n">raw_metadata</span><span class="p">)</span>
+</code></pre></div>
+
+
+</details>
 <h5 id="escrow_payloads">escrow_payloads</h5>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">escrow_payloads</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
@@ -3836,12 +3962,12 @@ and sending the fee to the arbitrator</p>
 </code></pre></div>
 
 
-<p>Returns the block hash of a provided node responce</p>
+<p>Returns the block hash of a provided node response</p>
 <details class="example"><summary>View Source</summary><div class="codehilite"><pre><span></span><code>    <span class="n">def</span> <span class="n">get_block_hash</span><span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="n">node_response</span><span class="p">:</span> <span class="n">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">str</span><span class="p">:</span>
 
         <span class="ss">&quot;&quot;&quot;</span>
 
-<span class="ss">        Returns the block hash of a provided node responce</span>
+<span class="ss">        Returns the block hash of a provided node response</span>
 
 <span class="ss">        &quot;&quot;&quot;</span>
 
@@ -4122,6 +4248,8 @@ and sending the fee to the arbitrator</p>
 <span class="ss">        &quot;&quot;&quot;</span><span class="w"></span>
 
 <span class="w">        </span><span class="n">raw_metadata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="p">.</span><span class="n">network</span><span class="p">.</span><span class="n">node_rpc_call</span><span class="p">(</span><span class="ss">&quot;state_getMetadata&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">[</span><span class="n">None</span><span class="o">]</span><span class="p">)</span><span class="o">[</span><span class="n">&quot;result&quot;</span><span class="o">]</span><span class="w"></span>
+
+<span class="w">        </span><span class="n">self</span><span class="p">.</span><span class="n">raw_metadata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">raw_metadata</span><span class="w"></span>
 
 <span class="w">        </span><span class="n">metadata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MetadataDecoder</span><span class="p">(</span><span class="n">ScaleBytes</span><span class="p">(</span><span class="n">raw_metadata</span><span class="p">))</span><span class="w"></span>
 

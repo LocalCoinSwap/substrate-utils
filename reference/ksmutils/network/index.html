@@ -693,11 +693,17 @@
 
                         <span class="k">if</span> <span class="p">(</span>
 
-                            <span class="s2">&quot;params&quot;</span> <span class="ow">in</span> <span class="n">result</span>
+                            <span class="p">(</span>
 
-                            <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;params&quot;</span><span class="p">][</span><span class="s2">&quot;result&quot;</span><span class="p">])</span> <span class="ow">is</span> <span class="nb">dict</span>
+                                <span class="s2">&quot;params&quot;</span> <span class="ow">in</span> <span class="n">result</span>
 
-                            <span class="ow">and</span> <span class="s2">&quot;finalized&quot;</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;params&quot;</span><span class="p">][</span><span class="s2">&quot;result&quot;</span><span class="p">]</span>
+                                <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;params&quot;</span><span class="p">][</span><span class="s2">&quot;result&quot;</span><span class="p">])</span> <span class="ow">is</span> <span class="nb">dict</span>
+
+                                <span class="ow">and</span> <span class="s2">&quot;finalized&quot;</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;params&quot;</span><span class="p">][</span><span class="s2">&quot;result&quot;</span><span class="p">]</span>
+
+                            <span class="p">)</span>
+
+                            <span class="ow">or</span> <span class="p">(</span><span class="s2">&quot;error&quot;</span> <span class="ow">in</span> <span class="n">result</span><span class="p">)</span>
 
                         <span class="p">)</span>
 
@@ -819,11 +825,17 @@
 
                         <span class="k">if</span> (
 
-                            <span class="s">&quot;params&quot;</span> <span class="nb">in</span> <span class="nb">result</span>
+                            (
 
-                            <span class="o">and</span> <span class="nb">type</span>(<span class="nb">result</span>[<span class="s">&quot;params&quot;</span>][<span class="s">&quot;result&quot;</span>]) <span class="k">is</span> <span class="n">dict</span>
+                                <span class="s">&quot;params&quot;</span> <span class="nb">in</span> <span class="nb">result</span>
 
-                            <span class="o">and</span> <span class="s">&quot;finalized&quot;</span> <span class="nb">in</span> <span class="nb">result</span>[<span class="s">&quot;params&quot;</span>][<span class="s">&quot;result&quot;</span>]
+                                <span class="o">and</span> <span class="nb">type</span>(<span class="nb">result</span>[<span class="s">&quot;params&quot;</span>][<span class="s">&quot;result&quot;</span>]) <span class="k">is</span> <span class="n">dict</span>
+
+                                <span class="o">and</span> <span class="s">&quot;finalized&quot;</span> <span class="nb">in</span> <span class="nb">result</span>[<span class="s">&quot;params&quot;</span>][<span class="s">&quot;result&quot;</span>]
+
+                            )
+
+                            <span class="o">or</span> (<span class="s">&quot;error&quot;</span> <span class="nb">in</span> <span class="nb">result</span>)
 
                         )
 

@@ -651,7 +651,7 @@
 
 
 <h3 id="construct-and-broadcast-the-transactions">Construct and broadcast the transactions</h3>
-<div class="codehilite"><pre><span></span><code><span class="n">escrow_tx_hash</span><span class="p">,</span> <span class="n">escrow_timepoint</span><span class="p">,</span> <span class="n">success</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
+<div class="codehilite"><pre><span></span><code><span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
     <span class="s1">&#39;transfer&#39;</span><span class="p">,</span>
     <span class="p">[</span><span class="n">seller_address</span><span class="p">,</span>
     <span class="n">escrow_signature</span><span class="p">,</span>
@@ -660,7 +660,7 @@
     <span class="n">trade_value</span><span class="p">]</span>
     <span class="p">)</span>
 <span class="k">assert</span> <span class="n">success</span>
-<span class="n">fee_tx_hash</span><span class="p">,</span> <span class="n">fee_timepoint</span><span class="p">,</span> <span class="n">success</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
+<span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
     <span class="s1">&#39;fee_transfer&#39;</span><span class="p">,</span>
     <span class="p">[</span><span class="n">seller_address</span><span class="p">,</span>
     <span class="n">fee_signature</span><span class="p">,</span>
@@ -684,7 +684,7 @@
 <span class="n">approve_as_multi_signature</span> <span class="o">=</span> <span class="n">sign_payload</span><span class="p">(</span><span class="n">keypair</span><span class="p">,</span> <span class="n">approve_as_multi_payload</span><span class="p">)</span>
 
 <span class="c1"># Construct and broadcast seller approve_as_multi</span>
-<span class="n">tx_hash</span><span class="p">,</span> <span class="n">timepoint</span><span class="p">,</span> <span class="n">success</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
+<span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
     <span class="s1">&#39;approve_as_multi&#39;</span><span class="p">,</span> <span class="p">[</span>
         <span class="n">seller_address</span><span class="p">,</span>
         <span class="n">approve_as_multi_signature</span><span class="p">,</span>
@@ -696,6 +696,10 @@
         <span class="p">)</span>
 <span class="k">assert</span> <span class="n">success</span>
 
+<span class="c1"># If successful the response contains both the tx_hash and timepoint</span>
+<span class="n">tx_hash</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;tx_hash&#39;</span><span class="p">]</span>
+<span class="n">timepoint</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;timepoint&#39;</span><span class="p">]</span>
+
 <span class="c1"># Get arbitrator release escrow transaction and broadcast it</span>
 <span class="n">as_multi</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">release_escrow</span><span class="p">(</span>
     <span class="n">buyer_address</span><span class="p">,</span>
@@ -703,7 +707,7 @@
     <span class="n">timepoint</span><span class="p">,</span>
     <span class="p">[</span><span class="n">seller_address</span><span class="p">,</span> <span class="n">buyer_address</span><span class="p">]</span>
     <span class="p">)</span>
-<span class="n">tx_hash</span><span class="p">,</span> <span class="n">timepoint</span><span class="p">,</span> <span class="n">success</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="s1">&#39;as_multi&#39;</span><span class="p">,</span> <span class="n">as_multi</span><span class="p">)</span>
+<span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="s1">&#39;as_multi&#39;</span><span class="p">,</span> <span class="n">as_multi</span><span class="p">)</span>
 <span class="k">assert</span> <span class="n">success</span>
 </code></pre></div>
 
@@ -717,7 +721,7 @@
     <span class="p">[</span><span class="n">buyer_address</span><span class="p">,</span> <span class="n">kusama</span><span class="o">.</span><span class="n">arbitrator_address</span><span class="p">]</span>
     <span class="p">)</span>
 <span class="n">approve_as_multi_signature</span> <span class="o">=</span> <span class="n">sign_payload</span><span class="p">(</span><span class="n">keypair</span><span class="p">,</span> <span class="n">approve_as_multi_payload</span><span class="p">)</span>
-<span class="n">tx_hash</span><span class="p">,</span> <span class="n">timepoint</span><span class="p">,</span> <span class="n">success</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
+<span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
     <span class="s1">&#39;approve_as_multi&#39;</span><span class="p">,</span>
     <span class="p">[</span>
         <span class="n">seller_address</span><span class="p">,</span>
@@ -736,12 +740,12 @@
     <span class="n">trade_value</span><span class="p">,</span>
     <span class="n">fee_value</span><span class="p">,</span>
     <span class="p">[</span><span class="n">seller_address</span><span class="p">,</span> <span class="n">buyer_address</span><span class="p">],</span>
-    <span class="n">timepoint</span>
+    <span class="n">response</span><span class="p">[</span><span class="s1">&#39;timepoint&#39;</span><span class="p">]</span>
     <span class="p">)</span>
 
-<span class="n">tx_hash</span><span class="p">,</span> <span class="n">timepoint</span><span class="p">,</span> <span class="n">success</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="s1">&#39;as_multi&#39;</span><span class="p">,</span> <span class="n">revert</span><span class="p">)</span>
+<span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="s1">&#39;as_multi&#39;</span><span class="p">,</span> <span class="n">revert</span><span class="p">)</span>
 <span class="k">assert</span> <span class="n">success</span>
-<span class="n">tx_hash</span><span class="p">,</span> <span class="n">timepoint</span><span class="p">,</span> <span class="n">success</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="s1">&#39;transfer&#39;</span><span class="p">,</span> <span class="n">fee_revert</span><span class="p">)</span>
+<span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="s1">&#39;transfer&#39;</span><span class="p">,</span> <span class="n">fee_revert</span><span class="p">)</span>
 <span class="k">assert</span> <span class="n">success</span>
 </code></pre></div>
 
@@ -758,10 +762,10 @@
     <span class="p">[</span><span class="n">buyer_address</span><span class="p">,</span> <span class="n">seller_address</span><span class="p">]</span>
     <span class="p">)</span>
 
-<span class="n">tx_hash</span><span class="p">,</span> <span class="n">escrow_timepoint</span><span class="p">,</span> <span class="n">success</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span>
+<span class="n">success</span><span class="p">,</span> <span class="n">escrow_responce</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span>
     <span class="s1">&#39;as_multi&#39;</span><span class="p">,</span> <span class="n">release_transaction</span><span class="p">)</span>
 <span class="k">assert</span> <span class="n">success</span>
-<span class="n">tx_hash</span><span class="p">,</span> <span class="n">timepoint</span><span class="p">,</span> <span class="n">success</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span>
+<span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span>
     <span class="s1">&#39;transfer&#39;</span><span class="p">,</span> <span class="n">welfare_transaction</span><span class="p">)</span>
 <span class="k">assert</span> <span class="n">success</span>
 
@@ -773,7 +777,7 @@
     <span class="p">[</span><span class="n">buyer_address</span><span class="p">,</span> <span class="n">kusama</span><span class="o">.</span><span class="n">arbitrator_address</span><span class="p">]</span>
     <span class="p">)</span>
 <span class="n">as_multi_signature</span> <span class="o">=</span> <span class="n">sign_payload</span><span class="p">(</span><span class="n">keypair</span><span class="p">,</span> <span class="n">as_multi_payload</span><span class="p">)</span>
-<span class="n">tx_hash</span><span class="p">,</span> <span class="n">timepoint</span><span class="p">,</span> <span class="n">success</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
+<span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
     <span class="s1">&#39;as_multi&#39;</span><span class="p">,</span>
     <span class="p">[</span>
         <span class="n">seller_address</span><span class="p">,</span>
@@ -782,7 +786,7 @@
         <span class="n">seller_address</span><span class="p">,</span>
         <span class="n">trade_value</span><span class="p">,</span>
         <span class="p">[</span><span class="n">buyer_address</span><span class="p">,</span> <span class="n">kusama</span><span class="o">.</span><span class="n">arbitrator_address</span><span class="p">],</span>
-        <span class="n">escrow_timepoint</span>
+        <span class="n">escrow_responce</span><span class="p">[</span><span class="s1">&#39;timepoint&#39;</span><span class="p">]</span>
     <span class="p">]</span>
     <span class="p">)</span>
 <span class="k">assert</span> <span class="n">success</span>
@@ -818,12 +822,12 @@
 <span class="n">escrow_signature</span> <span class="o">=</span> <span class="n">sign_payload</span><span class="p">(</span><span class="n">keypair</span><span class="p">,</span> <span class="n">escrow_payload</span><span class="p">)</span>
 <span class="n">fee_signature</span> <span class="o">=</span> <span class="n">sign_payload</span><span class="p">(</span><span class="n">keypair</span><span class="p">,</span> <span class="n">fee_payload</span><span class="p">)</span>
 
-<span class="n">escrow_tx_hash</span><span class="p">,</span> <span class="n">escrow_timepoint</span><span class="p">,</span> <span class="n">success</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
+<span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
     <span class="s1">&#39;transfer&#39;</span><span class="p">,</span>
     <span class="p">[</span><span class="n">seller_address</span><span class="p">,</span> <span class="n">escrow_signature</span><span class="p">,</span> <span class="n">nonce</span><span class="p">,</span> <span class="n">escrow_address</span><span class="p">,</span> <span class="n">trade_value</span><span class="p">]</span>
     <span class="p">)</span>
 <span class="k">assert</span> <span class="n">success</span>
-<span class="n">fee_tx_hash</span><span class="p">,</span> <span class="n">fee_timepoint</span><span class="p">,</span> <span class="n">success</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
+<span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
     <span class="s1">&#39;fee_transfer&#39;</span><span class="p">,</span>
     <span class="p">[</span><span class="n">seller_address</span><span class="p">,</span> <span class="n">fee_signature</span><span class="p">,</span> <span class="n">nonce</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">fee_value</span><span class="p">]</span>
     <span class="p">)</span>
@@ -842,7 +846,7 @@
     <span class="n">keypair</span><span class="p">,</span> <span class="n">approve_as_multi_payload</span><span class="p">)</span>
 
 <span class="c1"># Construct and broadcast seller approve_as_multi</span>
-<span class="n">tx_hash</span><span class="p">,</span> <span class="n">timepoint</span><span class="p">,</span> <span class="n">success</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
+<span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
     <span class="s1">&#39;approve_as_multi&#39;</span><span class="p">,</span>
     <span class="p">[</span>
         <span class="n">seller_address</span><span class="p">,</span>
@@ -859,10 +863,10 @@
 <span class="n">as_multi</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">release_escrow</span><span class="p">(</span>
     <span class="n">buyer_address</span><span class="p">,</span>
     <span class="n">trade_value</span><span class="p">,</span>
-    <span class="n">timepoint</span><span class="p">,</span>
+    <span class="n">response</span><span class="p">[</span><span class="s1">&#39;timepoint&#39;</span><span class="p">],</span>
     <span class="p">[</span><span class="n">seller_address</span><span class="p">,</span> <span class="n">buyer_address</span><span class="p">]</span>
     <span class="p">)</span>
-<span class="n">tx_hash</span><span class="p">,</span> <span class="n">timepoint</span><span class="p">,</span> <span class="n">success</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="s1">&#39;as_multi&#39;</span><span class="p">,</span> <span class="n">as_multi</span><span class="p">)</span>
+<span class="n">success</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="s1">&#39;as_multi&#39;</span><span class="p">,</span> <span class="n">as_multi</span><span class="p">)</span>
 <span class="k">assert</span> <span class="n">success</span>
 </code></pre></div>
                 
