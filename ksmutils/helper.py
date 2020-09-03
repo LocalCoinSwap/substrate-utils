@@ -48,7 +48,7 @@ def transfer_signature_payload(
     nonce: int,
     genesis_hash: str,
     spec_version: int,
-    transaction_version: int = 2,
+    transaction_version: int = 3,
 ) -> str:
     """
     Turn parameters gathered through side effects into unsigned transfer string
@@ -87,7 +87,7 @@ def approve_as_multi_signature_payload(
     other_signatories: list,
     threshold: int = 2,
     tip: int = 0,
-    transaction_version: int = 2,
+    transaction_version: int = 3,
     max_weight: int = 0,
 ) -> str:
     """
@@ -143,7 +143,7 @@ def as_multi_signature_payload(
     timepoint: tuple,
     threshold: int = 2,
     tip: int = 0,
-    transaction_version: int = 2,
+    transaction_version: int = 3,
     max_weight: int = 0,
 ) -> str:
     """
