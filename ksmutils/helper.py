@@ -145,6 +145,7 @@ def as_multi_signature_payload(
     tip: int = 0,
     transaction_version: int = 3,
     max_weight: int = 0,
+    store_call: bool = False,
 ) -> str:
     """
     Turn parameters gathered through side effects into unsigned as_multi string
@@ -167,7 +168,7 @@ def as_multi_signature_payload(
                 "maybe_timepoint": {"height": timepoint[0], "index": timepoint[1]},
                 "other_signatories": sorted(other_signatories),
                 "threshold": threshold,
-                "store_call": False,
+                "store_call": store_call,
                 "max_weight": max_weight,
             },
         }
@@ -303,6 +304,7 @@ def unsigned_as_multi_construction(
     threshold: int = 2,
     tip: int = 0,
     max_weight: int = 0,
+    store_call: bool = False,
 ) -> str:
     """
     Turn parameters gathered through side effects into an as_multi extrinsic object
@@ -322,7 +324,7 @@ def unsigned_as_multi_construction(
         "maybe_timepoint": {"height": timepoint[0], "index": timepoint[1]},
         "other_signatories": sorted(other_signatories),
         "threshold": threshold,
-        "store_call": False,
+        "store_call": store_call,
         "max_weight": max_weight,
     }
     return _extrinsic_construction(
