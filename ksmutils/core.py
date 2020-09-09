@@ -343,6 +343,8 @@ class Kusama(NonceManager):
         value: int,
         other_signatories: list,
         timepoint: tuple = None,
+        store_call: bool = False,
+        max_weight: int = 0,
     ) -> tuple:
         """
         Returns signature payloads for as_multi
@@ -357,6 +359,8 @@ class Kusama(NonceManager):
             value,
             other_signatories,
             timepoint,
+            max_weight=max_weight,
+            store_call=store_call,
         )
         return as_multi_payload, nonce
 
@@ -569,7 +573,8 @@ class Kusama(NonceManager):
         )
         successful = (
             True
-            if transaction_type == "as_multi" and "MultisigExecuted" in event_names
+            if transaction_type == "as_multi"
+            and (("MultisigExecuted" in event_names) or ("NewMultisig" in event_names))
             else successful
         )
         return successful
@@ -648,3 +653,78 @@ class Kusama(NonceManager):
             response[item[178:]] = return_decoder.decode()
         response["status"] = "unfinised escrows found"
         return response
+
+    def as_multi_storage(self, to_address: str, other_signatory: str, amount: str):
+        nonce = self.arbitrator_nonce()
+        payload = helper.as_multi_signature_payload(
+            self.metadata,
+            self.spec_version,
+            self.genesis_hash,
+            nonce,
+            to_address,
+            amount,
+            [other_signatory, to_address],
+            None,
+            store_call=True,
+        )
+        signature = helper.sign_payload(self.keypair, payload)
+        transaction = helper.unsigned_as_multi_construction(
+            self.metadata,
+            self.arbitrator_address,
+            signature,
+            nonce,
+            to_address,
+            amount,
+            None,
+            [other_signatory, to_address],
+            store_call=True,
+        )
+        return transaction
+
+    def fee_return_transaction(
+        self, seller_address: str, trade_value: int, fee_value: int,
+    ) -> str:
+        if fee_value > trade_value * 0.01:
+            raise Exception("Fee should not be more than 1% of trade value")
+        nonce = self.arbitrator_nonce()
+        fee_revert_payload = helper.transfer_signature_payload(
+            self.metadata,
+            seller_address,
+            fee_value,
+            nonce,
+            self.genesis_hash,
+            self.spec_version,
+        )
+        fee_revert_signature = helper.sign_payload(self.keypair, fee_revert_payload)
+        fee_revert_transaction = helper.unsigned_transfer_construction(
+            self.metadata,
+            self.arbitrator_address,
+            fee_revert_signature,
+            nonce,
+            seller_address,
+            fee_value,
+        )
+        return fee_revert_transaction
+
+    def welfare_transaction(
+        self, buyer_address: str, welfare_value: int = 1000000000,
+    ) -> str:
+        nonce = self.arbitrator_nonce()
+        welfare_payload = helper.transfer_signature_payload(
+            self.metadata,
+            buyer_address,
+            welfare_value,
+            nonce,
+            self.genesis_hash,
+            self.spec_version,
+        )
+        welfare_signature = helper.sign_payload(self.keypair, welfare_payload)
+        welfare_transaction = helper.unsigned_transfer_construction(
+            self.metadata,
+            self.arbitrator_address,
+            welfare_signature,
+            nonce,
+            buyer_address,
+            welfare_value,
+        )
+        return welfare_transaction
