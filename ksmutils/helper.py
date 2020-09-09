@@ -2,6 +2,7 @@
 Helper functions - all functions in this file are pure with no side effects
 """
 from hashlib import blake2b
+from typing import Union
 
 import scalecodec
 import sr25519
@@ -140,11 +141,12 @@ def as_multi_signature_payload(
     to_address: str,
     amount: int,
     other_signatories: list,
-    timepoint: tuple,
+    timepoint: Union[tuple, bool],
     threshold: int = 2,
     tip: int = 0,
     transaction_version: int = 3,
     max_weight: int = 0,
+    store_call: bool = False,
 ) -> str:
     """
     Turn parameters gathered through side effects into unsigned as_multi string
@@ -158,16 +160,19 @@ def as_multi_signature_payload(
             "call_args": {"dest": to_address, "value": amount},
         }
     )
+    maybe_timepoint = (
+        {"height": timepoint[0], "index": timepoint[1]} if timepoint else None
+    )
     as_multi.encode(
         {
             "call_module": "Multisig",
             "call_function": "as_multi",
             "call_args": {
                 "call": transfer.value,
-                "maybe_timepoint": {"height": timepoint[0], "index": timepoint[1]},
+                "maybe_timepoint": maybe_timepoint,
                 "other_signatories": sorted(other_signatories),
                 "threshold": threshold,
-                "store_call": False,
+                "store_call": store_call,
                 "max_weight": max_weight,
             },
         }
@@ -216,6 +221,7 @@ def _extrinsic_construction(
             "tip": tip,
         }
     )
+    print("Extrinsic", str(extrinsic.data))
     return str(extrinsic.data)
 
 
@@ -298,11 +304,12 @@ def unsigned_as_multi_construction(
     nonce: int,
     to_address: str,
     amount: int,
-    timepoint: tuple,
+    timepoint: Union[tuple, bool],
     other_signatories: list,
+    max_weight: int = 0,
+    store_call: bool = False,
     threshold: int = 2,
     tip: int = 0,
-    max_weight: int = 0,
 ) -> str:
     """
     Turn parameters gathered through side effects into an as_multi extrinsic object
@@ -317,12 +324,15 @@ def unsigned_as_multi_construction(
             "call_args": {"dest": to_address, "value": amount},
         }
     )
+    maybe_timepoint = (
+        {"height": timepoint[0], "index": timepoint[1]} if timepoint else None
+    )
     call_arguments = {
         "call": transfer.value,
-        "maybe_timepoint": {"height": timepoint[0], "index": timepoint[1]},
+        "maybe_timepoint": maybe_timepoint,
         "other_signatories": sorted(other_signatories),
         "threshold": threshold,
-        "store_call": False,
+        "store_call": store_call,
         "max_weight": max_weight,
     }
     return _extrinsic_construction(

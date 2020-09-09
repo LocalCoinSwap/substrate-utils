@@ -6,6 +6,7 @@ pre-commit==2.3.0
 py-sr25519-bindings==0.1.1
 pytest==5.4.1
 pytest-mock==3.1.0
+python-dotenv==0.13.0
 scalecodec==0.10.8
 websockets==8.1
 xxhash==1.4.3
