@@ -37,18 +37,14 @@ escrow_payload, fee_payload, nonce = kusama.escrow_payloads(
 escrow_signature = sign_payload(seller_keypair, escrow_payload)
 fee_signature = sign_payload(seller_keypair, fee_payload)
 
-"""
-# Example: 0x4357ba41eb3a74770f5741b7bb23709ec63e8cd30a1aade021bce7dfc80ea305
 success, response = kusama.publish(
     'transfer',
     [seller_address, escrow_signature, nonce, escrow_address, trade_value]
 )
-# Example: 0xdc384bbd69959038a5f413fe59903be8156189bdccaaab4ec0a27dff85ce4329
 success, response = kusama.publish(
     'fee_transfer',
     [seller_address, fee_signature, nonce + 1, fee_value]
 )
-"""
 
 # ARBITRATER MAKES STORAGE AS_MULTI
 transaction = kusama.as_multi_storage(
@@ -57,14 +53,11 @@ transaction = kusama.as_multi_storage(
     trade_value
 )
 
-"""
-# Example: 0xb9899405c3cdda9352cb3a72e6c10077c0c08ae54bb5506ebae4f437c436c99d
-# timepoint = (3971685, 1)
+# timepoint = (3972936, 38)
 success, response = kusama.broadcast(
     'as_multi', transaction
 )
 timepoint = response['timepoint']
-"""
 
 # SELLERS MAKES REGULAR AS_MULTI TO COMPLETE
 as_multi_payload, nonce = kusama.as_multi_payload(
@@ -74,7 +67,7 @@ as_multi_payload, nonce = kusama.as_multi_payload(
     [buyer_address, kusama.arbitrator_address],
     timepoint,
     False,
-    999999999999,
+    190949000,
 )
 as_multi_signature = sign_payload(seller_keypair, as_multi_payload)
 success, response = kusama.publish(
@@ -87,7 +80,7 @@ success, response = kusama.publish(
         trade_value,
         timepoint,
         [buyer_address, kusama.arbitrator_address],
-        999999999999,
+        190949000,
     ]
 )
 ```

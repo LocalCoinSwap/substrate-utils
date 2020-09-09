@@ -221,6 +221,7 @@ def _extrinsic_construction(
             "tip": tip,
         }
     )
+    print("Extrinsic", str(extrinsic.data))
     return str(extrinsic.data)
 
 
