@@ -101,6 +101,16 @@ success, response = kusama.broadcast(
 )
 timepoint = response['timepoint']
 
+# Return the fee
+transaction = kusama.fee_return_transaction(
+    seller_address,
+    trade_value,
+    fee_value,
+)
+success, response = kusama.broadcast(
+    'transfer', transaction
+)
+
 # Seller as_multi to return funds
 as_multi_payload, nonce = kusama.as_multi_payload(
     seller_address, # from
@@ -125,7 +135,29 @@ success, response = kusama.publish(
         190949000, # max weight
     ]
 )
+```
 
+### Sad case: dispute (buyer wins)
+```python
+
+```
+
+### Sad case: dispute (seller wins)
+In this situation the flow is exactly the same as the cancellation flow
+```python
+# Arbitrater makes storage as_multi back to seller
+transaction = kusama.as_multi_storage(
+    seller_address, # To address
+    buyer_address, # Other signatory
+    trade_value
+)
+
+success, response = kusama.broadcast(
+    'as_multi', transaction
+)
+timepoint = response['timepoint']
+
+# Return the fee
 transaction = kusama.fee_return_transaction(
     seller_address,
     trade_value,
@@ -134,9 +166,29 @@ transaction = kusama.fee_return_transaction(
 success, response = kusama.broadcast(
     'transfer', transaction
 )
-```
 
-### Sad case: dispute
-```python
-
+# Seller as_multi to return funds
+as_multi_payload, nonce = kusama.as_multi_payload(
+    seller_address, # from
+    seller_address, # to
+    trade_value,
+    [buyer_address, kusama.arbitrator_address],
+    timepoint, # timepoint from storage
+    False, # don't store
+    190949000, # max weight
+)
+as_multi_signature = sign_payload(seller_keypair, as_multi_payload)
+success, response = kusama.publish(
+    'as_multi',
+    [
+        seller_address, # from
+        as_multi_signature, # sig
+        nonce, # seller nonce
+        seller_address, # to
+        trade_value,
+        timepoint, # timepoint
+        [buyer_address, kusama.arbitrator_address], # other sigs
+        190949000, # max weight
+    ]
+)
 ```
