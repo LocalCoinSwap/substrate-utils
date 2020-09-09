@@ -47,43 +47,96 @@ success, response = kusama.publish(
 )
 ```
 
-### Regular release
+### Happy case: regular release
 ```python
-# ARBITRATER MAKES STORAGE AS_MULTI
+# Arbitrater makes storage as_multi to buyer
 transaction = kusama.as_multi_storage(
     buyer_address, # To address
-    seller_address,
+    seller_address, # Other signatory
     trade_value
 )
 
-# timepoint = (3972936, 38)
 success, response = kusama.broadcast(
     'as_multi', transaction
 )
 timepoint = response['timepoint']
 
-# SELLERS MAKES REGULAR AS_MULTI TO COMPLETE
+# Seller makes as_multi to release
 as_multi_payload, nonce = kusama.as_multi_payload(
-    seller_address,
-    buyer_address,
+    seller_address, # from
+    buyer_address, # to
     trade_value,
     [buyer_address, kusama.arbitrator_address],
-    timepoint,
-    False,
-    190949000,
+    timepoint, # timepoint from storage
+    False, # don't store
+    190949000, # max weight
 )
 as_multi_signature = sign_payload(seller_keypair, as_multi_payload)
 success, response = kusama.publish(
     'as_multi',
     [
-        seller_address,
-        as_multi_signature,
-        nonce,
-        buyer_address,
+        seller_address, # from
+        as_multi_signature, # sig
+        nonce, # seller nonce
+        buyer_address, # to
         trade_value,
-        timepoint,
-        [buyer_address, kusama.arbitrator_address],
-        190949000,
+        timepoint, # timepoint
+        [buyer_address, kusama.arbitrator_address], # other sigs
+        190949000, # max weight
     ]
 )
+```
+
+### Neutral case: cancellation
+```python
+# Arbitrater makes storage as_multi back to seller
+transaction = kusama.as_multi_storage(
+    seller_address, # To address
+    buyer_address, # Other signatory
+    trade_value
+)
+
+success, response = kusama.broadcast(
+    'as_multi', transaction
+)
+timepoint = response['timepoint']
+
+# Seller as_multi to return funds
+as_multi_payload, nonce = kusama.as_multi_payload(
+    seller_address, # from
+    seller_address, # to
+    trade_value,
+    [buyer_address, kusama.arbitrator_address],
+    timepoint, # timepoint from storage
+    False, # don't store
+    190949000, # max weight
+)
+as_multi_signature = sign_payload(seller_keypair, as_multi_payload)
+success, response = kusama.publish(
+    'as_multi',
+    [
+        seller_address, # from
+        as_multi_signature, # sig
+        nonce, # seller nonce
+        seller_address, # to
+        trade_value,
+        timepoint, # timepoint
+        [buyer_address, kusama.arbitrator_address], # other sigs
+        190949000, # max weight
+    ]
+)
+
+transaction = kusama.fee_return_transaction(
+    seller_address,
+    trade_value,
+    fee_value,
+)
+success, response = kusama.broadcast(
+    'transfer', transaction
+)
+```
+
+### Sad case: dispute
+```python
+
 ```
