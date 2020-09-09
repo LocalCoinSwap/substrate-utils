@@ -707,8 +707,10 @@ class Kusama(NonceManager):
         return fee_revert_transaction
 
     def welfare_transaction(
-        self, buyer_address: str, welfare_value: int = 1000000000,
+        self, buyer_address: str, welfare_value: int = 4000000000,
     ) -> str:
+        # Note: 4000000000 (0.004 KSM) seems to be the minimum
+        # To make an as_multi final tx once call is stored
         nonce = self.arbitrator_nonce()
         welfare_payload = helper.transfer_signature_payload(
             self.metadata,

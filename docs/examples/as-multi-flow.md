@@ -139,7 +139,50 @@ success, response = kusama.publish(
 
 ### Sad case: dispute (buyer wins)
 ```python
+# Arbitrater makes storage as_multi to buyer
+transaction = kusama.as_multi_storage(
+    buyer_address, # To address
+    seller_address, # Other signatory
+    trade_value
+)
 
+success, response = kusama.broadcast(
+    'as_multi', transaction
+)
+timepoint = response['timepoint']
+
+# Arbitrator makes welfare payment to buyer
+transaction = kusama.welfare_transaction(
+    buyer_address,
+)
+success, response = kusama.broadcast(
+    'transfer', transaction
+)
+
+# Buyer as_multi to receive funds
+as_multi_payload, nonce = kusama.as_multi_payload(
+    buyer_address, # from
+    buyer_address, # to
+    trade_value,
+    [seller_address, kusama.arbitrator_address],
+    timepoint, # timepoint from storage
+    False, # don't store
+    190949000, # max weight
+)
+as_multi_signature = sign_payload(buyer_keypair, as_multi_payload)
+success, response = kusama.publish(
+    'as_multi',
+    [
+        buyer_address, # from
+        as_multi_signature, # sig
+        nonce, # seller nonce
+        buyer_address, # to
+        trade_value,
+        timepoint, # timepoint
+        [seller_address, kusama.arbitrator_address], # other sigs
+        190949000, # max weight
+    ]
+)
 ```
 
 ### Sad case: dispute (seller wins)
