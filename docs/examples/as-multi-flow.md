@@ -45,7 +45,10 @@ success, response = kusama.publish(
     'fee_transfer',
     [seller_address, fee_signature, nonce + 1, fee_value]
 )
+```
 
+### Regular release
+```python
 # ARBITRATER MAKES STORAGE AS_MULTI
 transaction = kusama.as_multi_storage(
     buyer_address, # To address
