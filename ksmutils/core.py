@@ -435,8 +435,6 @@ class Kusama(NonceManager):
         """
         Return signed and ready transactions for the fee return and escrow return
         """
-        if fee_value > trade_value * 0.01:
-            raise Exception("Fee should not be more than 1% of trade value")
 
         nonce = self.arbitrator_nonce()
 
@@ -684,8 +682,6 @@ class Kusama(NonceManager):
     def fee_return_transaction(
         self, seller_address: str, trade_value: int, fee_value: int,
     ) -> str:
-        if fee_value > trade_value * 0.01:
-            raise Exception("Fee should not be more than 1% of trade value")
         nonce = self.arbitrator_nonce()
         fee_revert_payload = helper.transfer_signature_payload(
             self.metadata,
