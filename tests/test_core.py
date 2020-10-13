@@ -54,27 +54,17 @@ class TestGetMethods:
 
     def test_get_block(self, kusama, mocker):
         block_hash = (
-            "0xa8495cdf2eaf0025966e96b06fba92f647e1e316f2abc698186ecf67919dc52b"
-        )
-
-        mocker.patch(
-            "ksmutils.network.Network.node_rpc_call",
-            return_value=mocked_returns.node_rpc_call_return_2,
+            "0xbc0e05e6d9130f2d4ab765a19a9b6a937c54536bb8de407acf1051e14d1f23c5"
         )
 
         result = kusama.get_block(block_hash)
 
-        expected_number = 2493157
+        expected_number = 4455329
         assert result.get("block").get("header").get("number") == expected_number
 
     def test_get_events(self, kusama, mocker):
         block_hash = (
-            "0xa8495cdf2eaf0025966e96b06fba92f647e1e316f2abc698186ecf67919dc52b"
-        )
-
-        mocker.patch(
-            "ksmutils.network.Network.node_rpc_call",
-            return_value=mocked_returns.node_rpc_call_return_1,
+            "0xbc0e05e6d9130f2d4ab765a19a9b6a937c54536bb8de407acf1051e14d1f23c5"
         )
 
         result = kusama.get_events(block_hash)
