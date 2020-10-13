@@ -345,10 +345,6 @@ class TestWrapperMethods:
         )
         assert kusama.cancellation("", 1, 0.01, [], (1, 2)) == ("tx", "fx")
 
-        with pytest.raises(Exception) as excinfo:
-            kusama.cancellation("", 1, 0.02, [], (1, 2)) == ("tx", "fx")
-        assert "Fee should not be more than 1% of trade value" in str(excinfo.value)
-
     def test_resolve_dispute_seller_wins(self, kusama, mocker):
         mocker.patch("ksmutils.core.Kusama.arbitrator_nonce", return_value=4)
 
