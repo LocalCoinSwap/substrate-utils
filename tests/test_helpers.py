@@ -3,15 +3,15 @@ import sr25519
 from .fixtures import genesis_hash
 from .fixtures import metadata
 from .fixtures import spec_version
-from ksmutils.helper import approve_as_multi_signature_payload
-from ksmutils.helper import as_multi_signature_payload
-from ksmutils.helper import get_prefix
-from ksmutils.helper import sign_payload
-from ksmutils.helper import transfer_signature_payload
-from ksmutils.helper import unsigned_approve_as_multi_construction
-from ksmutils.helper import unsigned_as_multi_construction
-from ksmutils.helper import unsigned_transfer_construction
-from ksmutils.helper import xx128
+from substrateutils.helper import approve_as_multi_signature_payload
+from substrateutils.helper import as_multi_signature_payload
+from substrateutils.helper import get_prefix
+from substrateutils.helper import sign_payload
+from substrateutils.helper import transfer_signature_payload
+from substrateutils.helper import unsigned_approve_as_multi_construction
+from substrateutils.helper import unsigned_as_multi_construction
+from substrateutils.helper import unsigned_transfer_construction
+from substrateutils.helper import xx128
 
 
 class TestSignaturePayloads:

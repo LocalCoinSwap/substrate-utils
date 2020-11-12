@@ -12,11 +12,11 @@ from setuptools import find_packages
 from setuptools import setup
 
 # Package meta-data.
-NAME = "ksmutils"
+NAME = "substrate-utils"
 DESCRIPTION = (
-    "Kusama utility library providing functionality for multi-signature trading."
+    "Substrate utility library providing " "functionality for multi-signature trading."
 )
-URL = "https://github.com/LocalCoinSwap/kusama-utils/"
+URL = "https://github.com/LocalCoinSwap/substrate-utils/"
 EMAIL = "nathan@localcoinswap.com"
 AUTHOR = "Nathan Worsley"
 REQUIRES_PYTHON = ">=3.7.0"
