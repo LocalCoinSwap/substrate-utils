@@ -20,7 +20,7 @@ kusama = Kusama()
 
 ## Documentation
 
-[https://localcoinswap.github.io/kusama-utils/](https://localcoinswap.github.io/kusama-utils/)
+[https://localcoinswap.github.io/substrate-utils/](https://localcoinswap.github.io/substrate-utils/)
 
 # Local development
 
