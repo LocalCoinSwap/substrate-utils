@@ -9,7 +9,7 @@ Substrate utility library providing functionality for multi-signature trading, o
 
 ## Installation
 ```
-pip install substrateutils
+pip install substrate-utils
 ```
 
 ## Quick start
