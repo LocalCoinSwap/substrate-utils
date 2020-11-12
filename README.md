@@ -1,7 +1,7 @@
 # substrate-utils
 Substrate utility library providing functionality for multi-signature trading, originally built for [LocalCoinSwap](https://localcoinswap.com)
 
-![Python package](https://github.com/LocalCoinSwap/substrate-utils/workflows/Python%20package/badge.svg) [![PyPI pyversions](https://img.shields.io/pypi/pyversions/substrate.svg?v-0.0.3)](https://pypi.org/project/substrate/) [![PyPI version shields.io](https://img.shields.io/pypi/v/substrateutils.svg)](https://pypi.python.org/pypi/substrateutils/)
+![Python package](https://github.com/LocalCoinSwap/substrate-utils/workflows/Python%20package/badge.svg) [![PyPI pyversions](https://img.shields.io/pypi/pyversions/substrate-utils.svg?v-0.2.1)](https://pypi.org/project/substrate-utils/) [![PyPI version shields.io](https://img.shields.io/pypi/v/substrate-utils.svg?v-0.2.1)](https://pypi.python.org/pypi/substrate-utils/)
 
 
 
@@ -20,7 +20,7 @@ kusama = Kusama()
 
 ## Documentation
 
-[https://localcoinswap.github.io/kusama-utils/](https://localcoinswap.github.io/kusama-utils/)
+[https://localcoinswap.github.io/substrate-utils/](https://localcoinswap.github.io/substrate-utils/)
 
 # Local development
 
