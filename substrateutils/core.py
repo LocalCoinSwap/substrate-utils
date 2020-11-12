@@ -652,7 +652,14 @@ class Kusama(NonceManager):
         response["status"] = "unfinised escrows found"
         return response
 
-    def as_multi_storage(self, to_address: str, other_signatory: str, amount: str):
+    def as_multi_storage(
+        self,
+        to_address: str,
+        other_signatory: str,
+        amount: str,
+        store_call: bool = True,
+        max_weight: int = 648378000,
+    ):
         nonce = self.arbitrator_nonce()
         payload = helper.as_multi_signature_payload(
             self.metadata,
@@ -663,7 +670,8 @@ class Kusama(NonceManager):
             amount,
             [other_signatory, to_address],
             None,
-            store_call=True,
+            store_call=store_call,
+            max_weight=max_weight,
         )
         signature = helper.sign_payload(self.keypair, payload)
         transaction = helper.unsigned_as_multi_construction(
@@ -675,7 +683,8 @@ class Kusama(NonceManager):
             amount,
             None,
             [other_signatory, to_address],
-            store_call=True,
+            store_call=store_call,
+            max_weight=max_weight,
         )
         return transaction
 

@@ -1,7 +1,7 @@
-# kusama-utils
-Kusama utility library providing functionality for multi-signature trading, originally built for [LocalCoinSwap](https://localcoinswap.com)
+# substrate-utils
+Substrate utility library providing functionality for multi-signature trading, originally built for [LocalCoinSwap](https://localcoinswap.com)
 
-![Python package](https://github.com/LocalCoinSwap/kusama-utils/workflows/Python%20package/badge.svg) [![PyPI pyversions](https://img.shields.io/pypi/pyversions/ksmutils.svg?v-0.0.3)](https://pypi.org/project/ksmutils/) [![PyPI version shields.io](https://img.shields.io/pypi/v/ksmutils.svg)](https://pypi.python.org/pypi/ksmutils/)
+![Python package](https://github.com/LocalCoinSwap/substrate-utils/workflows/Python%20package/badge.svg) [![PyPI pyversions](https://img.shields.io/pypi/pyversions/substrate.svg?v-0.0.3)](https://pypi.org/project/substrate/) [![PyPI version shields.io](https://img.shields.io/pypi/v/substrateutils.svg)](https://pypi.python.org/pypi/substrateutils/)
 
 
 
@@ -9,12 +9,12 @@ Kusama utility library providing functionality for multi-signature trading, orig
 
 ## Installation
 ```
-pip install ksmutils
+pip install substrateutils
 ```
 
 ## Quick start
 ```
-from ksmutils import Kusama
+from substrateutils import Kusama
 kusama = Kusama()
 ```
 
@@ -35,8 +35,8 @@ Use [pyenv-installer](https://github.com/pyenv/pyenv-installer) for easy install
 
  - Install and activate python 3.8.1 in the root directory
     - `pyenv install 3.8.1`
-    - `pyenv virtualenv 3.8.1 ksmutils`
-    - `pyenv local ksmutils`
+    - `pyenv virtualenv 3.8.1 substrateutils`
+    - `pyenv local substrateutils`
 
  - Install project requirements
     - `pip install -r requirements.txt`

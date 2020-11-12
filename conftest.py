@@ -1,6 +1,6 @@
 import pytest
 
-from ksmutils import Kusama
+from substrateutils import Kusama
 
 
 @pytest.fixture(scope="session", autouse=True)

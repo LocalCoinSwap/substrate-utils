@@ -26,7 +26,7 @@ escrow_payload, fee_payload, nonce = kusama.escrow_payloads(
 ### Sign the payloads
 ```python
 import sr25519
-from ksmutils.helper import sign_payload
+from substrateutils.helper import sign_payload
 seller_key = '427a2c7cdff26fc2ab1dfda2ba991624cad12f8adc8b0851540db6efec2c7431'
 keypair = sr25519.pair_from_seed(bytes.fromhex(seller_key))
 
@@ -183,8 +183,8 @@ The following example is designed to show the execution logic over an entire tra
 ```
 import sr25519
 
-from ksmutils import Kusama
-from ksmutils.helper import sign_payload
+from substrateutils import Kusama
+from substrateutils.helper import sign_payload
 kusama = Kusama()
 
 arbitrator_key = 'b5643fe4084cae15ffbbc5c1cbe734bec5da9c351f4aa4d44f2897efeb8375c8'

@@ -4,9 +4,9 @@
 import os
 import sr25519
 
-from ksmutils import Kusama
-from ksmutils.helper import sign_payload
-from ksmutils.helper import hex_to_bytes
+from substrateutils import Kusama
+from substrateutils.helper import sign_payload
+from substrateutils.helper import hex_to_bytes
 from scalecodec.utils.ss58 import ss58_encode
 from dotenv import load_dotenv
 
@@ -53,7 +53,8 @@ success, response = kusama.publish(
 transaction = kusama.as_multi_storage(
     buyer_address, # To address
     seller_address, # Other signatory
-    trade_value
+    trade_value,
+    max_weight = 648378000,
 )
 
 success, response = kusama.broadcast(
@@ -69,7 +70,7 @@ as_multi_payload, nonce = kusama.as_multi_payload(
     [buyer_address, kusama.arbitrator_address],
     timepoint, # timepoint from storage
     False, # don't store
-    190949000, # max weight
+    648378000, # max weight
 )
 as_multi_signature = sign_payload(seller_keypair, as_multi_payload)
 success, response = kusama.publish(
@@ -82,7 +83,7 @@ success, response = kusama.publish(
         trade_value,
         timepoint, # timepoint
         [buyer_address, kusama.arbitrator_address], # other sigs
-        190949000, # max weight
+        648378000, # max weight
     ]
 )
 ```
