@@ -61,7 +61,7 @@ class NonceManager(ABC):
         return mempool_nonce
 
 
-class Kusama(NonceManager):
+class SubstrateBase(NonceManager):
     def __init__(
         self,
         *,
@@ -735,3 +735,23 @@ class Kusama(NonceManager):
             welfare_value,
         )
         return welfare_transaction
+
+
+class Kusama(SubstrateBase):
+    def __init__(
+        self,
+        *,
+        node_url: str = "wss://kusama-rpc.polkadot.io/",
+        arbitrator_key: str = None,
+    ):
+        super(Kusama, self).__init__(node_url=node_url, arbitrator_key=arbitrator_key)
+
+
+class Polkadot(SubstrateBase):
+    def __init__(
+        self,
+        *,
+        node_url: str = "wss://polkadot-rpc.polkadot.io/",
+        arbitrator_key: str = None,
+    ):
+        super(Polkadot, self).__init__(node_url=node_url, arbitrator_key=arbitrator_key)
