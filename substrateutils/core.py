@@ -88,7 +88,7 @@ class SubstrateBase(NonceManager):
         )
 
         self.metadata = self.get_metadata()
-        self.spec_version = self.get_spec_version()
+        self.runtime_info()
         self.genesis_hash = self.get_genesis_hash()
 
     def setup_arbitrator(self, arbitrator_key: str):
@@ -101,7 +101,8 @@ class SubstrateBase(NonceManager):
 
     def runtime_info(self) -> int:
         """
-        Check the current
+        Check the current runtime and load the correct spec vesion and
+        transaction version
         """
         result = self.network.node_rpc_call("state_getRuntimeVersion", [])
         self.spec_version = result["result"]["specVersion"]
@@ -124,12 +125,6 @@ class SubstrateBase(NonceManager):
         """
         with open(filename, "w") as f:
             f.write(self.raw_metadata)
-
-    def get_spec_version(self) -> int:
-        """
-        Returns the blockchain version
-        """
-        return self.spec_version
 
     def get_genesis_hash(self) -> str:
         """
@@ -752,10 +747,7 @@ class Kusama(SubstrateBase):
 
 class Polkadot(SubstrateBase):
     def __init__(
-        self,
-        *,
-        node_url: str = "wss://polkadot-rpc.polkadot.io/",
-        arbitrator_key: str = None,
+        self, *, node_url: str = "wss://rpc.polkadot.io/", arbitrator_key: str = None,
     ):
         self.chain = "polkadot"
         self.address_type = 0

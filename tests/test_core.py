@@ -17,7 +17,6 @@ class TestNoNetwork:
         mocker.patch("substrateutils.network.Network.__init__", return_value=None)
         mocker.patch("substrateutils.core.Kusama.get_metadata")
         mocker.patch("substrateutils.core.Kusama.runtime_info")
-        mocker.patch("substrateutils.core.Kusama.get_spec_version")
         mocker.patch("substrateutils.core.Kusama.get_genesis_hash")
         kusama = Kusama()
         kusama.connect()
