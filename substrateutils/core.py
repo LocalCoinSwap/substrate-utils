@@ -63,10 +63,7 @@ class NonceManager(ABC):
 
 class SubstrateBase(NonceManager):
     def __init__(
-        self,
-        *,
-        node_url: str = "wss://kusama-rpc.polkadot.io/",
-        arbitrator_key: str = None,
+        self, *, node_url: str = None, arbitrator_key: str = None,
     ):
         self.node_url = node_url
         if arbitrator_key:
@@ -86,7 +83,9 @@ class SubstrateBase(NonceManager):
         RuntimeConfiguration().update_type_registry(
             load_type_registry_preset("default")
         )
-        RuntimeConfiguration().update_type_registry(load_type_registry_preset("kusama"))
+        RuntimeConfiguration().update_type_registry(
+            load_type_registry_preset(self.chain)
+        )
 
         self.metadata = self.get_metadata()
         self.spec_version = self.get_spec_version()
@@ -98,7 +97,7 @@ class SubstrateBase(NonceManager):
         """
         self.keypair = sr25519.pair_from_seed(bytes.fromhex(arbitrator_key))
         self.arbitrator_account_id = self.keypair[0].hex()
-        self.arbitrator_address = ss58_encode(self.keypair[0], 2)
+        self.arbitrator_address = ss58_encode(self.keypair[0], self.address_type)
 
     def runtime_info(self) -> int:
         """
@@ -148,7 +147,7 @@ class SubstrateBase(NonceManager):
             "0x26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da9"
         )
 
-        account_id = ss58_decode(address, 2)
+        account_id = ss58_decode(address, self.address_type)
         hashed_address = f"{blake2b(bytes.fromhex(account_id), digest_size=16).digest().hex()}{account_id}"
         storage_hash = storage_key + hashed_address
         result = self.network.node_rpc_call("state_getStorageAt", [storage_hash, None])[
@@ -301,7 +300,9 @@ class SubstrateBase(NonceManager):
             [buyer_address, seller_address, self.arbitrator_address], 2
         )
 
-        multi_sig_address = ss58_encode(multi_sig_account_id.value.replace("0x", ""), 2)
+        multi_sig_address = ss58_encode(
+            multi_sig_account_id.value.replace("0x", ""), self.address_type
+        )
         return multi_sig_address
 
     def transfer_payload(self, from_address: str, to_address: str, value: int) -> str:
@@ -631,7 +632,7 @@ class SubstrateBase(NonceManager):
         Returns details of all unfinished multisigs from an address
         """
         response = {}
-        prefix = f"0x{helper.get_prefix(escrow_address)}"
+        prefix = f"0x{helper.get_prefix(escrow_address, self.address_type)}"
         getkeys_response = self.network.node_rpc_call("state_getKeys", [prefix])
 
         if not getkeys_response.get("result", False):
@@ -744,6 +745,8 @@ class Kusama(SubstrateBase):
         node_url: str = "wss://kusama-rpc.polkadot.io/",
         arbitrator_key: str = None,
     ):
+        self.chain = "kusama"
+        self.address_type = 2
         super(Kusama, self).__init__(node_url=node_url, arbitrator_key=arbitrator_key)
 
 
@@ -754,4 +757,6 @@ class Polkadot(SubstrateBase):
         node_url: str = "wss://polkadot-rpc.polkadot.io/",
         arbitrator_key: str = None,
     ):
+        self.chain = "polkadot"
+        self.address_type = 0
         super(Polkadot, self).__init__(node_url=node_url, arbitrator_key=arbitrator_key)
