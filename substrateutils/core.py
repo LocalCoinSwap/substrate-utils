@@ -69,6 +69,11 @@ class SubstrateBase(NonceManager):
         if arbitrator_key:
             self.setup_arbitrator(arbitrator_key)
 
+    def load_type_registry(self):
+        RuntimeConfiguration().update_type_registry(
+            load_type_registry_preset(self.chain)
+        )
+
     def connect(self, *, node_url: str = "", network: "Network" = None):
         """
         Connect to a Substrate node and instantiate necessary constants for chain communication
@@ -80,9 +85,7 @@ class SubstrateBase(NonceManager):
         self.network = network
         self.runtime_info()
 
-        RuntimeConfiguration().update_type_registry(
-            load_type_registry_preset(self.chain)
-        )
+        self.load_type_registry()
 
         self.metadata = self.get_metadata()
         self.runtime_info()
