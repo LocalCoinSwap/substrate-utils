@@ -23,12 +23,12 @@ def xx128(word: str) -> str:
     return f"{a.hex()}{b.hex()}"
 
 
-def get_prefix(escrow_address: str) -> str:
+def get_prefix(escrow_address: str, address_type: int = 2) -> str:
     """
     Returns prefix containing the account ID of the address provided
     """
     module_prefix = xx128("Multisig") + xx128("Multisigs")
-    account_id = ss58_decode(escrow_address, 2)
+    account_id = ss58_decode(escrow_address, address_type)
     storage_key = bytearray(xxhash.xxh64(bytes.fromhex(account_id), seed=0).digest())
     storage_key.reverse()
     return f"{module_prefix}{storage_key.hex()}{account_id}"

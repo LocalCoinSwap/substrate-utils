@@ -61,12 +61,9 @@ class NonceManager(ABC):
         return mempool_nonce
 
 
-class Kusama(NonceManager):
+class SubstrateBase(NonceManager):
     def __init__(
-        self,
-        *,
-        node_url: str = "wss://kusama-rpc.polkadot.io/",
-        arbitrator_key: str = None,
+        self, *, node_url: str = None, arbitrator_key: str = None,
     ):
         self.node_url = node_url
         if arbitrator_key:
@@ -86,10 +83,12 @@ class Kusama(NonceManager):
         RuntimeConfiguration().update_type_registry(
             load_type_registry_preset("default")
         )
-        RuntimeConfiguration().update_type_registry(load_type_registry_preset("kusama"))
+        RuntimeConfiguration().update_type_registry(
+            load_type_registry_preset(self.chain)
+        )
 
         self.metadata = self.get_metadata()
-        self.spec_version = self.get_spec_version()
+        self.runtime_info()
         self.genesis_hash = self.get_genesis_hash()
 
     def setup_arbitrator(self, arbitrator_key: str):
@@ -98,11 +97,12 @@ class Kusama(NonceManager):
         """
         self.keypair = sr25519.pair_from_seed(bytes.fromhex(arbitrator_key))
         self.arbitrator_account_id = self.keypair[0].hex()
-        self.arbitrator_address = ss58_encode(self.keypair[0], 2)
+        self.arbitrator_address = ss58_encode(self.keypair[0], self.address_type)
 
     def runtime_info(self) -> int:
         """
-        Check the current
+        Check the current runtime and load the correct spec vesion and
+        transaction version
         """
         result = self.network.node_rpc_call("state_getRuntimeVersion", [])
         self.spec_version = result["result"]["specVersion"]
@@ -126,12 +126,6 @@ class Kusama(NonceManager):
         with open(filename, "w") as f:
             f.write(self.raw_metadata)
 
-    def get_spec_version(self) -> int:
-        """
-        Returns the blockchain version
-        """
-        return self.spec_version
-
     def get_genesis_hash(self) -> str:
         """
         Returns the chain's genesis block hash
@@ -148,7 +142,7 @@ class Kusama(NonceManager):
             "0x26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da9"
         )
 
-        account_id = ss58_decode(address, 2)
+        account_id = ss58_decode(address, self.address_type)
         hashed_address = f"{blake2b(bytes.fromhex(account_id), digest_size=16).digest().hex()}{account_id}"
         storage_hash = storage_key + hashed_address
         result = self.network.node_rpc_call("state_getStorageAt", [storage_hash, None])[
@@ -301,7 +295,9 @@ class Kusama(NonceManager):
             [buyer_address, seller_address, self.arbitrator_address], 2
         )
 
-        multi_sig_address = ss58_encode(multi_sig_account_id.value.replace("0x", ""), 2)
+        multi_sig_address = ss58_encode(
+            multi_sig_account_id.value.replace("0x", ""), self.address_type
+        )
         return multi_sig_address
 
     def transfer_payload(self, from_address: str, to_address: str, value: int) -> str:
@@ -333,6 +329,7 @@ class Kusama(NonceManager):
             to_address,
             value,
             other_signatories,
+            transaction_version=self.transaction_version,
         )
         return approve_as_multi_payload, nonce
 
@@ -361,6 +358,7 @@ class Kusama(NonceManager):
             timepoint,
             max_weight=max_weight,
             store_call=store_call,
+            transaction_version=self.transaction_version,
         )
         return as_multi_payload, nonce
 
@@ -379,6 +377,7 @@ class Kusama(NonceManager):
             nonce,
             self.genesis_hash,
             self.spec_version,
+            transaction_version=self.transaction_version,
         )
         fee_payload = helper.transfer_signature_payload(
             self.metadata,
@@ -387,6 +386,7 @@ class Kusama(NonceManager):
             nonce + 1,
             self.genesis_hash,
             self.spec_version,
+            transaction_version=self.transaction_version,
         )
         return escrow_payload, fee_payload, nonce
 
@@ -410,6 +410,7 @@ class Kusama(NonceManager):
             trade_value,
             other_signatories,
             timepoint,
+            transaction_version=self.transaction_version,
         )
         release_signature = helper.sign_payload(self.keypair, release_payload)
         release_transaction = helper.unsigned_as_multi_construction(
@@ -447,6 +448,7 @@ class Kusama(NonceManager):
             trade_value,
             other_signatories,
             timepoint,
+            transaction_version=self.transaction_version,
         )
         fee_revert_payload = helper.transfer_signature_payload(
             self.metadata,
@@ -455,6 +457,7 @@ class Kusama(NonceManager):
             nonce + 1,
             self.genesis_hash,
             self.spec_version,
+            transaction_version=self.transaction_version,
         )
 
         revert_signature = helper.sign_payload(self.keypair, revert_payload)
@@ -508,6 +511,7 @@ class Kusama(NonceManager):
             seller_address,
             trade_value,
             other_signatories,
+            transaction_version=self.transaction_version,
         )
         welfare_payload = helper.transfer_signature_payload(
             self.metadata,
@@ -516,6 +520,7 @@ class Kusama(NonceManager):
             nonce + 1,
             self.genesis_hash,
             self.spec_version,
+            transaction_version=self.transaction_version,
         )
 
         release_signature = helper.sign_payload(self.keypair, release_payload)
@@ -631,7 +636,7 @@ class Kusama(NonceManager):
         Returns details of all unfinished multisigs from an address
         """
         response = {}
-        prefix = f"0x{helper.get_prefix(escrow_address)}"
+        prefix = f"0x{helper.get_prefix(escrow_address, self.address_type)}"
         getkeys_response = self.network.node_rpc_call("state_getKeys", [prefix])
 
         if not getkeys_response.get("result", False):
@@ -672,6 +677,7 @@ class Kusama(NonceManager):
             None,
             store_call=store_call,
             max_weight=max_weight,
+            transaction_version=self.transaction_version,
         )
         signature = helper.sign_payload(self.keypair, payload)
         transaction = helper.unsigned_as_multi_construction(
@@ -699,6 +705,7 @@ class Kusama(NonceManager):
             nonce,
             self.genesis_hash,
             self.spec_version,
+            transaction_version=self.transaction_version,
         )
         fee_revert_signature = helper.sign_payload(self.keypair, fee_revert_payload)
         fee_revert_transaction = helper.unsigned_transfer_construction(
@@ -724,6 +731,7 @@ class Kusama(NonceManager):
             nonce,
             self.genesis_hash,
             self.spec_version,
+            transaction_version=self.transaction_version,
         )
         welfare_signature = helper.sign_payload(self.keypair, welfare_payload)
         welfare_transaction = helper.unsigned_transfer_construction(
@@ -735,3 +743,24 @@ class Kusama(NonceManager):
             welfare_value,
         )
         return welfare_transaction
+
+
+class Kusama(SubstrateBase):
+    def __init__(
+        self,
+        *,
+        node_url: str = "wss://kusama-rpc.polkadot.io/",
+        arbitrator_key: str = None,
+    ):
+        self.chain = "kusama"
+        self.address_type = 2
+        super(Kusama, self).__init__(node_url=node_url, arbitrator_key=arbitrator_key)
+
+
+class Polkadot(SubstrateBase):
+    def __init__(
+        self, *, node_url: str = "wss://rpc.polkadot.io/", arbitrator_key: str = None,
+    ):
+        self.chain = "polkadot"
+        self.address_type = 0
+        super(Polkadot, self).__init__(node_url=node_url, arbitrator_key=arbitrator_key)

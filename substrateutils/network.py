@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 class Network:
     """
-    The Network class manages a connection to local/remote Kusama node
+    The Network class manages a connection to local/remote Substrate node
     """
 
     def __init__(self, *, node_url: str = "wss://kusama-rpc.polkadot.io/"):
