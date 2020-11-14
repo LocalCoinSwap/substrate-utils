@@ -85,6 +85,10 @@ class SubstrateBase(NonceManager):
         self.network = network
         self.runtime_info()
 
+        RuntimeConfiguration().update_type_registry(
+            load_type_registry_preset("default")
+        )
+
         self.load_type_registry()
 
         self.metadata = self.get_metadata()
