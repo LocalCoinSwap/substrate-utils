@@ -81,9 +81,6 @@ class SubstrateBase(NonceManager):
         self.runtime_info()
 
         RuntimeConfiguration().update_type_registry(
-            load_type_registry_preset("default")
-        )
-        RuntimeConfiguration().update_type_registry(
             load_type_registry_preset(self.chain)
         )
 
