@@ -329,6 +329,7 @@ class SubstrateBase(NonceManager):
             to_address,
             value,
             other_signatories,
+            transaction_version=self.transaction_version,
         )
         return approve_as_multi_payload, nonce
 
@@ -357,6 +358,7 @@ class SubstrateBase(NonceManager):
             timepoint,
             max_weight=max_weight,
             store_call=store_call,
+            transaction_version=self.transaction_version,
         )
         return as_multi_payload, nonce
 
@@ -375,6 +377,7 @@ class SubstrateBase(NonceManager):
             nonce,
             self.genesis_hash,
             self.spec_version,
+            transaction_version=self.transaction_version,
         )
         fee_payload = helper.transfer_signature_payload(
             self.metadata,
@@ -383,6 +386,7 @@ class SubstrateBase(NonceManager):
             nonce + 1,
             self.genesis_hash,
             self.spec_version,
+            transaction_version=self.transaction_version,
         )
         return escrow_payload, fee_payload, nonce
 
@@ -406,6 +410,7 @@ class SubstrateBase(NonceManager):
             trade_value,
             other_signatories,
             timepoint,
+            transaction_version=self.transaction_version,
         )
         release_signature = helper.sign_payload(self.keypair, release_payload)
         release_transaction = helper.unsigned_as_multi_construction(
@@ -443,6 +448,7 @@ class SubstrateBase(NonceManager):
             trade_value,
             other_signatories,
             timepoint,
+            transaction_version=self.transaction_version,
         )
         fee_revert_payload = helper.transfer_signature_payload(
             self.metadata,
@@ -451,6 +457,7 @@ class SubstrateBase(NonceManager):
             nonce + 1,
             self.genesis_hash,
             self.spec_version,
+            transaction_version=self.transaction_version,
         )
 
         revert_signature = helper.sign_payload(self.keypair, revert_payload)
@@ -504,6 +511,7 @@ class SubstrateBase(NonceManager):
             seller_address,
             trade_value,
             other_signatories,
+            transaction_version=self.transaction_version,
         )
         welfare_payload = helper.transfer_signature_payload(
             self.metadata,
@@ -512,6 +520,7 @@ class SubstrateBase(NonceManager):
             nonce + 1,
             self.genesis_hash,
             self.spec_version,
+            transaction_version=self.transaction_version,
         )
 
         release_signature = helper.sign_payload(self.keypair, release_payload)
@@ -668,6 +677,7 @@ class SubstrateBase(NonceManager):
             None,
             store_call=store_call,
             max_weight=max_weight,
+            transaction_version=self.transaction_version,
         )
         signature = helper.sign_payload(self.keypair, payload)
         transaction = helper.unsigned_as_multi_construction(
@@ -695,6 +705,7 @@ class SubstrateBase(NonceManager):
             nonce,
             self.genesis_hash,
             self.spec_version,
+            transaction_version=self.transaction_version,
         )
         fee_revert_signature = helper.sign_payload(self.keypair, fee_revert_payload)
         fee_revert_transaction = helper.unsigned_transfer_construction(
@@ -720,6 +731,7 @@ class SubstrateBase(NonceManager):
             nonce,
             self.genesis_hash,
             self.spec_version,
+            transaction_version=self.transaction_version,
         )
         welfare_signature = helper.sign_payload(self.keypair, welfare_payload)
         welfare_transaction = helper.unsigned_transfer_construction(
