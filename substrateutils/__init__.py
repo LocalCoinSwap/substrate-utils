@@ -1,6 +1,6 @@
-from .core import Kulupu
-from .core import Kusama
-from .core import Polkadot
+from .cores import Kulupu
+from .cores import Kusama
+from .cores import Polkadot
 from .network import Network
 
 __all__ = [Kusama, Polkadot, Kulupu, Network]

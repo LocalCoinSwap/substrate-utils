@@ -4,7 +4,7 @@ import pytest
 
 from . import mocked_returns
 from substrateutils import Kusama
-from substrateutils.core import NonceManager
+from substrateutils.cores import NonceManager
 
 
 class TestVersionEndpoint:
@@ -15,9 +15,9 @@ class TestVersionEndpoint:
 class TestNoNetwork:
     def test_connect_no_network(self, mocker):
         mocker.patch("substrateutils.network.Network.__init__", return_value=None)
-        mocker.patch("substrateutils.core.Kusama.get_metadata")
-        mocker.patch("substrateutils.core.Kusama.runtime_info")
-        mocker.patch("substrateutils.core.Kusama.get_genesis_hash")
+        mocker.patch("substrateutils.cores.Kusama.get_metadata")
+        mocker.patch("substrateutils.cores.Kusama.runtime_info")
+        mocker.patch("substrateutils.cores.Kusama.get_genesis_hash")
         kusama = Kusama()
         kusama.connect()
 
@@ -77,7 +77,7 @@ class TestGetMethods:
         extrinsic_index = 3
 
         mocker.patch(
-            "substrateutils.core.Kusama.get_events",
+            "substrateutils.cores.Kusama.get_events",
             return_value=mocked_returns.get_events_return_1,
         )
 
@@ -112,7 +112,7 @@ class TestGetMethods:
         get_block_return_value = copy.deepcopy(mocked_returns.get_block_mock_1)
 
         mocker.patch(
-            "substrateutils.core.Kusama.get_block", return_value=get_block_return_value
+            "substrateutils.cores.Kusama.get_block", return_value=get_block_return_value
         )
 
         expected_result = (2493157, 3)
@@ -158,7 +158,7 @@ class TestGetMethods:
         escrow_address = "CofvaLbP3m8PLeNRQmLVPWmTT7jGgAXTwyT69k2wkfPxJ9V"
         trade_value = 9900000000
         fee_value = 100000000
-        mocker.patch("substrateutils.core.Kusama.get_nonce", return_value=46)
+        mocker.patch("substrateutils.cores.Kusama.get_nonce", return_value=46)
         result = kusama.escrow_payloads(
             seller_address, escrow_address, trade_value, fee_value
         )
@@ -187,7 +187,7 @@ class TestNonceManager:
 
     def test_get_mempool_nonce(self, kusama, mocker):
         mocker.patch(
-            "substrateutils.core.Kusama.get_pending_extrinsics",
+            "substrateutils.cores.Kusama.get_pending_extrinsics",
             return_value=mocked_returns.pending_extrinsics_1,
         )
 
@@ -201,16 +201,16 @@ class TestNonceManager:
 
     def test_arbitrator_nonce(self, kusama, mocker):
         mocker.patch(
-            "substrateutils.core.NonceManager.get_mempool_nonce", return_value=-1
+            "substrateutils.cores.NonceManager.get_mempool_nonce", return_value=-1
         )
 
-        mocker.patch("substrateutils.core.Kusama.get_nonce", return_value=2)
+        mocker.patch("substrateutils.cores.Kusama.get_nonce", return_value=2)
         result = kusama.arbitrator_nonce()
 
         assert result == 2
 
         mocker.patch(
-            "substrateutils.core.NonceManager.get_mempool_nonce", return_value=3
+            "substrateutils.cores.NonceManager.get_mempool_nonce", return_value=3
         )
 
         result = kusama.arbitrator_nonce()
@@ -233,14 +233,16 @@ class TestWrapperMethods:
     def test_broadcast_success(self, kusama, mocker):
         mocker.patch("substrateutils.network.Network.node_rpc_call")
 
-        mocker.patch("substrateutils.core.Kusama.get_extrinsic_hash", return_value="a")
-        mocker.patch("substrateutils.core.Kusama.get_block_hash")
+        mocker.patch("substrateutils.cores.Kusama.get_extrinsic_hash", return_value="a")
+        mocker.patch("substrateutils.cores.Kusama.get_block_hash")
         mocker.patch(
-            "substrateutils.core.Kusama.get_extrinsic_timepoint", return_value=(1, 2)
+            "substrateutils.cores.Kusama.get_extrinsic_timepoint", return_value=(1, 2)
         )
-        mocker.patch("substrateutils.core.Kusama.get_extrinsic_events", return_value=[])
         mocker.patch(
-            "substrateutils.core.Kusama.is_transaction_success", return_value=True
+            "substrateutils.cores.Kusama.get_extrinsic_events", return_value=[]
+        )
+        mocker.patch(
+            "substrateutils.cores.Kusama.is_transaction_success", return_value=True
         )
 
         result = kusama.broadcast(
@@ -254,12 +256,12 @@ class TestWrapperMethods:
         """
         mocker.patch("substrateutils.network.Network.node_rpc_call")
 
-        mocker.patch("substrateutils.core.Kusama.get_extrinsic_hash", return_value=None)
-        mocker.patch("substrateutils.core.Kusama.get_block_hash")
+        mocker.patch("substrateutils.cores.Kusama.get_extrinsic_hash", return_value=None)
+        mocker.patch("substrateutils.cores.Kusama.get_block_hash")
         mocker.patch(
-            "substrateutils.core.Kusama.get_extrinsic_timepoint", return_value=None
+            "substrateutils.cores.Kusama.get_extrinsic_timepoint", return_value=None
         )
-        mocker.patch("substrateutils.core.Kusama.get_extrinsic_events", return_value=[])
+        mocker.patch("substrateutils.cores.Kusama.get_extrinsic_events", return_value=[])
         mocker.patch("substrateutils.core.Kusama.is_transaction_success", return_value=False)
         """
         result = kusama.broadcast("t", "tx")
@@ -284,7 +286,7 @@ class TestWrapperMethods:
         )
         kusama.setup_arbitrator(arbitrator_key)
 
-        mocker.patch("substrateutils.core.Kusama.broadcast", return_value=True)
+        mocker.patch("substrateutils.cores.Kusama.broadcast", return_value=True)
         mocker.patch("substrateutils.helper.unsigned_transfer_construction")
         mocker.patch("substrateutils.helper.unsigned_transfer_construction")
         mocker.patch("substrateutils.helper.unsigned_approve_as_multi_construction")
@@ -299,7 +301,7 @@ class TestWrapperMethods:
         assert kusama.is_transaction_success("transfer", [{"event_id": "Transfer"}])
 
     def test_transfer_payload(self, kusama, mocker):
-        mocker.patch("substrateutils.core.Kusama.get_nonce", return_value=4)
+        mocker.patch("substrateutils.cores.Kusama.get_nonce", return_value=4)
         mocker.patch(
             "substrateutils.helper.transfer_signature_payload", return_value=None
         )
@@ -307,7 +309,7 @@ class TestWrapperMethods:
         assert kusama.transfer_payload("", "", 0) is None
 
     def test_approve_as_multi_payload(self, kusama, mocker):
-        mocker.patch("substrateutils.core.Kusama.get_nonce", return_value=4)
+        mocker.patch("substrateutils.cores.Kusama.get_nonce", return_value=4)
         mocker.patch(
             "substrateutils.helper.approve_as_multi_signature_payload",
             return_value=None,
@@ -316,7 +318,7 @@ class TestWrapperMethods:
         assert kusama.approve_as_multi_payload("", "", 0, []) == (None, 4)
 
     def test_as_multi_payload(self, kusama, mocker):
-        mocker.patch("substrateutils.core.Kusama.get_nonce", return_value=4)
+        mocker.patch("substrateutils.cores.Kusama.get_nonce", return_value=4)
         mocker.patch(
             "substrateutils.helper.as_multi_signature_payload", return_value=None
         )
@@ -324,7 +326,7 @@ class TestWrapperMethods:
         assert kusama.as_multi_payload("", "", 0, []) == (None, 4)
 
     def test_release_escrow(self, kusama, mocker):
-        mocker.patch("substrateutils.core.Kusama.arbitrator_nonce", return_value=4)
+        mocker.patch("substrateutils.cores.Kusama.arbitrator_nonce", return_value=4)
         mocker.patch(
             "substrateutils.helper.as_multi_signature_payload", return_value=None
         )
@@ -336,7 +338,7 @@ class TestWrapperMethods:
         assert kusama.release_escrow("", "", (1, 2), []) == "tx"
 
     def test_cancellation(self, kusama, mocker):
-        mocker.patch("substrateutils.core.Kusama.arbitrator_nonce", return_value=4)
+        mocker.patch("substrateutils.cores.Kusama.arbitrator_nonce", return_value=4)
         mocker.patch(
             "substrateutils.helper.as_multi_signature_payload", return_value=None
         )
@@ -353,16 +355,16 @@ class TestWrapperMethods:
         assert kusama.cancellation("", 1, 0.01, [], (1, 2)) == ("tx", "fx")
 
     def test_resolve_dispute_seller_wins(self, kusama, mocker):
-        mocker.patch("substrateutils.core.Kusama.arbitrator_nonce", return_value=4)
+        mocker.patch("substrateutils.cores.Kusama.arbitrator_nonce", return_value=4)
 
         mocker.patch(
-            "substrateutils.core.Kusama.cancellation", return_value=("tx", "fx")
+            "substrateutils.cores.Kusama.cancellation", return_value=("tx", "fx")
         )
 
         assert kusama.resolve_dispute("seller", "", 1, 0.01, []) == ("tx", "fx")
 
     def test_resolve_dispute_buyer_wins(self, kusama, mocker):
-        mocker.patch("substrateutils.core.Kusama.arbitrator_nonce", return_value=4)
+        mocker.patch("substrateutils.cores.Kusama.arbitrator_nonce", return_value=4)
         mocker.patch(
             "substrateutils.helper.approve_as_multi_signature_payload",
             return_value=None,
