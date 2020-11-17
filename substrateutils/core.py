@@ -768,3 +768,15 @@ class Polkadot(SubstrateBase):
         self.chain = "polkadot"
         self.address_type = 0
         super(Polkadot, self).__init__(node_url=node_url, arbitrator_key=arbitrator_key)
+
+
+class Kulupu(SubstrateBase):
+    def __init__(
+        self,
+        *,
+        node_url: str = "wss://rpc.kulupu.corepaper.org/ws",
+        arbitrator_key: str = None,
+    ):
+        self.chain = "kulupu"
+        self.address_type = 16
+        super(Kulupu, self).__init__(node_url=node_url, arbitrator_key=arbitrator_key)
