@@ -153,11 +153,12 @@ class SubstrateBase(NonceManager):
             "result"
         ]
         if not result:
-            result = (
-                "0x00000000000000000000000000000000000000000000000000000"
-                "0000000000000000000000000000000000000000000000000000000"
-                "000000000000000000000000000000"
-            )
+            # TODO: Check if the format of this dict changes frequently
+            return {
+                "nonce": 0,
+                "refcount": 0,
+                "data": {"free": 0, "reserved": 0, "miscFrozen": 0, "feeFrozen": 0},
+            }
 
         return_decoder = ScaleDecoder.get_decoder_class(
             "AccountInfo<Index, AccountData>",
