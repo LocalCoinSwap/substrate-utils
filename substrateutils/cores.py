@@ -153,7 +153,6 @@ class SubstrateBase(NonceManager):
             "result"
         ]
         if not result:
-            # TODO: Check if the format of this dict changes frequently
             return {
                 "nonce": 0,
                 "refcount": 0,
