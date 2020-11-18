@@ -1,7 +1,5 @@
 import sr25519
 
-from .fixtures import genesis_hash
-from .fixtures import spec_version
 from substrateutils.helper import approve_as_multi_signature_payload
 from substrateutils.helper import as_multi_signature_payload
 from substrateutils.helper import get_prefix
@@ -32,7 +30,12 @@ class TestSignaturePayloads:
         address = "Ed7AYYmMQYRmU7sbwijGgLkRfhNYnMrBZ5epigL2c2FyBbU"
         nonce = 4
         result = transfer_signature_payload(
-            kusama.metadata, address, value, nonce, genesis_hash, spec_version
+            kusama.metadata,
+            address,
+            value,
+            nonce,
+            kusama.genesis_hash,
+            kusama.spec_version,
         )
         assert len(result) == 232 and result[0:2] == "0x"
 
@@ -51,8 +54,8 @@ class TestSignaturePayloads:
 
         result = approve_as_multi_signature_payload(
             kusama.metadata,
-            spec_version,
-            genesis_hash,
+            kusama.spec_version,
+            kusama.genesis_hash,
             nonce,
             to_address,
             amount,
@@ -75,8 +78,8 @@ class TestSignaturePayloads:
         timepoint = (9000, 1)
         result = as_multi_signature_payload(
             kusama.metadata,
-            spec_version,
-            genesis_hash,
+            kusama.spec_version,
+            kusama.genesis_hash,
             nonce,
             to_address,
             amount,
