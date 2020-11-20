@@ -316,6 +316,7 @@ class SubstrateBase(NonceManager):
             nonce,
             self.genesis_hash,
             self.spec_version,
+            transaction_version=self.transaction_version,
         )
 
     def approve_as_multi_payload(

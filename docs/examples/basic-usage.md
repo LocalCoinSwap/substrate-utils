@@ -2,67 +2,74 @@
 
 ### Instantiating without configuration
 ```
-from substrateutils import Kusama
+from substrateutils import Kusama, Polkadot
 kusama = Kusama()
+polkadot = Polkadot()
 ```
 
 ### Loading configuration after instantiation
 ```
-from substrateutils import Kusama
-kusama = Kusama()
+from substrateutils import Kusama, Polkadot
+kusama, polkadot = Kusama(), Polkadot()
 
 arbitrator_key = 'b5643fe4084cae15ffbbc5c1cbe734bec5da9c351f4aa4d44f2897efeb8375c8'
 kusama.setup_arbitrator(arbitrator_key)
+polkadot.setup_arbitrator(arbitrator_key)
 ```
 
 ### Instantiating with arbitrator and websocket configuration
 ```
-from substrateutils import Kusama
-kusama = Kusama()
+from substrateutils import Kusama, Polkadot
+kusama, polkadot = Kusama(), Polkadot()
 
 arbitrator_key = 'b5643fe4084cae15ffbbc5c1cbe734bec5da9c351f4aa4d44f2897efeb8375c8'
-node_provider = 'wss://kusama-rpc.polkadot.io/'
+ksm_provider = 'wss://kusama-rpc.polkadot.io/'
+dot_provider = 'wss://rpc.polkadot.io/'
 kusama = Kusama(
     arbitrator_key=arbitrator_key,
-    node_url=node_provider
+    node_url=ksm_provider
+)
+polkadot = Kusama(
+    arbitrator_key=arbitrator_key,
+    node_url=dot_provider
 )
 ```
 
-### Connecting to the Kusama blockchain
+### Connecting to the blockchain and getting runtime
 ```python
 
-kusama.connect()
-kusama.runtime_info()
+chain.connect()
+chain.runtime_info()
 ```
 
 ### Preparing and sending a generic transfer
 
 ```python
 import sr25519
-from substrateutils import Kusama
+from substrateutils import Polkadot as Provider
 from substrateutils.helper import hex_to_bytes
 from scalecodec.utils.ss58 import ss58_encode
 
-kusama = Kusama()
-kusama.connect()
+chain = Provider()
+chain.connect()
 
 sender_seed_hex = "<SEED OF SENDER>"
-to_address = "JELVFBo1GL82vvEtDqVZMd2NDTFgQC3oi8W2fV3Xtm6CLXX"
-value = 10000000000 # 0.01 KSM in Planks
+to_address = "<TO ADDRESS>"
+value = 10000000000 # 1 DOT
 
 # Prepare key
 keypair = sr25519.pair_from_seed(hex_to_bytes(sender_seed_hex))
-sender_address = ss58_encode(keypair[0], 2)
+sender_address = ss58_encode(keypair[0], 0)
 
 # Get transaction payload to sign and nonce
-payload = kusama.transfer_payload(sender_address, to_address, value)
-nonce = kusama.get_nonce(sender_address)
+payload = chain.transfer_payload(sender_address, to_address, value)
+nonce = chain.get_nonce(sender_address)
 
 # Sign payload
 signed_payload = sr25519.sign(keypair, hex_to_bytes(payload)).hex()
 
 # Broadcast payload
-success, response = kusama.publish(
+success, response = chain.publish(
     'transfer',
     [sender_address,
     signed_payload,
