@@ -242,7 +242,43 @@ success, response = chain.publish(
 
 ### Happy case: regular release
 ```python
+# Arbitrater makes storage as_multi to buyer
+transaction = chain.as_multi_storage(
+    buyer_address, # To address
+    seller_address, # Other signatory
+    trade_value,
+    max_weight = 648378000,
+)
 
+success, response = chain.broadcast(
+    'as_multi', transaction
+)
+timepoint = response['timepoint']
+
+# Seller makes as_multi to release
+as_multi_payload, nonce = chain.as_multi_payload(
+    seller_address, # from
+    buyer_address, # to
+    trade_value,
+    [buyer_address, chain.arbitrator_address],
+    timepoint, # timepoint from storage
+    False, # don't store
+    648378000, # max weight
+)
+as_multi_signature = sign_payload(seller_keypair, as_multi_payload)
+success, response = chain.publish(
+    'as_multi',
+    [
+        seller_address, # from
+        as_multi_signature, # sig
+        nonce, # seller nonce
+        buyer_address, # to
+        trade_value,
+        timepoint, # timepoint
+        [buyer_address, chain.arbitrator_address], # other sigs
+        648378000, # max weight
+    ]
+)
 ```
 
 ### Neutral case: cancellation
@@ -390,6 +426,68 @@ success, response = chain.publish(
         timepoint, # timepoint
         [buyer_address, chain.arbitrator_address], # other sigs
         190949000, # max weight
+    ]
+)
+```
+
+### End-to-end process
+```python
+import os
+from dotenv import load_dotenv
+from substrateutils import Polkadot as Provider
+load_dotenv()
+
+chain = Provider()
+arbitrator_key = os.getenv("ARBITRATOR_SEED")
+chain.setup_arbitrator(arbitrator_key)
+chain.connect()
+
+buyer_address = os.getenv("BUYER_ADDRESS")
+seller_address = os.getenv("SELLER_ADDRESS")
+escrow_address = chain.get_escrow_address(buyer_address, seller_address)
+
+# Value of the trade in Plancks
+trade_value = 10000000000
+# Fee being paid in Plancks (trade_value is not inclusive of fee)
+fee_value = 100000000
+escrow_payload, fee_payload, nonce = chain.escrow_payloads(
+    seller_address, escrow_address, trade_value, fee_value)
+
+transaction = chain.as_multi_storage(
+    seller_address, # To address
+    buyer_address, # Other signatory
+    trade_value,
+    # max_weight = 2565254000,
+    max_weight = 1000000000,
+)
+
+success, response = chain.broadcast(
+    'as_multi', transaction
+)
+timepoint = response['timepoint']
+
+# Seller makes as_multi to release
+as_multi_payload, nonce = chain.as_multi_payload(
+    seller_address, # from
+    buyer_address, # to
+    trade_value,
+    [buyer_address, chain.arbitrator_address],
+    timepoint, # timepoint from storage
+    False, # don't store
+    648378000, # max weight
+)
+as_multi_signature = sign_payload(seller_keypair, as_multi_payload)
+success, response = chain.publish(
+    'as_multi',
+    [
+        seller_address, # from
+        as_multi_signature, # sig
+        nonce, # seller nonce
+        buyer_address, # to
+        trade_value,
+        timepoint, # timepoint
+        [buyer_address, chain.arbitrator_address], # other sigs
+        648378000, # max weight
     ]
 )
 ```

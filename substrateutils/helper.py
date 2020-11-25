@@ -163,6 +163,7 @@ def as_multi_signature_payload(
     maybe_timepoint = (
         {"height": timepoint[0], "index": timepoint[1]} if timepoint else None
     )
+    print("IN CALL", transfer.value)
     as_multi.encode(
         {
             "call_module": "Multisig",
