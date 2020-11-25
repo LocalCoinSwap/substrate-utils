@@ -69,3 +69,9 @@ Before making changes, let's ensure tests run successfully on local.
     - `coverage run -m pytest -v`
  - Show report in terminal
     - `coverage report -m`
+
+### Notes
+
+Trade storage calls for 2/3 trades cost:  
+Polkadot - 40.3040 DOT  
+Kusama   - 6.71733331304 KSM  
