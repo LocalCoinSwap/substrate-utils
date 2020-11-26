@@ -391,12 +391,6 @@ class SubstrateBase(NonceManager):
             )
             return self.broadcast("transfer", transaction)
 
-        if type == "approve_as_multi":
-            transaction = helper.unsigned_approve_as_multi_construction(
-                self.metadata, *params
-            )
-            return self.broadcast(type, transaction)
-
         if type == "as_multi":
             if params[7] == 0:
                 params[7] = self.max_weight

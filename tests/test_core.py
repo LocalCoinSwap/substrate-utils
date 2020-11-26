@@ -289,13 +289,11 @@ class TestWrapperMethods:
         mocker.patch("substrateutils.cores.Kusama.broadcast", return_value=True)
         mocker.patch("substrateutils.helper.unsigned_transfer_construction")
         mocker.patch("substrateutils.helper.unsigned_transfer_construction")
-        mocker.patch("substrateutils.helper.unsigned_approve_as_multi_construction")
         mocker.patch("substrateutils.helper.unsigned_as_multi_construction")
 
         assert kusama.publish("transfer", [True])
         assert kusama.publish("fee_transfer", [1, 2, 3, 4])
-        assert kusama.publish("approve_as_multi", [1, 2, 3, 4])
-        assert kusama.publish("as_multi", [1, 2, 3, 4])
+        assert kusama.publish("as_multi", [1, 2, 3, 4, 5, 6, 7, 8])
 
     def test_is_transaction_success(self, kusama):
         assert kusama.is_transaction_success("transfer", [{"event_id": "Transfer"}])
