@@ -289,6 +289,8 @@ class SubstrateBase(NonceManager):
         """
         Returns signature payloads for as_multi
         """
+        if max_weight == 0:
+            max_weight = self.max_weight
         nonce = self.get_nonce(from_address)
         as_multi_payload = helper.as_multi_signature_payload(
             self.metadata,
@@ -396,6 +398,8 @@ class SubstrateBase(NonceManager):
             return self.broadcast(type, transaction)
 
         if type == "as_multi":
+            if params[7] == 0:
+                params[7] = self.max_weight
             transaction = helper.unsigned_as_multi_construction(self.metadata, *params)
             return self.broadcast(type, transaction)
 
@@ -451,8 +455,10 @@ class SubstrateBase(NonceManager):
         other_signatory: str,
         amount: str,
         store_call: bool = True,
-        max_weight: int = 648378000,
+        max_weight: int = 1,
     ):
+        if max_weight == 0:
+            max_weight = self.max_weight
         nonce = self.arbitrator_nonce()
         payload = helper.as_multi_signature_payload(
             self.metadata,
@@ -506,11 +512,9 @@ class SubstrateBase(NonceManager):
         )
         return fee_revert_transaction
 
-    def welfare_transaction(
-        self, buyer_address: str, welfare_value: int = 4000000000,
-    ) -> str:
-        # Note: 4000000000 (0.004 KSM) seems to be the minimum
-        # To make an as_multi final tx once call is stored
+    def welfare_transaction(self, buyer_address: str, welfare_value: int = 0,) -> str:
+        if welfare_value == 0:
+            welfare_value = self.welfare_value
         nonce = self.arbitrator_nonce()
         welfare_payload = helper.transfer_signature_payload(
             self.metadata,
@@ -543,6 +547,7 @@ class Kusama(SubstrateBase):
         self.chain = "kusama"
         self.address_type = 2
         self.max_weight = 190949000
+        self.welfare_value = 4000000000  # 0.004 KSM
         super(Kusama, self).__init__(node_url=node_url, arbitrator_key=arbitrator_key)
 
 
@@ -553,6 +558,7 @@ class Polkadot(SubstrateBase):
         self.chain = "polkadot"
         self.address_type = 0
         self.max_weight = 648378000
+        self.welfare_value = 400000000  # 0.04 DOT
         super(Polkadot, self).__init__(node_url=node_url, arbitrator_key=arbitrator_key)
 
 
