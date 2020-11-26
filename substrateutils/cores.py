@@ -1,6 +1,4 @@
 import logging
-from abc import ABC
-from abc import abstractmethod
 from hashlib import blake2b
 
 import sr25519
@@ -15,50 +13,9 @@ from scalecodec.utils.ss58 import ss58_encode
 
 from . import helper
 from .network import Network
+from .nonce import NonceManager
 
 logger = logging.getLogger(__name__)
-
-
-class NonceManager(ABC):
-    """
-
-    Abstract Class: Extending this class allows a user to build advanced
-    nonce management in asyncronous environments where ordering is important
-    """
-
-    @abstractmethod
-    def get_pending_extrinsics(self) -> list:
-        raise NotImplementedError("Not implemented")
-
-    @abstractmethod
-    def get_nonce(self, address: str) -> int:
-        raise NotImplementedError("Not implemented")
-
-    def get_mempool_nonce(self, address: str) -> int:
-        """
-        Returns the nonce of any pending extrinsics for a given address
-        """
-        account_id = ss58_decode(address)
-
-        pending_extrinsics = self.get_pending_extrinsics()
-        nonce = -1
-
-        for idx, extrinsic in enumerate(pending_extrinsics):
-            if extrinsic.get("account_id") == account_id:
-                nonce = max(extrinsic.get("nonce", nonce), nonce)
-        return nonce
-
-    def arbitrator_nonce(self) -> int:
-        """
-        Returns the nonce of any pending extrinsics for the arbitrator
-        """
-        if not self.arbitrator_address:
-            raise Exception("Did you forget to setup artitrator address?")
-
-        mempool_nonce = self.get_mempool_nonce(self.arbitrator_address)
-        if mempool_nonce == -1:
-            return self.get_nonce(self.arbitrator_address)
-        return mempool_nonce
 
 
 class SubstrateBase(NonceManager):
@@ -319,25 +276,6 @@ class SubstrateBase(NonceManager):
             transaction_version=self.transaction_version,
         )
 
-    def approve_as_multi_payload(
-        self, from_address: str, to_address: str, value: int, other_signatories: list
-    ) -> tuple:
-        """
-        Returns signature payloads for approve_as_multi
-        """
-        nonce = self.get_nonce(from_address)
-        approve_as_multi_payload = helper.approve_as_multi_signature_payload(
-            self.metadata,
-            self.spec_version,
-            self.genesis_hash,
-            nonce,
-            to_address,
-            value,
-            other_signatories,
-            transaction_version=self.transaction_version,
-        )
-        return approve_as_multi_payload, nonce
-
     def as_multi_payload(
         self,
         from_address: str,
@@ -351,6 +289,8 @@ class SubstrateBase(NonceManager):
         """
         Returns signature payloads for as_multi
         """
+        if max_weight == 0:
+            max_weight = self.max_weight
         nonce = self.get_nonce(from_address)
         as_multi_payload = helper.as_multi_signature_payload(
             self.metadata,
@@ -394,161 +334,6 @@ class SubstrateBase(NonceManager):
             transaction_version=self.transaction_version,
         )
         return escrow_payload, fee_payload, nonce
-
-    def release_escrow(
-        self,
-        buyer_address: str,
-        trade_value: int,
-        timepoint: tuple,
-        other_signatories: list,
-    ) -> str:
-        """
-        Return final arbitrator as_multi transaction for releasing escrow
-        """
-        nonce = self.arbitrator_nonce()
-        release_payload = helper.as_multi_signature_payload(
-            self.metadata,
-            self.spec_version,
-            self.genesis_hash,
-            nonce,
-            buyer_address,
-            trade_value,
-            other_signatories,
-            timepoint,
-            transaction_version=self.transaction_version,
-        )
-        release_signature = helper.sign_payload(self.keypair, release_payload)
-        release_transaction = helper.unsigned_as_multi_construction(
-            self.metadata,
-            self.arbitrator_address,
-            release_signature,
-            nonce,
-            buyer_address,
-            trade_value,
-            timepoint,
-            other_signatories,
-        )
-        return release_transaction
-
-    def cancellation(
-        self,
-        seller_address: str,
-        trade_value: int,
-        fee_value: int,
-        other_signatories: list,
-        timepoint: tuple,
-    ) -> tuple:
-        """
-        Return signed and ready transactions for the fee return and escrow return
-        """
-
-        nonce = self.arbitrator_nonce()
-
-        revert_payload = helper.as_multi_signature_payload(
-            self.metadata,
-            self.spec_version,
-            self.genesis_hash,
-            nonce,
-            seller_address,
-            trade_value,
-            other_signatories,
-            timepoint,
-            transaction_version=self.transaction_version,
-        )
-        fee_revert_payload = helper.transfer_signature_payload(
-            self.metadata,
-            seller_address,
-            fee_value,
-            nonce + 1,
-            self.genesis_hash,
-            self.spec_version,
-            transaction_version=self.transaction_version,
-        )
-
-        revert_signature = helper.sign_payload(self.keypair, revert_payload)
-        fee_revert_signature = helper.sign_payload(self.keypair, fee_revert_payload)
-
-        revert_transaction = helper.unsigned_as_multi_construction(
-            self.metadata,
-            self.arbitrator_address,
-            revert_signature,
-            nonce,
-            seller_address,
-            trade_value,
-            timepoint,
-            other_signatories,
-        )
-        fee_revert_transaction = helper.unsigned_transfer_construction(
-            self.metadata,
-            self.arbitrator_address,
-            fee_revert_signature,
-            nonce + 1,
-            seller_address,
-            fee_value,
-        )
-        return revert_transaction, fee_revert_transaction
-
-    def resolve_dispute(
-        self,
-        victor: str,
-        seller_address: str,
-        trade_value: int,
-        fee_value: int,
-        other_signatories: list,
-        welfare_value: int = 1000000000,
-    ) -> tuple:
-        """
-        If sellers wins then return cancellation logic
-        If buyer wins then return ready approveAsMulti and ready buyer welfare transfer
-        """
-        nonce = self.arbitrator_nonce()
-
-        if victor == "seller":
-            return self.cancellation(
-                seller_address, trade_value, fee_value, other_signatories, None
-            )
-
-        release_payload = helper.approve_as_multi_signature_payload(
-            self.metadata,
-            self.spec_version,
-            self.genesis_hash,
-            nonce,
-            seller_address,
-            trade_value,
-            other_signatories,
-            transaction_version=self.transaction_version,
-        )
-        welfare_payload = helper.transfer_signature_payload(
-            self.metadata,
-            seller_address,
-            welfare_value,
-            nonce + 1,
-            self.genesis_hash,
-            self.spec_version,
-            transaction_version=self.transaction_version,
-        )
-
-        release_signature = helper.sign_payload(self.keypair, release_payload)
-        welfare_signature = helper.sign_payload(self.keypair, welfare_payload)
-
-        release_transaction = helper.unsigned_approve_as_multi_construction(
-            self.metadata,
-            self.arbitrator_address,
-            release_signature,
-            nonce,
-            seller_address,
-            trade_value,
-            other_signatories,
-        )
-        welfare_transaction = helper.unsigned_transfer_construction(
-            self.metadata,
-            self.arbitrator_address,
-            welfare_signature,
-            nonce + 1,
-            seller_address,
-            welfare_value,
-        )
-        return release_transaction, welfare_transaction
 
     def get_block_hash(self, node_response: dict) -> str:
         """
@@ -606,13 +391,9 @@ class SubstrateBase(NonceManager):
             )
             return self.broadcast("transfer", transaction)
 
-        if type == "approve_as_multi":
-            transaction = helper.unsigned_approve_as_multi_construction(
-                self.metadata, *params
-            )
-            return self.broadcast(type, transaction)
-
         if type == "as_multi":
+            if params[7] == 0:
+                params[7] = self.max_weight
             transaction = helper.unsigned_as_multi_construction(self.metadata, *params)
             return self.broadcast(type, transaction)
 
@@ -668,8 +449,10 @@ class SubstrateBase(NonceManager):
         other_signatory: str,
         amount: str,
         store_call: bool = True,
-        max_weight: int = 648378000,
+        max_weight: int = 1,
     ):
+        if max_weight == 0:
+            max_weight = self.max_weight
         nonce = self.arbitrator_nonce()
         payload = helper.as_multi_signature_payload(
             self.metadata,
@@ -723,11 +506,9 @@ class SubstrateBase(NonceManager):
         )
         return fee_revert_transaction
 
-    def welfare_transaction(
-        self, buyer_address: str, welfare_value: int = 4000000000,
-    ) -> str:
-        # Note: 4000000000 (0.004 KSM) seems to be the minimum
-        # To make an as_multi final tx once call is stored
+    def welfare_transaction(self, buyer_address: str, welfare_value: int = 0,) -> str:
+        if welfare_value == 0:
+            welfare_value = self.welfare_value
         nonce = self.arbitrator_nonce()
         welfare_payload = helper.transfer_signature_payload(
             self.metadata,
@@ -759,6 +540,8 @@ class Kusama(SubstrateBase):
     ):
         self.chain = "kusama"
         self.address_type = 2
+        self.max_weight = 190949000
+        self.welfare_value = 4000000000  # 0.004 KSM
         super(Kusama, self).__init__(node_url=node_url, arbitrator_key=arbitrator_key)
 
 
@@ -768,6 +551,8 @@ class Polkadot(SubstrateBase):
     ):
         self.chain = "polkadot"
         self.address_type = 0
+        self.max_weight = 648378000
+        self.welfare_value = 400000000  # 0.04 DOT
         super(Polkadot, self).__init__(node_url=node_url, arbitrator_key=arbitrator_key)
 
 

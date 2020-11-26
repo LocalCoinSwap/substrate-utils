@@ -289,13 +289,11 @@ class TestWrapperMethods:
         mocker.patch("substrateutils.cores.Kusama.broadcast", return_value=True)
         mocker.patch("substrateutils.helper.unsigned_transfer_construction")
         mocker.patch("substrateutils.helper.unsigned_transfer_construction")
-        mocker.patch("substrateutils.helper.unsigned_approve_as_multi_construction")
         mocker.patch("substrateutils.helper.unsigned_as_multi_construction")
 
         assert kusama.publish("transfer", [True])
         assert kusama.publish("fee_transfer", [1, 2, 3, 4])
-        assert kusama.publish("approve_as_multi", [1, 2, 3, 4])
-        assert kusama.publish("as_multi", [1, 2, 3, 4])
+        assert kusama.publish("as_multi", [1, 2, 3, 4, 5, 6, 7, 8])
 
     def test_is_transaction_success(self, kusama):
         assert kusama.is_transaction_success("transfer", [{"event_id": "Transfer"}])
@@ -308,15 +306,6 @@ class TestWrapperMethods:
 
         assert kusama.transfer_payload("", "", 0) is None
 
-    def test_approve_as_multi_payload(self, kusama, mocker):
-        mocker.patch("substrateutils.cores.Kusama.get_nonce", return_value=4)
-        mocker.patch(
-            "substrateutils.helper.approve_as_multi_signature_payload",
-            return_value=None,
-        )
-
-        assert kusama.approve_as_multi_payload("", "", 0, []) == (None, 4)
-
     def test_as_multi_payload(self, kusama, mocker):
         mocker.patch("substrateutils.cores.Kusama.get_nonce", return_value=4)
         mocker.patch(
@@ -324,61 +313,3 @@ class TestWrapperMethods:
         )
 
         assert kusama.as_multi_payload("", "", 0, []) == (None, 4)
-
-    def test_release_escrow(self, kusama, mocker):
-        mocker.patch("substrateutils.cores.Kusama.arbitrator_nonce", return_value=4)
-        mocker.patch(
-            "substrateutils.helper.as_multi_signature_payload", return_value=None
-        )
-        mocker.patch("substrateutils.helper.sign_payload", return_value=None)
-        mocker.patch(
-            "substrateutils.helper.unsigned_as_multi_construction", return_value="tx"
-        )
-
-        assert kusama.release_escrow("", "", (1, 2), []) == "tx"
-
-    def test_cancellation(self, kusama, mocker):
-        mocker.patch("substrateutils.cores.Kusama.arbitrator_nonce", return_value=4)
-        mocker.patch(
-            "substrateutils.helper.as_multi_signature_payload", return_value=None
-        )
-        mocker.patch(
-            "substrateutils.helper.transfer_signature_payload", return_value=None
-        )
-        mocker.patch("substrateutils.helper.sign_payload", return_value=None)
-        mocker.patch(
-            "substrateutils.helper.unsigned_as_multi_construction", return_value="tx"
-        )
-        mocker.patch(
-            "substrateutils.helper.unsigned_transfer_construction", return_value="fx"
-        )
-        assert kusama.cancellation("", 1, 0.01, [], (1, 2)) == ("tx", "fx")
-
-    def test_resolve_dispute_seller_wins(self, kusama, mocker):
-        mocker.patch("substrateutils.cores.Kusama.arbitrator_nonce", return_value=4)
-
-        mocker.patch(
-            "substrateutils.cores.Kusama.cancellation", return_value=("tx", "fx")
-        )
-
-        assert kusama.resolve_dispute("seller", "", 1, 0.01, []) == ("tx", "fx")
-
-    def test_resolve_dispute_buyer_wins(self, kusama, mocker):
-        mocker.patch("substrateutils.cores.Kusama.arbitrator_nonce", return_value=4)
-        mocker.patch(
-            "substrateutils.helper.approve_as_multi_signature_payload",
-            return_value=None,
-        )
-        mocker.patch(
-            "substrateutils.helper.transfer_signature_payload", return_value=None
-        )
-        mocker.patch("substrateutils.helper.sign_payload", return_value=None)
-        mocker.patch(
-            "substrateutils.helper.unsigned_approve_as_multi_construction",
-            return_value="tx",
-        )
-        mocker.patch(
-            "substrateutils.helper.unsigned_transfer_construction", return_value="wx"
-        )
-
-        assert kusama.resolve_dispute("buyer", "", 1, 0.01, []) == ("tx", "wx")

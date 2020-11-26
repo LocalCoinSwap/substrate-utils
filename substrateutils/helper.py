@@ -78,61 +78,6 @@ def transfer_signature_payload(
     return str(signature_payload.data)
 
 
-def approve_as_multi_signature_payload(
-    metadata: "MetadataDecoder",
-    spec_version: int,
-    genesis_hash: str,
-    nonce: int,
-    to_address: str,
-    amount: int,
-    other_signatories: list,
-    threshold: int = 2,
-    tip: int = 0,
-    transaction_version: int = 3,
-    max_weight: int = 0,
-) -> str:
-    """
-    Turn parameters gathered through side effects into unsigned approve_as_multi string
-    """
-    transfer = ScaleDecoder.get_decoder_class("Call", metadata=metadata)
-    approve_as_multi = ScaleDecoder.get_decoder_class("Call", metadata=metadata)
-    transfer.encode(
-        {
-            "call_module": "Balances",
-            "call_function": "transfer",
-            "call_args": {"dest": to_address, "value": amount},
-        }
-    )
-    approve_as_multi.encode(
-        {
-            "call_module": "Multisig",
-            "call_function": "approve_as_multi",
-            "call_args": {
-                "call_hash": hash_call(transfer),
-                "maybe_timepoint": None,
-                "other_signatories": sorted(other_signatories),
-                "threshold": threshold,
-                "max_weight": max_weight,
-            },
-        }
-    )
-    signature_payload = ScaleDecoder.get_decoder_class("ExtrinsicPayloadValue")
-    signature_payload.encode(
-        {
-            "call": str(approve_as_multi.data),
-            "era": "00",
-            "nonce": nonce,
-            "tip": tip,
-            "specVersion": spec_version,
-            "transactionVersion": transaction_version,
-            "genesisHash": genesis_hash,
-            "blockHash": genesis_hash,
-        }
-    )
-
-    return str(signature_payload.data)
-
-
 def as_multi_signature_payload(
     metadata: "MetadataDecoder",
     spec_version: int,
@@ -163,7 +108,6 @@ def as_multi_signature_payload(
     maybe_timepoint = (
         {"height": timepoint[0], "index": timepoint[1]} if timepoint else None
     )
-    print("IN CALL", transfer.value)
     as_multi.encode(
         {
             "call_module": "Multisig",
@@ -241,51 +185,6 @@ def unsigned_transfer_construction(
     call_function = "transfer"
     call_module = "Balances"
     call_arguments = {"dest": to_address, "value": amount}
-    return _extrinsic_construction(
-        metadata,
-        account_id,
-        signature,
-        call_function,
-        call_module,
-        call_arguments,
-        nonce,
-        tip,
-    )
-
-
-def unsigned_approve_as_multi_construction(
-    metadata: "MetadataDecoder",
-    account_id: str,
-    signature: str,
-    nonce: int,
-    to_address: str,
-    amount: int,
-    other_signatories,
-    threshold: int = 2,
-    tip: int = 0,
-    max_weight: int = 0,
-) -> str:
-    """
-    Turn parameters gathered through side effects into an approve_as_multi extrinsic object
-    """
-    call_function = "approve_as_multi"
-    call_module = "Multisig"
-    transfer = ScaleDecoder.get_decoder_class("Call", metadata=metadata)
-    transfer.encode(
-        {
-            "call_module": "Balances",
-            "call_function": "transfer",
-            "call_args": {"dest": to_address, "value": amount},
-        }
-    )
-
-    call_arguments = {
-        "call_hash": hash_call(transfer),
-        "maybe_timepoint": None,
-        "other_signatories": sorted(other_signatories),
-        "threshold": threshold,
-        "max_weight": max_weight,
-    }
     return _extrinsic_construction(
         metadata,
         account_id,

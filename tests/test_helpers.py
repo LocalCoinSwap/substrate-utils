@@ -1,11 +1,8 @@
 import sr25519
 
-from substrateutils.helper import approve_as_multi_signature_payload
-from substrateutils.helper import as_multi_signature_payload
 from substrateutils.helper import get_prefix
 from substrateutils.helper import sign_payload
 from substrateutils.helper import transfer_signature_payload
-from substrateutils.helper import unsigned_approve_as_multi_construction
 from substrateutils.helper import unsigned_as_multi_construction
 from substrateutils.helper import unsigned_transfer_construction
 from substrateutils.helper import xx128
@@ -39,55 +36,6 @@ class TestSignaturePayloads:
         )
         assert len(result) == 232 and result[0:2] == "0x"
 
-    def test_approve_as_multi_payload(self, kusama):
-        """
-        metadata, spec_version, genesis_hash, nonce, to_address, amount,
-        other_signatories, threshold=2, tip=0
-        """
-        nonce = 4
-        to_address = "CofvaLbP3m8PLeNRQmLVPWmTT7jGgAXTwyT69k2wkfPxJ9V"
-        amount = 9900000000
-        other_signatories = [
-            "EifTqgEMBpjRD3WnV9jmdN3ArMj1JGKXAKw2eeHCSLw1Bkg",
-            "CofvaLbP3m8PLeNRQmLVPWmTT7jGgAXTwyT69k2wkfPxJ9V",
-        ]
-
-        result = approve_as_multi_signature_payload(
-            kusama.metadata,
-            kusama.spec_version,
-            kusama.genesis_hash,
-            nonce,
-            to_address,
-            amount,
-            other_signatories,
-        )
-        assert len(result) == 372 and result[0:2] == "0x"
-
-    def test_as_multi_payload(self, kusama):
-        """
-        metadata, spec_version, genesis_hash, nonce, to_address, amount,
-        other_signatories, timepoint, threshold=2, tip=0,
-        """
-        nonce = 5
-        to_address = "CofvaLbP3m8PLeNRQmLVPWmTT7jGgAXTwyT69k2wkfPxJ9V"
-        amount = 9900000000
-        other_signatories = [
-            "CofvaLbP3m8PLeNRQmLVPWmTT7jGgAXTwyT69k2wkfPxJ9V",
-            "D2bHQwFcQj11SvtkjULEdKhK4WAeP6MThXgosMHjW9DrmbE",
-        ]
-        timepoint = (9000, 1)
-        result = as_multi_signature_payload(
-            kusama.metadata,
-            kusama.spec_version,
-            kusama.genesis_hash,
-            nonce,
-            to_address,
-            amount,
-            other_signatories,
-            timepoint,
-        )
-        assert len(result) == 408 and result[0:2] == "0x"
-
 
 class TestPayloadConstruction:
     def test_transfer_construction(self, kusama):
@@ -114,36 +62,6 @@ class TestPayloadConstruction:
             kusama.metadata, account_id, signature, nonce, to_address, amount
         )
         assert result == expected_final_extrinsic
-
-    def test_approve_as_multi_construction(self, kusama):
-        """
-        metadata, account_id, signature, nonce, to_address, amount,
-        other_signatories
-        """
-        account_id = (
-            "0x14097421065c7bb0efc6770ffc5d604654159d45910cc7a3cb602be16acc5528"
-        )
-        signature = (
-            "0x26ef62025f86b150442d1e1f2996dce635b591250f60a532dc32f8cf319c6515eea9bb7"
-            "60e442b6a816aef9fdbc535eca0d663e9b9d783a0616153df2ac0fd87"
-        )
-        amount = 9900000000
-        to_address = "CofvaLbP3m8PLeNRQmLVPWmTT7jGgAXTwyT69k2wkfPxJ9V"
-        nonce = 4
-        other_signatories = [
-            "EifTqgEMBpjRD3WnV9jmdN3ArMj1JGKXAKw2eeHCSLw1Bkg",
-            "CofvaLbP3m8PLeNRQmLVPWmTT7jGgAXTwyT69k2wkfPxJ9V",
-        ]
-        result = unsigned_approve_as_multi_construction(
-            kusama.metadata,
-            account_id,
-            signature,
-            nonce,
-            to_address,
-            amount,
-            other_signatories,
-        )
-        assert len(result) == 428 and result[0:2] == "0x"
 
     def test_as_multi_construction(self, kusama):
         """

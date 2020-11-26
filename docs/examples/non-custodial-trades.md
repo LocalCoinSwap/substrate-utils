@@ -55,7 +55,7 @@ success, response = chain.publish(
     nonce,
     escrow_address,
     trade_value]
-    )
+)
 assert success
 success, response = chain.publish(
     'fee_transfer',
@@ -63,7 +63,7 @@ success, response = chain.publish(
     fee_signature,
     nonce + 1,
     fee_value]
-    )
+)
 assert success
 ```
 
@@ -74,7 +74,6 @@ transaction = chain.as_multi_storage(
     buyer_address, # To address
     seller_address, # Other signatory
     trade_value,
-    max_weight = 648378000,
 )
 
 success, response = chain.broadcast(
@@ -90,7 +89,6 @@ as_multi_payload, nonce = chain.as_multi_payload(
     [buyer_address, chain.arbitrator_address],
     timepoint, # timepoint from storage
     False, # don't store
-    648378000, # max weight
 )
 as_multi_signature = sign_payload(seller_keypair, as_multi_payload)
 success, response = chain.publish(
@@ -103,7 +101,7 @@ success, response = chain.publish(
         trade_value,
         timepoint, # timepoint
         [buyer_address, chain.arbitrator_address], # other sigs
-        648378000, # max weight
+        0,
     ]
 )
 ```
@@ -140,7 +138,6 @@ as_multi_payload, nonce = chain.as_multi_payload(
     [buyer_address, chain.arbitrator_address],
     timepoint, # timepoint from storage
     False, # don't store
-    190949000, # max weight
 )
 as_multi_signature = sign_payload(seller_keypair, as_multi_payload)
 success, response = chain.publish(
@@ -153,7 +150,7 @@ success, response = chain.publish(
         trade_value,
         timepoint, # timepoint
         [buyer_address, chain.arbitrator_address], # other sigs
-        190949000, # max weight
+        0,
     ]
 )
 ```
@@ -187,8 +184,7 @@ as_multi_payload, nonce = chain.as_multi_payload(
     trade_value,
     [seller_address, chain.arbitrator_address],
     timepoint, # timepoint from storage
-    False, # don't store
-    190949000, # max weight
+    False, # don't store,
 )
 as_multi_signature = sign_payload(buyer_keypair, as_multi_payload)
 success, response = chain.publish(
@@ -201,7 +197,7 @@ success, response = chain.publish(
         trade_value,
         timepoint, # timepoint
         [seller_address, chain.arbitrator_address], # other sigs
-        190949000, # max weight
+        0,
     ]
 )
 ```
@@ -239,7 +235,6 @@ as_multi_payload, nonce = chain.as_multi_payload(
     [buyer_address, chain.arbitrator_address],
     timepoint, # timepoint from storage
     False, # don't store
-    190949000, # max weight
 )
 as_multi_signature = sign_payload(seller_keypair, as_multi_payload)
 success, response = chain.publish(
@@ -252,7 +247,7 @@ success, response = chain.publish(
         trade_value,
         timepoint, # timepoint
         [buyer_address, chain.arbitrator_address], # other sigs
-        190949000, # max weight
+        0,
     ]
 )
 ```
@@ -262,7 +257,9 @@ This is a purposely verbose, line by line execution for an entire trade. This is
 
 ```python
 import os
+import sr25519
 from dotenv import load_dotenv
+from scalecodec.utils.ss58 import ss58_encode
 from substrateutils.helper import sign_payload
 from substrateutils import Polkadot as Provider
 load_dotenv()
@@ -272,8 +269,14 @@ arbitrator_key = os.getenv("ARBITRATOR_SEED")
 chain.setup_arbitrator(arbitrator_key)
 chain.connect()
 
-buyer_address = os.getenv("BUYER_ADDRESS")
-seller_address = os.getenv("SELLER_ADDRESS")
+# Get seller and buyer addresses
+seller_key = os.getenv("SELLER_SEED")
+buyer_key = os.getenv("BUYER_SEED")
+seller_keypair = sr25519.pair_from_seed(bytes.fromhex(seller_key))
+buyer_keypair = sr25519.pair_from_seed(bytes.fromhex(buyer_key))
+seller_address = ss58_encode(seller_keypair[0], 0)
+buyer_address = ss58_encode(buyer_keypair[0], 0)
+
 escrow_address = chain.get_escrow_address(buyer_address, seller_address)
 
 # Value of the trade in Plancks
@@ -282,9 +285,6 @@ trade_value = 10000000000
 fee_value = 100000000
 escrow_payload, fee_payload, nonce = chain.escrow_payloads(
     seller_address, escrow_address, trade_value, fee_value)
-
-seller_key = os.getenv("SELLER_SEED")
-seller_keypair = sr25519.pair_from_seed(bytes.fromhex(seller_key))
 
 escrow_signature = sign_payload(seller_keypair, escrow_payload)
 fee_signature = sign_payload(seller_keypair, fee_payload)
@@ -302,8 +302,6 @@ transaction = chain.as_multi_storage(
     buyer_address, # To address
     seller_address, # Other signatory
     trade_value,
-    # max_weight = 2565254000,
-    max_weight = 1000000000,
 )
 
 success, response = chain.broadcast(
@@ -318,8 +316,7 @@ as_multi_payload, nonce = chain.as_multi_payload(
     trade_value,
     [buyer_address, chain.arbitrator_address],
     timepoint, # timepoint from storage
-    False, # don't store
-    648378000, # max weight
+    False, # don't store,
 )
 as_multi_signature = sign_payload(seller_keypair, as_multi_payload)
 success, response = chain.publish(
@@ -332,7 +329,7 @@ success, response = chain.publish(
         trade_value,
         timepoint, # timepoint
         [buyer_address, chain.arbitrator_address], # other sigs
-        648378000, # max weight
+        0, # reverts to chain default
     ]
 )
 ```
