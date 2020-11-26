@@ -55,7 +55,7 @@ success, response = chain.publish(
     nonce,
     escrow_address,
     trade_value]
-    )
+)
 assert success
 success, response = chain.publish(
     'fee_transfer',
@@ -63,7 +63,7 @@ success, response = chain.publish(
     fee_signature,
     nonce + 1,
     fee_value]
-    )
+)
 assert success
 ```
 
@@ -74,7 +74,6 @@ transaction = chain.as_multi_storage(
     buyer_address, # To address
     seller_address, # Other signatory
     trade_value,
-    max_weight = 648378000,
 )
 
 success, response = chain.broadcast(
@@ -90,7 +89,6 @@ as_multi_payload, nonce = chain.as_multi_payload(
     [buyer_address, chain.arbitrator_address],
     timepoint, # timepoint from storage
     False, # don't store
-    648378000, # max weight
 )
 as_multi_signature = sign_payload(seller_keypair, as_multi_payload)
 success, response = chain.publish(
@@ -103,7 +101,6 @@ success, response = chain.publish(
         trade_value,
         timepoint, # timepoint
         [buyer_address, chain.arbitrator_address], # other sigs
-        648378000, # max weight
     ]
 )
 ```
@@ -140,7 +137,6 @@ as_multi_payload, nonce = chain.as_multi_payload(
     [buyer_address, chain.arbitrator_address],
     timepoint, # timepoint from storage
     False, # don't store
-    190949000, # max weight
 )
 as_multi_signature = sign_payload(seller_keypair, as_multi_payload)
 success, response = chain.publish(
@@ -153,7 +149,6 @@ success, response = chain.publish(
         trade_value,
         timepoint, # timepoint
         [buyer_address, chain.arbitrator_address], # other sigs
-        190949000, # max weight
     ]
 )
 ```
@@ -188,7 +183,6 @@ as_multi_payload, nonce = chain.as_multi_payload(
     [seller_address, chain.arbitrator_address],
     timepoint, # timepoint from storage
     False, # don't store
-    190949000, # max weight
 )
 as_multi_signature = sign_payload(buyer_keypair, as_multi_payload)
 success, response = chain.publish(
@@ -201,7 +195,6 @@ success, response = chain.publish(
         trade_value,
         timepoint, # timepoint
         [seller_address, chain.arbitrator_address], # other sigs
-        190949000, # max weight
     ]
 )
 ```
@@ -239,7 +232,6 @@ as_multi_payload, nonce = chain.as_multi_payload(
     [buyer_address, chain.arbitrator_address],
     timepoint, # timepoint from storage
     False, # don't store
-    190949000, # max weight
 )
 as_multi_signature = sign_payload(seller_keypair, as_multi_payload)
 success, response = chain.publish(
@@ -252,7 +244,6 @@ success, response = chain.publish(
         trade_value,
         timepoint, # timepoint
         [buyer_address, chain.arbitrator_address], # other sigs
-        190949000, # max weight
     ]
 )
 ```
@@ -262,6 +253,7 @@ This is a purposely verbose, line by line execution for an entire trade. This is
 
 ```python
 import os
+import sr25519
 from dotenv import load_dotenv
 from substrateutils.helper import sign_payload
 from substrateutils import Polkadot as Provider
@@ -302,8 +294,6 @@ transaction = chain.as_multi_storage(
     buyer_address, # To address
     seller_address, # Other signatory
     trade_value,
-    # max_weight = 2565254000,
-    max_weight = 1000000000,
 )
 
 success, response = chain.broadcast(
@@ -319,7 +309,6 @@ as_multi_payload, nonce = chain.as_multi_payload(
     [buyer_address, chain.arbitrator_address],
     timepoint, # timepoint from storage
     False, # don't store
-    648378000, # max weight
 )
 as_multi_signature = sign_payload(seller_keypair, as_multi_payload)
 success, response = chain.publish(
@@ -332,7 +321,6 @@ success, response = chain.publish(
         trade_value,
         timepoint, # timepoint
         [buyer_address, chain.arbitrator_address], # other sigs
-        648378000, # max weight
     ]
 )
 ```
