@@ -8,6 +8,7 @@ from scalecodec.base import ScaleDecoder
 from scalecodec.block import ExtrinsicsDecoder
 from scalecodec.metadata import MetadataDecoder
 from scalecodec.type_registry import load_type_registry_preset
+from scalecodec.updater import update_type_registries
 from scalecodec.utils.ss58 import ss58_decode
 from scalecodec.utils.ss58 import ss58_encode
 
@@ -566,3 +567,7 @@ class Kulupu(SubstrateBase):
         self.chain = "kulupu"
         self.address_type = 16
         super(Kulupu, self).__init__(node_url=node_url, arbitrator_key=arbitrator_key)
+
+
+def update_registry():
+    update_type_registries()
