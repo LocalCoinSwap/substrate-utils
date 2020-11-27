@@ -9,6 +9,6 @@ pytest-mock==3.1.0
 python-dotenv==0.13.0
 # scalecodec==0.10.34
 # Temporary, to install first run: export GITHUB_REF=refs/tags/v1
--e git+https://github.com/CodeForcer/py-scale-codec.git@patch#egg=scalecodec
+git+git://github.com/CodeForcer/py-scale-codec.git@patch#egg=scalecodec
 websockets==8.1
 xxhash==1.4.3
