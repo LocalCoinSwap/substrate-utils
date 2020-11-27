@@ -1,6 +1,9 @@
 import pytest
+from scalecodec.updater import update_type_registries
 
 from substrateutils import Kusama
+
+update_type_registries()
 
 
 @pytest.fixture(scope="session", autouse=True)

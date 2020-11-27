@@ -3,7 +3,7 @@ from hashlib import blake2b
 
 import sr25519
 from scalecodec import ScaleBytes
-from scalecodec.base import RuntimeConfiguration
+from scalecodec.base import RuntimeConfigurationObject
 from scalecodec.base import ScaleDecoder
 from scalecodec.block import ExtrinsicsDecoder
 from scalecodec.metadata import MetadataDecoder
@@ -28,9 +28,10 @@ class SubstrateBase(NonceManager):
             self.setup_arbitrator(arbitrator_key)
 
     def load_type_registry(self):
-        RuntimeConfiguration().update_type_registry(
-            load_type_registry_preset(self.chain)
-        )
+        runtime_config = RuntimeConfigurationObject()
+        runtime_config.update_type_registry(load_type_registry_preset("default"))
+        runtime_config.update_type_registry(load_type_registry_preset(self.chain))
+        self.runtime_config = runtime_config
 
     def connect(self, *, node_url: str = "", network: "Network" = None):
         """
@@ -42,10 +43,6 @@ class SubstrateBase(NonceManager):
 
         self.network = network
         self.runtime_info()
-
-        RuntimeConfiguration().update_type_registry(
-            load_type_registry_preset("default")
-        )
 
         self.load_type_registry()
 
@@ -121,6 +118,7 @@ class SubstrateBase(NonceManager):
             "AccountInfo<Index, AccountData>",
             ScaleBytes(result),
             metadata=self.metadata,
+            runtime_config=self.runtime_config,
         )
         return return_decoder.decode()
 
@@ -172,7 +170,10 @@ class SubstrateBase(NonceManager):
         )["result"]
 
         return_decoder = ScaleDecoder.get_decoder_class(
-            "Vec<EventRecord<Event, Hash>>", ScaleBytes(result), metadata=self.metadata,
+            "Vec<EventRecord<Event, Hash>>",
+            ScaleBytes(result),
+            metadata=self.metadata,
+            runtime_config=self.runtime_config,
         )
         return return_decoder.decode()
 
@@ -239,7 +240,9 @@ class SubstrateBase(NonceManager):
 
         for idx, extrinsic in enumerate(extrinsics):
             extrinsic_decoder = ExtrinsicsDecoder(
-                data=ScaleBytes(extrinsic), metadata=self.metadata
+                data=ScaleBytes(extrinsic),
+                metadata=self.metadata,
+                runtime_config=self.runtime_config,
             )
             decoded_extrinsics.append(extrinsic_decoder.decode())
 
@@ -251,10 +254,9 @@ class SubstrateBase(NonceManager):
         """
         Returns an escrow address for multisignature transactions
         """
-        MultiAccountId = RuntimeConfiguration().get_decoder_class("MultiAccountId")
-
+        MultiAccountId = self.runtime_config.get_decoder_class("MultiAccountId")
         multi_sig_account_id = MultiAccountId.create_from_account_list(
-            [buyer_address, seller_address, self.arbitrator_address], 2
+            [buyer_address, seller_address, self.arbitrator_address], 2,
         )
 
         multi_sig_address = ss58_encode(
@@ -275,6 +277,7 @@ class SubstrateBase(NonceManager):
             self.genesis_hash,
             self.spec_version,
             transaction_version=self.transaction_version,
+            runtime_config=self.runtime_config,
         )
 
     def as_multi_payload(
@@ -305,6 +308,7 @@ class SubstrateBase(NonceManager):
             max_weight=max_weight,
             store_call=store_call,
             transaction_version=self.transaction_version,
+            runtime_config=self.runtime_config,
         )
         return as_multi_payload, nonce
 
@@ -324,6 +328,7 @@ class SubstrateBase(NonceManager):
             self.genesis_hash,
             self.spec_version,
             transaction_version=self.transaction_version,
+            runtime_config=self.runtime_config,
         )
         fee_payload = helper.transfer_signature_payload(
             self.metadata,
@@ -333,6 +338,7 @@ class SubstrateBase(NonceManager):
             self.genesis_hash,
             self.spec_version,
             transaction_version=self.transaction_version,
+            runtime_config=self.runtime_config,
         )
         return escrow_payload, fee_payload, nonce
 
@@ -378,7 +384,9 @@ class SubstrateBase(NonceManager):
         Raw extrinsic broadcast
         """
         if type == "transfer":
-            transaction = helper.unsigned_transfer_construction(self.metadata, *params)
+            transaction = helper.unsigned_transfer_construction(
+                self.metadata, *params, runtime_config=self.runtime_config
+            )
             return self.broadcast(type, transaction)
 
         if type == "fee_transfer":
@@ -389,13 +397,16 @@ class SubstrateBase(NonceManager):
                 params[2],
                 self.arbitrator_address,
                 params[3],
+                runtime_config=self.runtime_config,
             )
             return self.broadcast("transfer", transaction)
 
         if type == "as_multi":
             if params[7] == 0:
                 params[7] = self.max_weight
-            transaction = helper.unsigned_as_multi_construction(self.metadata, *params)
+            transaction = helper.unsigned_as_multi_construction(
+                self.metadata, *params, runtime_config=self.runtime_config
+            )
             return self.broadcast(type, transaction)
 
     def broadcast(self, type: str, transaction: str) -> tuple:
@@ -439,6 +450,7 @@ class SubstrateBase(NonceManager):
                 "Multisig<BlockNumber, BalanceOf, AccountId>",
                 ScaleBytes(storage_result),
                 metadata=self.metadata,
+                runtime_config=self.runtime_config,
             )
             response[item[178:]] = return_decoder.decode()
         response["status"] = "unfinised escrows found"
@@ -467,6 +479,7 @@ class SubstrateBase(NonceManager):
             store_call=store_call,
             max_weight=max_weight,
             transaction_version=self.transaction_version,
+            runtime_config=self.runtime_config,
         )
         signature = helper.sign_payload(self.keypair, payload)
         transaction = helper.unsigned_as_multi_construction(
@@ -480,6 +493,7 @@ class SubstrateBase(NonceManager):
             [other_signatory, to_address],
             store_call=store_call,
             max_weight=max_weight,
+            runtime_config=self.runtime_config,
         )
         return transaction
 
@@ -495,6 +509,7 @@ class SubstrateBase(NonceManager):
             self.genesis_hash,
             self.spec_version,
             transaction_version=self.transaction_version,
+            runtime_config=self.runtime_config,
         )
         fee_revert_signature = helper.sign_payload(self.keypair, fee_revert_payload)
         fee_revert_transaction = helper.unsigned_transfer_construction(
@@ -504,6 +519,7 @@ class SubstrateBase(NonceManager):
             nonce,
             seller_address,
             fee_value,
+            runtime_config=self.runtime_config,
         )
         return fee_revert_transaction
 
@@ -519,6 +535,7 @@ class SubstrateBase(NonceManager):
             self.genesis_hash,
             self.spec_version,
             transaction_version=self.transaction_version,
+            runtime_config=self.runtime_config,
         )
         welfare_signature = helper.sign_payload(self.keypair, welfare_payload)
         welfare_transaction = helper.unsigned_transfer_construction(
@@ -528,6 +545,7 @@ class SubstrateBase(NonceManager):
             nonce,
             buyer_address,
             welfare_value,
+            runtime_config=self.runtime_config,
         )
         return welfare_transaction
 

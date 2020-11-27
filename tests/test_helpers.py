@@ -33,6 +33,7 @@ class TestSignaturePayloads:
             nonce,
             kusama.genesis_hash,
             kusama.spec_version,
+            runtime_config=kusama.runtime_config,
         )
         assert len(result) == 232 and result[0:2] == "0x"
 
@@ -59,7 +60,13 @@ class TestPayloadConstruction:
             "b8a619b90205b6c3bef293f7b0c38fae7353afe10feae4c471255b0700e40b5402"
         )
         result = unsigned_transfer_construction(
-            kusama.metadata, account_id, signature, nonce, to_address, amount
+            kusama.metadata,
+            account_id,
+            signature,
+            nonce,
+            to_address,
+            amount,
+            runtime_config=kusama.runtime_config,
         )
         assert result == expected_final_extrinsic
 
@@ -92,6 +99,7 @@ class TestPayloadConstruction:
             amount,
             timepoint,
             other_signatories,
+            runtime_config=kusama.runtime_config,
         )
         assert len(result) == 464 and result[0:2] == "0x"
 
