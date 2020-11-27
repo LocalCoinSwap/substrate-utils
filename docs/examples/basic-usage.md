@@ -1,14 +1,14 @@
 ## Basic setup of the module
 
 ### Instantiating without configuration
-```
+```python
 from substrateutils import Kusama, Polkadot
 kusama = Kusama()
 polkadot = Polkadot()
 ```
 
 ### Loading configuration after instantiation
-```
+```python
 from substrateutils import Kusama, Polkadot
 kusama, polkadot = Kusama(), Polkadot()
 
@@ -18,7 +18,7 @@ polkadot.setup_arbitrator(arbitrator_key)
 ```
 
 ### Instantiating with arbitrator and websocket configuration
-```
+```python
 from substrateutils import Kusama, Polkadot
 kusama, polkadot = Kusama(), Polkadot()
 
