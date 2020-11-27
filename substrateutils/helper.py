@@ -7,6 +7,7 @@ from typing import Union
 import scalecodec
 import sr25519
 import xxhash
+from scalecodec.base import RuntimeConfigurationObject
 from scalecodec.base import ScaleDecoder
 from scalecodec.metadata import MetadataDecoder
 from scalecodec.utils.ss58 import ss58_decode
@@ -50,11 +51,14 @@ def transfer_signature_payload(
     genesis_hash: str,
     spec_version: int,
     transaction_version: int = 3,
+    runtime_config: "RuntimeConfigurationObject" = None,
 ) -> str:
     """
     Turn parameters gathered through side effects into unsigned transfer string
     """
-    call = ScaleDecoder.get_decoder_class("Call", metadata=metadata)
+    call = ScaleDecoder.get_decoder_class(
+        "Call", metadata=metadata, runtime_config=runtime_config
+    )
     call.encode(
         {
             "call_module": "Balances",
@@ -62,7 +66,9 @@ def transfer_signature_payload(
             "call_args": {"dest": address, "value": value},
         }
     )
-    signature_payload = ScaleDecoder.get_decoder_class("ExtrinsicPayloadValue")
+    signature_payload = ScaleDecoder.get_decoder_class(
+        "ExtrinsicPayloadValue", runtime_config=runtime_config
+    )
     signature_payload.encode(
         {
             "call": str(call.data),
@@ -92,12 +98,17 @@ def as_multi_signature_payload(
     transaction_version: int = 3,
     max_weight: int = 0,
     store_call: bool = False,
+    runtime_config: "RuntimeConfigurationObject" = None,
 ) -> str:
     """
     Turn parameters gathered through side effects into unsigned as_multi string
     """
-    as_multi = ScaleDecoder.get_decoder_class("Call", metadata=metadata)
-    transfer = ScaleDecoder.get_decoder_class("OpaqueCall", metadata=metadata)
+    as_multi = ScaleDecoder.get_decoder_class(
+        "Call", metadata=metadata, runtime_config=runtime_config
+    )
+    transfer = ScaleDecoder.get_decoder_class(
+        "OpaqueCall", metadata=metadata, runtime_config=runtime_config
+    )
     transfer.encode(
         {
             "call_module": "Balances",
@@ -122,7 +133,9 @@ def as_multi_signature_payload(
             },
         }
     )
-    signature_payload = ScaleDecoder.get_decoder_class("ExtrinsicPayloadValue")
+    signature_payload = ScaleDecoder.get_decoder_class(
+        "ExtrinsicPayloadValue", runtime_config=runtime_config
+    )
     signature_payload.encode(
         {
             "call": str(as_multi.data),
@@ -148,11 +161,14 @@ def _extrinsic_construction(
     call_arguments: dict,
     nonce: int,
     tip: int = 0,
+    runtime_config: "RuntimeConfigurationObject" = None,
 ) -> str:
     """
     Turn parameters gathered through side effects into extrinsic object
     """
-    extrinsic = ScaleDecoder.get_decoder_class("Extrinsic", metadata=metadata)
+    extrinsic = ScaleDecoder.get_decoder_class(
+        "Extrinsic", metadata=metadata, runtime_config=runtime_config
+    )
     extrinsic.encode(
         {
             "account_id": account_id,
@@ -178,6 +194,7 @@ def unsigned_transfer_construction(
     to_address: str,
     amount: int,
     tip: int = 0,
+    runtime_config: "RuntimeConfigurationObject" = None,
 ) -> str:
     """
     Turn parameters gathered through side effects into a transfer extrinsic object
@@ -194,6 +211,7 @@ def unsigned_transfer_construction(
         call_arguments,
         nonce,
         tip,
+        runtime_config,
     )
 
 
@@ -210,13 +228,16 @@ def unsigned_as_multi_construction(
     store_call: bool = False,
     threshold: int = 2,
     tip: int = 0,
+    runtime_config: "RuntimeConfigurationObject" = None,
 ) -> str:
     """
     Turn parameters gathered through side effects into an as_multi extrinsic object
     """
     call_function = "as_multi"
     call_module = "Multisig"
-    transfer = ScaleDecoder.get_decoder_class("OpaqueCall", metadata=metadata)
+    transfer = ScaleDecoder.get_decoder_class(
+        "OpaqueCall", metadata=metadata, runtime_config=runtime_config
+    )
     transfer.encode(
         {
             "call_module": "Balances",
@@ -244,6 +265,7 @@ def unsigned_as_multi_construction(
         call_arguments,
         nonce,
         tip,
+        runtime_config,
     )
 
 
