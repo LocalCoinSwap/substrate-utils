@@ -3,7 +3,6 @@ from hashlib import blake2b
 
 import sr25519
 from scalecodec import ScaleBytes
-from scalecodec.base import RuntimeConfiguration
 from scalecodec.base import RuntimeConfigurationObject
 from scalecodec.base import ScaleDecoder
 from scalecodec.block import ExtrinsicsDecoder
@@ -255,11 +254,7 @@ class SubstrateBase(NonceManager):
         """
         Returns an escrow address for multisignature transactions
         """
-        RuntimeConfiguration().update_type_registry(
-            load_type_registry_preset("default")
-        )
-        MultiAccountId = RuntimeConfiguration().get_decoder_class("MultiAccountId")
-        # MultiAccountId = self.runtime_config.get_decoder_class("MultiAccountId")
+        MultiAccountId = self.runtime_config.get_decoder_class("MultiAccountId")
         multi_sig_account_id = MultiAccountId.create_from_account_list(
             [buyer_address, seller_address, self.arbitrator_address], 2,
         )
