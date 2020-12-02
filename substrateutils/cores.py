@@ -368,11 +368,6 @@ class SubstrateBase(NonceManager):
         )
         successful = (
             True
-            if transaction_type == "approve_as_multi" and "NewMultisig" in event_names
-            else successful
-        )
-        successful = (
-            True
             if transaction_type == "as_multi"
             and (("MultisigExecuted" in event_names) or ("NewMultisig" in event_names))
             else successful
