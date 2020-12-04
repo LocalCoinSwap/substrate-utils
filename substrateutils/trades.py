@@ -8,7 +8,7 @@ from .helper import sign_payload
 
 
 class User:
-    def __init__(self, address_type=2, *, mnemonic=None, hex=None):
+    def __init__(self, address_type=0, *, mnemonic=None, hex=None):
         if mnemonic:
             seed_bytes = bip39.bip39_to_mini_secret(mnemonic, "")
             seed_hex = bytearray(seed_bytes).hex()
@@ -22,15 +22,15 @@ class User:
         self.address = ss58_encode(self.keypair[0], address_type)
 
 
-class Trade:
+class TradeManager:
     def __init__(
         self,
         buyer: "User" = None,
         seller: "User" = None,
         arbitrator: "User" = None,
-        chain: "SubstrateBase" = None,
         value: int = 0,
         *,
+        chain: "SubstrateBase" = None,
         fee_value: int = 1,  # %
     ):
         self.buyer = buyer
@@ -40,7 +40,8 @@ class Trade:
             core = chain
         else:
             core = Polkadot(arbitrator_key=arbitrator.hex)
-        self.core = core
+        self.chain = core
+        self.chain.connect()
         self.escrow_address = core.get_escrow_address(
             self.buyer.address, self.seller.address
         )
@@ -49,12 +50,12 @@ class Trade:
         self.status = "CREATED"
 
     def fund_escrow(self):
-        escrow_payload, fee_payload, nonce = self.core.escrow_payloads(
+        escrow_payload, fee_payload, nonce = self.chain.escrow_payloads(
             self.seller.address, self.escrow_address, self.value, self.fee_value,
         )
         escrow_signature = sign_payload(self.seller.keypair, escrow_payload)
         fee_signature = sign_payload(self.seller.keypair, fee_payload)
-        _, self.escrow_tx.response = self.chain.publish(
+        _, self.escrow_tx = self.chain.publish(
             "transfer",
             [
                 self.seller.address,
@@ -64,7 +65,7 @@ class Trade:
                 self.value,
             ],
         )
-        _, self.fee_tx.response = self.chain.publish(
+        _, self.fee_tx = self.chain.publish(
             "fee_transfer",
             [self.seller.address, fee_signature, nonce + 1, self.fee_value],
         )
@@ -82,7 +83,7 @@ class Trade:
             self.buyer.address,
             self.value,
             [self.buyer.address, self.arbitrator.address],
-            self.release_tx["timepoint"],
+            self.release_arb_tx["timepoint"],
             False,
         )
         as_multi_signature = sign_payload(self.seller.keypair, as_multi_payload)
@@ -94,7 +95,7 @@ class Trade:
                 nonce,
                 self.buyer.address,
                 self.value,
-                self.release_tx["timepoint"],
+                self.release_arb_tx["timepoint"],
                 [self.buyer.address, self.arbitrator.address],
                 0,
             ],

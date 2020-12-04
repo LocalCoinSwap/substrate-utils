@@ -148,7 +148,9 @@ class SubstrateBase(NonceManager):
 
         for idx, data in enumerate(response["block"]["extrinsics"]):
             extrinsic_decoder = ExtrinsicsDecoder(
-                data=ScaleBytes(data), metadata=self.metadata
+                data=ScaleBytes(data),
+                metadata=self.metadata,
+                runtime_config=self.runtime_config,
             )
             extrinsic_decoder.decode()
             response["block"]["extrinsics"][idx] = extrinsic_decoder.value
