@@ -1,76 +1,37 @@
 import logging
-from abc import ABC
-from abc import abstractmethod
 from hashlib import blake2b
 
 import sr25519
 from scalecodec import ScaleBytes
-from scalecodec.base import RuntimeConfiguration
+from scalecodec.base import RuntimeConfigurationObject
 from scalecodec.base import ScaleDecoder
 from scalecodec.block import ExtrinsicsDecoder
 from scalecodec.metadata import MetadataDecoder
 from scalecodec.type_registry import load_type_registry_preset
+from scalecodec.updater import update_type_registries
 from scalecodec.utils.ss58 import ss58_decode
 from scalecodec.utils.ss58 import ss58_encode
 
 from . import helper
 from .network import Network
+from .nonce import NonceManager
 
 logger = logging.getLogger(__name__)
 
 
-class NonceManager(ABC):
-    """
-
-    Abstract Class: Extending this class allows a user to build advanced
-    nonce management in asyncronous environments where ordering is important
-    """
-
-    @abstractmethod
-    def get_pending_extrinsics(self) -> list:
-        raise NotImplementedError("Not implemented")
-
-    @abstractmethod
-    def get_nonce(self, address: str) -> int:
-        raise NotImplementedError("Not implemented")
-
-    def get_mempool_nonce(self, address: str) -> int:
-        """
-        Returns the nonce of any pending extrinsics for a given address
-        """
-        account_id = ss58_decode(address)
-
-        pending_extrinsics = self.get_pending_extrinsics()
-        nonce = -1
-
-        for idx, extrinsic in enumerate(pending_extrinsics):
-            if extrinsic.get("account_id") == account_id:
-                nonce = max(extrinsic.get("nonce", nonce), nonce)
-        return nonce
-
-    def arbitrator_nonce(self) -> int:
-        """
-        Returns the nonce of any pending extrinsics for the arbitrator
-        """
-        if not self.arbitrator_address:
-            raise Exception("Did you forget to setup artitrator address?")
-
-        mempool_nonce = self.get_mempool_nonce(self.arbitrator_address)
-        if mempool_nonce == -1:
-            return self.get_nonce(self.arbitrator_address)
-        return mempool_nonce
-
-
-class Kusama(NonceManager):
+class SubstrateBase(NonceManager):
     def __init__(
-        self,
-        *,
-        node_url: str = "wss://kusama-rpc.polkadot.io/",
-        arbitrator_key: str = None,
+        self, *, node_url: str = None, arbitrator_key: str = None,
     ):
         self.node_url = node_url
         if arbitrator_key:
             self.setup_arbitrator(arbitrator_key)
+
+    def load_type_registry(self):
+        runtime_config = RuntimeConfigurationObject()
+        runtime_config.update_type_registry(load_type_registry_preset("default"))
+        runtime_config.update_type_registry(load_type_registry_preset(self.chain))
+        self.runtime_config = runtime_config
 
     def connect(self, *, node_url: str = "", network: "Network" = None):
         """
@@ -83,13 +44,10 @@ class Kusama(NonceManager):
         self.network = network
         self.runtime_info()
 
-        RuntimeConfiguration().update_type_registry(
-            load_type_registry_preset("default")
-        )
-        RuntimeConfiguration().update_type_registry(load_type_registry_preset("kusama"))
+        self.load_type_registry()
 
         self.metadata = self.get_metadata()
-        self.spec_version = self.get_spec_version()
+        self.runtime_info()
         self.genesis_hash = self.get_genesis_hash()
 
     def setup_arbitrator(self, arbitrator_key: str):
@@ -98,11 +56,12 @@ class Kusama(NonceManager):
         """
         self.keypair = sr25519.pair_from_seed(bytes.fromhex(arbitrator_key))
         self.arbitrator_account_id = self.keypair[0].hex()
-        self.arbitrator_address = ss58_encode(self.keypair[0], 2)
+        self.arbitrator_address = ss58_encode(self.keypair[0], self.address_type)
 
     def runtime_info(self) -> int:
         """
-        Check the current
+        Check the current runtime and load the correct spec vesion and
+        transaction version
         """
         result = self.network.node_rpc_call("state_getRuntimeVersion", [])
         self.spec_version = result["result"]["specVersion"]
@@ -126,12 +85,6 @@ class Kusama(NonceManager):
         with open(filename, "w") as f:
             f.write(self.raw_metadata)
 
-    def get_spec_version(self) -> int:
-        """
-        Returns the blockchain version
-        """
-        return self.spec_version
-
     def get_genesis_hash(self) -> str:
         """
         Returns the chain's genesis block hash
@@ -148,23 +101,24 @@ class Kusama(NonceManager):
             "0x26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da9"
         )
 
-        account_id = ss58_decode(address, 2)
+        account_id = ss58_decode(address, self.address_type)
         hashed_address = f"{blake2b(bytes.fromhex(account_id), digest_size=16).digest().hex()}{account_id}"
         storage_hash = storage_key + hashed_address
         result = self.network.node_rpc_call("state_getStorageAt", [storage_hash, None])[
             "result"
         ]
         if not result:
-            result = (
-                "0x00000000000000000000000000000000000000000000000000000"
-                "0000000000000000000000000000000000000000000000000000000"
-                "000000000000000000000000000000"
-            )
+            return {
+                "nonce": 0,
+                "refcount": 0,
+                "data": {"free": 0, "reserved": 0, "miscFrozen": 0, "feeFrozen": 0},
+            }
 
         return_decoder = ScaleDecoder.get_decoder_class(
             "AccountInfo<Index, AccountData>",
             ScaleBytes(result),
             metadata=self.metadata,
+            runtime_config=self.runtime_config,
         )
         return return_decoder.decode()
 
@@ -194,7 +148,9 @@ class Kusama(NonceManager):
 
         for idx, data in enumerate(response["block"]["extrinsics"]):
             extrinsic_decoder = ExtrinsicsDecoder(
-                data=ScaleBytes(data), metadata=self.metadata
+                data=ScaleBytes(data),
+                metadata=self.metadata,
+                runtime_config=self.runtime_config,
             )
             extrinsic_decoder.decode()
             response["block"]["extrinsics"][idx] = extrinsic_decoder.value
@@ -216,7 +172,10 @@ class Kusama(NonceManager):
         )["result"]
 
         return_decoder = ScaleDecoder.get_decoder_class(
-            "Vec<EventRecord<Event, Hash>>", ScaleBytes(result), metadata=self.metadata,
+            "Vec<EventRecord<Event, Hash>>",
+            ScaleBytes(result),
+            metadata=self.metadata,
+            runtime_config=self.runtime_config,
         )
         return return_decoder.decode()
 
@@ -283,7 +242,9 @@ class Kusama(NonceManager):
 
         for idx, extrinsic in enumerate(extrinsics):
             extrinsic_decoder = ExtrinsicsDecoder(
-                data=ScaleBytes(extrinsic), metadata=self.metadata
+                data=ScaleBytes(extrinsic),
+                metadata=self.metadata,
+                runtime_config=self.runtime_config,
             )
             decoded_extrinsics.append(extrinsic_decoder.decode())
 
@@ -295,13 +256,14 @@ class Kusama(NonceManager):
         """
         Returns an escrow address for multisignature transactions
         """
-        MultiAccountId = RuntimeConfiguration().get_decoder_class("MultiAccountId")
-
+        MultiAccountId = self.runtime_config.get_decoder_class("MultiAccountId")
         multi_sig_account_id = MultiAccountId.create_from_account_list(
-            [buyer_address, seller_address, self.arbitrator_address], 2
+            [buyer_address, seller_address, self.arbitrator_address], 2,
         )
 
-        multi_sig_address = ss58_encode(multi_sig_account_id.value.replace("0x", ""), 2)
+        multi_sig_address = ss58_encode(
+            multi_sig_account_id.value.replace("0x", ""), self.address_type
+        )
         return multi_sig_address
 
     def transfer_payload(self, from_address: str, to_address: str, value: int) -> str:
@@ -316,25 +278,9 @@ class Kusama(NonceManager):
             nonce,
             self.genesis_hash,
             self.spec_version,
+            transaction_version=self.transaction_version,
+            runtime_config=self.runtime_config,
         )
-
-    def approve_as_multi_payload(
-        self, from_address: str, to_address: str, value: int, other_signatories: list
-    ) -> tuple:
-        """
-        Returns signature payloads for approve_as_multi
-        """
-        nonce = self.get_nonce(from_address)
-        approve_as_multi_payload = helper.approve_as_multi_signature_payload(
-            self.metadata,
-            self.spec_version,
-            self.genesis_hash,
-            nonce,
-            to_address,
-            value,
-            other_signatories,
-        )
-        return approve_as_multi_payload, nonce
 
     def as_multi_payload(
         self,
@@ -349,6 +295,8 @@ class Kusama(NonceManager):
         """
         Returns signature payloads for as_multi
         """
+        if max_weight == 0:
+            max_weight = self.max_weight
         nonce = self.get_nonce(from_address)
         as_multi_payload = helper.as_multi_signature_payload(
             self.metadata,
@@ -361,6 +309,8 @@ class Kusama(NonceManager):
             timepoint,
             max_weight=max_weight,
             store_call=store_call,
+            transaction_version=self.transaction_version,
+            runtime_config=self.runtime_config,
         )
         return as_multi_payload, nonce
 
@@ -379,6 +329,8 @@ class Kusama(NonceManager):
             nonce,
             self.genesis_hash,
             self.spec_version,
+            transaction_version=self.transaction_version,
+            runtime_config=self.runtime_config,
         )
         fee_payload = helper.transfer_signature_payload(
             self.metadata,
@@ -387,158 +339,10 @@ class Kusama(NonceManager):
             nonce + 1,
             self.genesis_hash,
             self.spec_version,
+            transaction_version=self.transaction_version,
+            runtime_config=self.runtime_config,
         )
         return escrow_payload, fee_payload, nonce
-
-    def release_escrow(
-        self,
-        buyer_address: str,
-        trade_value: int,
-        timepoint: tuple,
-        other_signatories: list,
-    ) -> str:
-        """
-        Return final arbitrator as_multi transaction for releasing escrow
-        """
-        nonce = self.arbitrator_nonce()
-        release_payload = helper.as_multi_signature_payload(
-            self.metadata,
-            self.spec_version,
-            self.genesis_hash,
-            nonce,
-            buyer_address,
-            trade_value,
-            other_signatories,
-            timepoint,
-        )
-        release_signature = helper.sign_payload(self.keypair, release_payload)
-        release_transaction = helper.unsigned_as_multi_construction(
-            self.metadata,
-            self.arbitrator_address,
-            release_signature,
-            nonce,
-            buyer_address,
-            trade_value,
-            timepoint,
-            other_signatories,
-        )
-        return release_transaction
-
-    def cancellation(
-        self,
-        seller_address: str,
-        trade_value: int,
-        fee_value: int,
-        other_signatories: list,
-        timepoint: tuple,
-    ) -> tuple:
-        """
-        Return signed and ready transactions for the fee return and escrow return
-        """
-
-        nonce = self.arbitrator_nonce()
-
-        revert_payload = helper.as_multi_signature_payload(
-            self.metadata,
-            self.spec_version,
-            self.genesis_hash,
-            nonce,
-            seller_address,
-            trade_value,
-            other_signatories,
-            timepoint,
-        )
-        fee_revert_payload = helper.transfer_signature_payload(
-            self.metadata,
-            seller_address,
-            fee_value,
-            nonce + 1,
-            self.genesis_hash,
-            self.spec_version,
-        )
-
-        revert_signature = helper.sign_payload(self.keypair, revert_payload)
-        fee_revert_signature = helper.sign_payload(self.keypair, fee_revert_payload)
-
-        revert_transaction = helper.unsigned_as_multi_construction(
-            self.metadata,
-            self.arbitrator_address,
-            revert_signature,
-            nonce,
-            seller_address,
-            trade_value,
-            timepoint,
-            other_signatories,
-        )
-        fee_revert_transaction = helper.unsigned_transfer_construction(
-            self.metadata,
-            self.arbitrator_address,
-            fee_revert_signature,
-            nonce + 1,
-            seller_address,
-            fee_value,
-        )
-        return revert_transaction, fee_revert_transaction
-
-    def resolve_dispute(
-        self,
-        victor: str,
-        seller_address: str,
-        trade_value: int,
-        fee_value: int,
-        other_signatories: list,
-        welfare_value: int = 1000000000,
-    ) -> tuple:
-        """
-        If sellers wins then return cancellation logic
-        If buyer wins then return ready approveAsMulti and ready buyer welfare transfer
-        """
-        nonce = self.arbitrator_nonce()
-
-        if victor == "seller":
-            return self.cancellation(
-                seller_address, trade_value, fee_value, other_signatories, None
-            )
-
-        release_payload = helper.approve_as_multi_signature_payload(
-            self.metadata,
-            self.spec_version,
-            self.genesis_hash,
-            nonce,
-            seller_address,
-            trade_value,
-            other_signatories,
-        )
-        welfare_payload = helper.transfer_signature_payload(
-            self.metadata,
-            seller_address,
-            welfare_value,
-            nonce + 1,
-            self.genesis_hash,
-            self.spec_version,
-        )
-
-        release_signature = helper.sign_payload(self.keypair, release_payload)
-        welfare_signature = helper.sign_payload(self.keypair, welfare_payload)
-
-        release_transaction = helper.unsigned_approve_as_multi_construction(
-            self.metadata,
-            self.arbitrator_address,
-            release_signature,
-            nonce,
-            seller_address,
-            trade_value,
-            other_signatories,
-        )
-        welfare_transaction = helper.unsigned_transfer_construction(
-            self.metadata,
-            self.arbitrator_address,
-            welfare_signature,
-            nonce + 1,
-            seller_address,
-            welfare_value,
-        )
-        return release_transaction, welfare_transaction
 
     def get_block_hash(self, node_response: dict) -> str:
         """
@@ -566,11 +370,6 @@ class Kusama(NonceManager):
         )
         successful = (
             True
-            if transaction_type == "approve_as_multi" and "NewMultisig" in event_names
-            else successful
-        )
-        successful = (
-            True
             if transaction_type == "as_multi"
             and (("MultisigExecuted" in event_names) or ("NewMultisig" in event_names))
             else successful
@@ -582,7 +381,9 @@ class Kusama(NonceManager):
         Raw extrinsic broadcast
         """
         if type == "transfer":
-            transaction = helper.unsigned_transfer_construction(self.metadata, *params)
+            transaction = helper.unsigned_transfer_construction(
+                self.metadata, *params, runtime_config=self.runtime_config
+            )
             return self.broadcast(type, transaction)
 
         if type == "fee_transfer":
@@ -593,17 +394,16 @@ class Kusama(NonceManager):
                 params[2],
                 self.arbitrator_address,
                 params[3],
+                runtime_config=self.runtime_config,
             )
             return self.broadcast("transfer", transaction)
 
-        if type == "approve_as_multi":
-            transaction = helper.unsigned_approve_as_multi_construction(
-                self.metadata, *params
-            )
-            return self.broadcast(type, transaction)
-
         if type == "as_multi":
-            transaction = helper.unsigned_as_multi_construction(self.metadata, *params)
+            if params[7] == 0:
+                params[7] = self.max_weight
+            transaction = helper.unsigned_as_multi_construction(
+                self.metadata, *params, runtime_config=self.runtime_config
+            )
             return self.broadcast(type, transaction)
 
     def broadcast(self, type: str, transaction: str) -> tuple:
@@ -631,7 +431,7 @@ class Kusama(NonceManager):
         Returns details of all unfinished multisigs from an address
         """
         response = {}
-        prefix = f"0x{helper.get_prefix(escrow_address)}"
+        prefix = f"0x{helper.get_prefix(escrow_address, self.address_type)}"
         getkeys_response = self.network.node_rpc_call("state_getKeys", [prefix])
 
         if not getkeys_response.get("result", False):
@@ -647,6 +447,7 @@ class Kusama(NonceManager):
                 "Multisig<BlockNumber, BalanceOf, AccountId>",
                 ScaleBytes(storage_result),
                 metadata=self.metadata,
+                runtime_config=self.runtime_config,
             )
             response[item[178:]] = return_decoder.decode()
         response["status"] = "unfinised escrows found"
@@ -658,8 +459,10 @@ class Kusama(NonceManager):
         other_signatory: str,
         amount: str,
         store_call: bool = True,
-        max_weight: int = 648378000,
+        max_weight: int = 1,
     ):
+        if max_weight == 0:
+            max_weight = self.max_weight
         nonce = self.arbitrator_nonce()
         payload = helper.as_multi_signature_payload(
             self.metadata,
@@ -672,6 +475,8 @@ class Kusama(NonceManager):
             None,
             store_call=store_call,
             max_weight=max_weight,
+            transaction_version=self.transaction_version,
+            runtime_config=self.runtime_config,
         )
         signature = helper.sign_payload(self.keypair, payload)
         transaction = helper.unsigned_as_multi_construction(
@@ -685,6 +490,7 @@ class Kusama(NonceManager):
             [other_signatory, to_address],
             store_call=store_call,
             max_weight=max_weight,
+            runtime_config=self.runtime_config,
         )
         return transaction
 
@@ -699,6 +505,8 @@ class Kusama(NonceManager):
             nonce,
             self.genesis_hash,
             self.spec_version,
+            transaction_version=self.transaction_version,
+            runtime_config=self.runtime_config,
         )
         fee_revert_signature = helper.sign_payload(self.keypair, fee_revert_payload)
         fee_revert_transaction = helper.unsigned_transfer_construction(
@@ -708,14 +516,13 @@ class Kusama(NonceManager):
             nonce,
             seller_address,
             fee_value,
+            runtime_config=self.runtime_config,
         )
         return fee_revert_transaction
 
-    def welfare_transaction(
-        self, buyer_address: str, welfare_value: int = 4000000000,
-    ) -> str:
-        # Note: 4000000000 (0.004 KSM) seems to be the minimum
-        # To make an as_multi final tx once call is stored
+    def welfare_transaction(self, buyer_address: str, welfare_value: int = 0,) -> str:
+        if welfare_value == 0:
+            welfare_value = self.welfare_value
         nonce = self.arbitrator_nonce()
         welfare_payload = helper.transfer_signature_payload(
             self.metadata,
@@ -724,6 +531,8 @@ class Kusama(NonceManager):
             nonce,
             self.genesis_hash,
             self.spec_version,
+            transaction_version=self.transaction_version,
+            runtime_config=self.runtime_config,
         )
         welfare_signature = helper.sign_payload(self.keypair, welfare_payload)
         welfare_transaction = helper.unsigned_transfer_construction(
@@ -733,5 +542,47 @@ class Kusama(NonceManager):
             nonce,
             buyer_address,
             welfare_value,
+            runtime_config=self.runtime_config,
         )
         return welfare_transaction
+
+
+class Kusama(SubstrateBase):
+    def __init__(
+        self,
+        *,
+        node_url: str = "wss://kusama-rpc.polkadot.io/",
+        arbitrator_key: str = None,
+    ):
+        self.chain = "kusama"
+        self.address_type = 2
+        self.max_weight = 190949000
+        self.welfare_value = 4000000000  # 0.004 KSM
+        super(Kusama, self).__init__(node_url=node_url, arbitrator_key=arbitrator_key)
+
+
+class Polkadot(SubstrateBase):
+    def __init__(
+        self, *, node_url: str = "wss://rpc.polkadot.io/", arbitrator_key: str = None,
+    ):
+        self.chain = "polkadot"
+        self.address_type = 0
+        self.max_weight = 648378000
+        self.welfare_value = 400000000  # 0.04 DOT
+        super(Polkadot, self).__init__(node_url=node_url, arbitrator_key=arbitrator_key)
+
+
+class Kulupu(SubstrateBase):
+    def __init__(
+        self,
+        *,
+        node_url: str = "wss://rpc.kulupu.corepaper.org/ws",
+        arbitrator_key: str = None,
+    ):
+        self.chain = "kulupu"
+        self.address_type = 16
+        super(Kulupu, self).__init__(node_url=node_url, arbitrator_key=arbitrator_key)
+
+
+def update_registry():
+    update_type_registries()

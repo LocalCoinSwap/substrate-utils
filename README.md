@@ -1,9 +1,22 @@
 # substrate-utils
-Substrate utility library providing functionality for multi-signature trading, originally built for [LocalCoinSwap](https://localcoinswap.com)
+Substrate utility library providing functionality for exchange management and multi-signature trading, originally built for [LocalCoinSwap](https://localcoinswap.com)
 
 ![Python package](https://github.com/LocalCoinSwap/substrate-utils/workflows/Python%20package/badge.svg) [![PyPI pyversions](https://img.shields.io/pypi/pyversions/substrate-utils.svg?v-0.2.1)](https://pypi.org/project/substrate-utils/) [![PyPI version shields.io](https://img.shields.io/pypi/v/substrate-utils.svg?v-0.2.1)](https://pypi.python.org/pypi/substrate-utils/)
 
+The focus of this library is on functionality needed to provide an exchange service, including:
 
+- Account generation
+- Balance checking
+- Making transfers
+- Creating N/M (2/3) escrow addresses
+- Non-custodial trades
+- Cancellation of trades
+- Administration of trade disputes
+- Verification of transactions
+- Diagnostics for common problems
+- Associated cryptography
+
+For complete examples please review the documentation. If there's any exchange functionality you need which we haven't provided, feel free to raise an issue in Github.
 
 ----
 
@@ -14,8 +27,10 @@ pip install substrate-utils
 
 ## Quick start
 ```
-from substrateutils import Kusama
+from substrateutils import Kusama, Polkadot, Kulupu
 kusama = Kusama()
+polkadot = Polkadot()
+kulupu = Kulupu()
 ```
 
 ## Documentation
@@ -54,3 +69,11 @@ Before making changes, let's ensure tests run successfully on local.
     - `coverage run -m pytest -v`
  - Show report in terminal
     - `coverage report -m`
+
+### Notes
+
+Trade storage calls for 2/3 trades cost:  
+```
+Polkadot - 40.3040 DOT  
+Kusama   - 6.71733331304 KSM  
+```
