@@ -36,7 +36,7 @@
     
     
       
-        <title>Basic Usage - kusama-utils</title>
+        <title>Basic Usage - substrate-utils</title>
       
     
     
@@ -86,7 +86,7 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../.." title="kusama-utils" aria-label="kusama-utils" class="md-header-nav__button md-logo">
+        <a href="../../.." title="substrate-utils" aria-label="substrate-utils" class="md-header-nav__button md-logo">
           
             <img alt="logo" src="https://static.localcoinswap.com/exchange/assets/images/lcs_logo_light.svg" width="24" height="24">
           
@@ -99,7 +99,7 @@
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
           
             <span class="md-header-nav__topic">
-              kusama-utils
+              substrate-utils
             </span>
             <span class="md-header-nav__topic">
               
@@ -178,12 +178,12 @@
                   <div class="md-sidebar__inner">
                     <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../.." title="kusama-utils" class="md-nav__button md-logo">
+    <a href="../../.." title="substrate-utils" class="md-nav__button md-logo">
       
         <img alt="logo" src="https://static.localcoinswap.com/exchange/assets/images/lcs_logo_light.svg" width="48" height="48">
       
     </a>
-    kusama-utils
+    substrate-utils
   </label>
   
     <div class="md-nav__source">
@@ -335,8 +335,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#connecting-to-the-kusama-blockchain" class="md-nav__link">
-    Connecting to the Kusama blockchain
+  <a href="#connecting-to-the-blockchain-and-getting-runtime" class="md-nav__link">
+    Connecting to the blockchain and getting runtime
   </a>
   
 </li>
@@ -376,6 +376,18 @@
   </li>
 
         
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../trade-class-usage/" title="Trade Class Usage" class="md-nav__link">
+      Trade Class Usage
+    </a>
+  </li>
+
+        
       </ul>
     </nav>
   </li>
@@ -410,11 +422,11 @@
       <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4-1" type="checkbox" id="nav-4-1">
     
     <label class="md-nav__link" for="nav-4-1">
-      Ksmutils
+      Substrateutils
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
       <label class="md-nav__title" for="nav-4-1">
-        Ksmutils
+        Substrateutils
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
         
@@ -425,8 +437,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../../../reference/ksmutils/core/" title="Core" class="md-nav__link">
-      Core
+    <a href="../../../reference/substrateutils/cores/" title="Cores" class="md-nav__link">
+      Cores
     </a>
   </li>
 
@@ -437,7 +449,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../../reference/ksmutils/helper/" title="Helper" class="md-nav__link">
+    <a href="../../../reference/substrateutils/helper/" title="Helper" class="md-nav__link">
       Helper
     </a>
   </li>
@@ -449,7 +461,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../../reference/ksmutils/" title="Index" class="md-nav__link">
+    <a href="../../../reference/substrateutils/" title="Index" class="md-nav__link">
       Index
     </a>
   </li>
@@ -461,7 +473,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../../reference/ksmutils/network/" title="Network" class="md-nav__link">
+    <a href="../../../reference/substrateutils/network/" title="Network" class="md-nav__link">
       Network
     </a>
   </li>
@@ -473,8 +485,32 @@
 
 
   <li class="md-nav__item">
-    <a href="../../../reference/ksmutils/settings/" title="Settings" class="md-nav__link">
+    <a href="../../../reference/substrateutils/nonce/" title="Nonce" class="md-nav__link">
+      Nonce
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../reference/substrateutils/settings/" title="Settings" class="md-nav__link">
       Settings
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../reference/substrateutils/trades/" title="Trades" class="md-nav__link">
+      Trades
     </a>
   </li>
 
@@ -537,8 +573,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#connecting-to-the-kusama-blockchain" class="md-nav__link">
-    Connecting to the Kusama blockchain
+  <a href="#connecting-to-the-blockchain-and-getting-runtime" class="md-nav__link">
+    Connecting to the blockchain and getting runtime
   </a>
   
 </li>
@@ -578,65 +614,68 @@
                 
                 <h2 id="basic-setup-of-the-module">Basic setup of the module</h2>
 <h3 id="instantiating-without-configuration">Instantiating without configuration</h3>
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">ksmutils</span> <span class="kn">import</span> <span class="n">Kusama</span>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">substrateutils</span> <span class="kn">import</span> <span class="n">Kusama</span><span class="p">,</span> <span class="n">Polkadot</span>
 <span class="n">kusama</span> <span class="o">=</span> <span class="n">Kusama</span><span class="p">()</span>
+<span class="n">polkadot</span> <span class="o">=</span> <span class="n">Polkadot</span><span class="p">()</span>
 </code></pre></div>
 
-
 <h3 id="loading-configuration-after-instantiation">Loading configuration after instantiation</h3>
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">ksmutils</span> <span class="kn">import</span> <span class="n">Kusama</span>
-<span class="n">kusama</span> <span class="o">=</span> <span class="n">Kusama</span><span class="p">()</span>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">substrateutils</span> <span class="kn">import</span> <span class="n">Kusama</span><span class="p">,</span> <span class="n">Polkadot</span>
+<span class="n">kusama</span><span class="p">,</span> <span class="n">polkadot</span> <span class="o">=</span> <span class="n">Kusama</span><span class="p">(),</span> <span class="n">Polkadot</span><span class="p">()</span>
 
 <span class="n">arbitrator_key</span> <span class="o">=</span> <span class="s1">&#39;b5643fe4084cae15ffbbc5c1cbe734bec5da9c351f4aa4d44f2897efeb8375c8&#39;</span>
 <span class="n">kusama</span><span class="o">.</span><span class="n">setup_arbitrator</span><span class="p">(</span><span class="n">arbitrator_key</span><span class="p">)</span>
+<span class="n">polkadot</span><span class="o">.</span><span class="n">setup_arbitrator</span><span class="p">(</span><span class="n">arbitrator_key</span><span class="p">)</span>
 </code></pre></div>
 
-
 <h3 id="instantiating-with-arbitrator-and-websocket-configuration">Instantiating with arbitrator and websocket configuration</h3>
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">ksmutils</span> <span class="kn">import</span> <span class="n">Kusama</span>
-<span class="n">kusama</span> <span class="o">=</span> <span class="n">Kusama</span><span class="p">()</span>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">substrateutils</span> <span class="kn">import</span> <span class="n">Kusama</span><span class="p">,</span> <span class="n">Polkadot</span>
+<span class="n">kusama</span><span class="p">,</span> <span class="n">polkadot</span> <span class="o">=</span> <span class="n">Kusama</span><span class="p">(),</span> <span class="n">Polkadot</span><span class="p">()</span>
 
 <span class="n">arbitrator_key</span> <span class="o">=</span> <span class="s1">&#39;b5643fe4084cae15ffbbc5c1cbe734bec5da9c351f4aa4d44f2897efeb8375c8&#39;</span>
-<span class="n">node_provider</span> <span class="o">=</span> <span class="s1">&#39;wss://kusama-rpc.polkadot.io/&#39;</span>
+<span class="n">ksm_provider</span> <span class="o">=</span> <span class="s1">&#39;wss://kusama-rpc.polkadot.io/&#39;</span>
+<span class="n">dot_provider</span> <span class="o">=</span> <span class="s1">&#39;wss://rpc.polkadot.io/&#39;</span>
 <span class="n">kusama</span> <span class="o">=</span> <span class="n">Kusama</span><span class="p">(</span>
     <span class="n">arbitrator_key</span><span class="o">=</span><span class="n">arbitrator_key</span><span class="p">,</span>
-    <span class="n">node_url</span><span class="o">=</span><span class="n">node_provider</span>
+    <span class="n">node_url</span><span class="o">=</span><span class="n">ksm_provider</span>
+<span class="p">)</span>
+<span class="n">polkadot</span> <span class="o">=</span> <span class="n">Kusama</span><span class="p">(</span>
+    <span class="n">arbitrator_key</span><span class="o">=</span><span class="n">arbitrator_key</span><span class="p">,</span>
+    <span class="n">node_url</span><span class="o">=</span><span class="n">dot_provider</span>
 <span class="p">)</span>
 </code></pre></div>
 
-
-<h3 id="connecting-to-the-kusama-blockchain">Connecting to the Kusama blockchain</h3>
-<div class="codehilite"><pre><span></span><code><span class="n">kusama</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
-<span class="n">kusama</span><span class="o">.</span><span class="n">runtime_info</span><span class="p">()</span>
+<h3 id="connecting-to-the-blockchain-and-getting-runtime">Connecting to the blockchain and getting runtime</h3>
+<div class="codehilite"><pre><span></span><code><span class="n">chain</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+<span class="n">chain</span><span class="o">.</span><span class="n">runtime_info</span><span class="p">()</span>
 </code></pre></div>
-
 
 <h3 id="preparing-and-sending-a-generic-transfer">Preparing and sending a generic transfer</h3>
 <div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">sr25519</span>
-<span class="kn">from</span> <span class="nn">ksmutils</span> <span class="kn">import</span> <span class="n">Kusama</span>
-<span class="kn">from</span> <span class="nn">ksmutils.helper</span> <span class="kn">import</span> <span class="n">hex_to_bytes</span>
+<span class="kn">from</span> <span class="nn">substrateutils</span> <span class="kn">import</span> <span class="n">Polkadot</span> <span class="k">as</span> <span class="n">Provider</span>
+<span class="kn">from</span> <span class="nn">substrateutils.helper</span> <span class="kn">import</span> <span class="n">hex_to_bytes</span>
 <span class="kn">from</span> <span class="nn">scalecodec.utils.ss58</span> <span class="kn">import</span> <span class="n">ss58_encode</span>
 
-<span class="n">kusama</span> <span class="o">=</span> <span class="n">Kusama</span><span class="p">()</span>
-<span class="n">kusama</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+<span class="n">chain</span> <span class="o">=</span> <span class="n">Provider</span><span class="p">()</span>
+<span class="n">chain</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
 
 <span class="n">sender_seed_hex</span> <span class="o">=</span> <span class="s2">&quot;&lt;SEED OF SENDER&gt;&quot;</span>
-<span class="n">to_address</span> <span class="o">=</span> <span class="s2">&quot;JELVFBo1GL82vvEtDqVZMd2NDTFgQC3oi8W2fV3Xtm6CLXX&quot;</span>
-<span class="n">value</span> <span class="o">=</span> <span class="mi">10000000000</span> <span class="c1"># 0.01 KSM in Planks</span>
+<span class="n">to_address</span> <span class="o">=</span> <span class="s2">&quot;&lt;TO ADDRESS&gt;&quot;</span>
+<span class="n">value</span> <span class="o">=</span> <span class="mi">10000000000</span> <span class="c1"># 1 DOT</span>
 
 <span class="c1"># Prepare key</span>
 <span class="n">keypair</span> <span class="o">=</span> <span class="n">sr25519</span><span class="o">.</span><span class="n">pair_from_seed</span><span class="p">(</span><span class="n">hex_to_bytes</span><span class="p">(</span><span class="n">sender_seed_hex</span><span class="p">))</span>
-<span class="n">sender_address</span> <span class="o">=</span> <span class="n">ss58_encode</span><span class="p">(</span><span class="n">keypair</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">sender_address</span> <span class="o">=</span> <span class="n">ss58_encode</span><span class="p">(</span><span class="n">keypair</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
 
 <span class="c1"># Get transaction payload to sign and nonce</span>
-<span class="n">payload</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">transfer_payload</span><span class="p">(</span><span class="n">sender_address</span><span class="p">,</span> <span class="n">to_address</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-<span class="n">nonce</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">get_nonce</span><span class="p">(</span><span class="n">sender_address</span><span class="p">)</span>
+<span class="n">payload</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">transfer_payload</span><span class="p">(</span><span class="n">sender_address</span><span class="p">,</span> <span class="n">to_address</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+<span class="n">nonce</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">get_nonce</span><span class="p">(</span><span class="n">sender_address</span><span class="p">)</span>
 
 <span class="c1"># Sign payload</span>
 <span class="n">signed_payload</span> <span class="o">=</span> <span class="n">sr25519</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">keypair</span><span class="p">,</span> <span class="n">hex_to_bytes</span><span class="p">(</span><span class="n">payload</span><span class="p">))</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span>
 
 <span class="c1"># Broadcast payload</span>
-<span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
+<span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
     <span class="s1">&#39;transfer&#39;</span><span class="p">,</span>
     <span class="p">[</span><span class="n">sender_address</span><span class="p">,</span>
     <span class="n">signed_payload</span><span class="p">,</span>

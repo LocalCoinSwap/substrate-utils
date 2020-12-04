@@ -12,20 +12,20 @@ from setuptools import find_packages
 from setuptools import setup
 
 # Package meta-data.
-NAME = "ksmutils"
+NAME = "substrate-utils"
 DESCRIPTION = (
-    "Kusama utility library providing functionality for multi-signature trading."
+    "Substrate utility library providing " "functionality for multi-signature trading."
 )
-URL = "https://github.com/LocalCoinSwap/kusama-utils/"
+URL = "https://github.com/LocalCoinSwap/substrate-utils/"
 EMAIL = "nathan@localcoinswap.com"
 AUTHOR = "Nathan Worsley"
 REQUIRES_PYTHON = ">=3.7.0"
-VERSION = "0.1.5"
+VERSION = "0.2.12"
 
 REQUIRED = [
     "websockets==8.1",
-    "scalecodec==0.10.8",
-    "base58==1.0.3",
+    "scalecodec==0.10.35",
+    "base58==2.0.1",
     "py-sr25519-bindings==0.1.1",
     "xxhash==1.4.3",
 ]

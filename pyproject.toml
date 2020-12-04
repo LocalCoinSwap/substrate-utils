@@ -1,5 +1,5 @@
 [tool.portray]
-modules = ["ksmutils"]
+modules = ["substrateutils"]
 port = 8100
 
 [tool.portray.mkdocs.theme]

@@ -36,7 +36,7 @@
     
     
       
-        <title>Non Custodial Trades - kusama-utils</title>
+        <title>Non Custodial Trades - substrate-utils</title>
       
     
     
@@ -86,7 +86,7 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../.." title="kusama-utils" aria-label="kusama-utils" class="md-header-nav__button md-logo">
+        <a href="../../.." title="substrate-utils" aria-label="substrate-utils" class="md-header-nav__button md-logo">
           
             <img alt="logo" src="https://static.localcoinswap.com/exchange/assets/images/lcs_logo_light.svg" width="24" height="24">
           
@@ -99,7 +99,7 @@
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
           
             <span class="md-header-nav__topic">
-              kusama-utils
+              substrate-utils
             </span>
             <span class="md-header-nav__topic">
               
@@ -178,12 +178,12 @@
                   <div class="md-sidebar__inner">
                     <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../.." title="kusama-utils" class="md-nav__button md-logo">
+    <a href="../../.." title="substrate-utils" class="md-nav__button md-logo">
       
         <img alt="logo" src="https://static.localcoinswap.com/exchange/assets/images/lcs_logo_light.svg" width="48" height="48">
       
     </a>
-    kusama-utils
+    substrate-utils
   </label>
   
     <div class="md-nav__source">
@@ -354,35 +354,42 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#release-the-escrow-to-buyer" class="md-nav__link">
-    Release the escrow to buyer
+  <a href="#happy-case-regular-release" class="md-nav__link">
+    Happy case: regular release
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#trade-cancellation-return-funds-to-seller" class="md-nav__link">
-    Trade cancellation, return funds to seller
+  <a href="#neutral-case-trade-cancellation-return-funds-to-seller" class="md-nav__link">
+    Neutral case: trade cancellation, return funds to seller
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#buyer-wins-dispute" class="md-nav__link">
-    Buyer wins dispute
+  <a href="#sad-case-dispute-buyer-wins" class="md-nav__link">
+    Sad case: dispute (buyer wins)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sad-case-dispute-seller-wins" class="md-nav__link">
+    Sad case: dispute (seller wins)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#end-to-end-trade-flow-in-happy-case" class="md-nav__link">
+    End-to-end trade flow in happy case
   </a>
   
 </li>
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#end-to-end-standard-trade" class="md-nav__link">
-    End-to-end standard trade
-  </a>
   
 </li>
       
@@ -394,6 +401,18 @@
   
 </nav>
     
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../trade-class-usage/" title="Trade Class Usage" class="md-nav__link">
+      Trade Class Usage
+    </a>
   </li>
 
         
@@ -431,11 +450,11 @@
       <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4-1" type="checkbox" id="nav-4-1">
     
     <label class="md-nav__link" for="nav-4-1">
-      Ksmutils
+      Substrateutils
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
       <label class="md-nav__title" for="nav-4-1">
-        Ksmutils
+        Substrateutils
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
         
@@ -446,8 +465,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../../../reference/ksmutils/core/" title="Core" class="md-nav__link">
-      Core
+    <a href="../../../reference/substrateutils/cores/" title="Cores" class="md-nav__link">
+      Cores
     </a>
   </li>
 
@@ -458,7 +477,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../../reference/ksmutils/helper/" title="Helper" class="md-nav__link">
+    <a href="../../../reference/substrateutils/helper/" title="Helper" class="md-nav__link">
       Helper
     </a>
   </li>
@@ -470,7 +489,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../../reference/ksmutils/" title="Index" class="md-nav__link">
+    <a href="../../../reference/substrateutils/" title="Index" class="md-nav__link">
       Index
     </a>
   </li>
@@ -482,7 +501,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../../reference/ksmutils/network/" title="Network" class="md-nav__link">
+    <a href="../../../reference/substrateutils/network/" title="Network" class="md-nav__link">
       Network
     </a>
   </li>
@@ -494,8 +513,32 @@
 
 
   <li class="md-nav__item">
-    <a href="../../../reference/ksmutils/settings/" title="Settings" class="md-nav__link">
+    <a href="../../../reference/substrateutils/nonce/" title="Nonce" class="md-nav__link">
+      Nonce
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../reference/substrateutils/settings/" title="Settings" class="md-nav__link">
       Settings
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../reference/substrateutils/trades/" title="Trades" class="md-nav__link">
+      Trades
     </a>
   </li>
 
@@ -565,35 +608,42 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#release-the-escrow-to-buyer" class="md-nav__link">
-    Release the escrow to buyer
+  <a href="#happy-case-regular-release" class="md-nav__link">
+    Happy case: regular release
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#trade-cancellation-return-funds-to-seller" class="md-nav__link">
-    Trade cancellation, return funds to seller
+  <a href="#neutral-case-trade-cancellation-return-funds-to-seller" class="md-nav__link">
+    Neutral case: trade cancellation, return funds to seller
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#buyer-wins-dispute" class="md-nav__link">
-    Buyer wins dispute
+  <a href="#sad-case-dispute-buyer-wins" class="md-nav__link">
+    Sad case: dispute (buyer wins)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sad-case-dispute-seller-wins" class="md-nav__link">
+    Sad case: dispute (seller wins)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#end-to-end-trade-flow-in-happy-case" class="md-nav__link">
+    End-to-end trade flow in happy case
   </a>
   
 </li>
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#end-to-end-standard-trade" class="md-nav__link">
-    End-to-end standard trade
-  </a>
   
 </li>
       
@@ -619,255 +669,325 @@
                   <h1>Non Custodial Trades</h1>
                 
                 <h2 id="non-custodial-trades-using-the-utility-module">Non-custodial trades using the utility module</h2>
-<p>First, setup the module and connect to the Kusama blockchain using the instructions in the basic-usage section.</p>
+<p>First, setup the module and connect to the blockchain using the instructions in the basic-usage section.</p>
 <p>You can now use the library to go through each step of the trading process.</p>
 <p>Please be aware of the distinction between user transactions and arbitrator transactions. User transactions need to be broadcast using the <code>publish</code> method, as there is construction required. Arbitrator transactions can be immediately broadcast using <code>broadcast</code> since they are already constructed.</p>
-<h3 id="generate-an-escrow-address">Generate an escrow address</h3>
-<div class="codehilite"><pre><span></span><code><span class="n">buyer_address</span> <span class="o">=</span> <span class="s2">&quot;CofvaLbP3m8PLeNRQmLVPWmTT7jGgAXTwyT69k2wkfPxJ9V&quot;</span>
-<span class="n">seller_address</span> <span class="o">=</span> <span class="s2">&quot;D2bHQwFcQj11SvtkjULEdKhK4WAeP6MThXgosMHjW9DrmbE&quot;</span>
-<span class="n">escrow_address</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">get_escrow_address</span><span class="p">(</span><span class="n">buyer_address</span><span class="p">,</span> <span class="n">seller_address</span><span class="p">)</span>
+<p>The following code snippet instantiates everything needed to follow these examples. You will need to provide you own environment variables in a local <code>.env</code> file:</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">dotenv</span> <span class="kn">import</span> <span class="n">load_dotenv</span>
+<span class="kn">from</span> <span class="nn">substrateutils</span> <span class="kn">import</span> <span class="n">Polkadot</span> <span class="k">as</span> <span class="n">Provider</span>
+<span class="n">load_dotenv</span><span class="p">()</span>
+
+<span class="n">chain</span> <span class="o">=</span> <span class="n">Provider</span><span class="p">()</span>
+<span class="n">arbitrator_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;ARBITRATOR_SEED&quot;</span><span class="p">)</span>
+<span class="n">chain</span><span class="o">.</span><span class="n">setup_arbitrator</span><span class="p">(</span><span class="n">arbitrator_key</span><span class="p">)</span>
+<span class="n">chain</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
 </code></pre></div>
 
+<h3 id="generate-an-escrow-address">Generate an escrow address</h3>
+<div class="codehilite"><pre><span></span><code><span class="n">buyer_address</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;BUYER_ADDRESS&quot;</span><span class="p">)</span>
+<span class="n">seller_address</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELLER_ADDRESS&quot;</span><span class="p">)</span>
+<span class="n">escrow_address</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">get_escrow_address</span><span class="p">(</span><span class="n">buyer_address</span><span class="p">,</span> <span class="n">seller_address</span><span class="p">)</span>
+</code></pre></div>
 
 <h3 id="generate-the-signature-payloads-to-fund-the-escrow-and-send-the-fee">Generate the signature payloads to fund the escrow and send the fee</h3>
 <div class="codehilite"><pre><span></span><code><span class="c1"># Value of the trade in Plancks</span>
 <span class="n">trade_value</span> <span class="o">=</span> <span class="mi">10000000000</span>
 <span class="c1"># Fee being paid in Plancks (trade_value is not inclusive of fee)</span>
 <span class="n">fee_value</span> <span class="o">=</span> <span class="mi">100000000</span>
-<span class="n">escrow_payload</span><span class="p">,</span> <span class="n">fee_payload</span><span class="p">,</span> <span class="n">nonce</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">escrow_payloads</span><span class="p">(</span>
+<span class="n">escrow_payload</span><span class="p">,</span> <span class="n">fee_payload</span><span class="p">,</span> <span class="n">nonce</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">escrow_payloads</span><span class="p">(</span>
     <span class="n">seller_address</span><span class="p">,</span> <span class="n">escrow_address</span><span class="p">,</span> <span class="n">trade_value</span><span class="p">,</span> <span class="n">fee_value</span><span class="p">)</span>
 </code></pre></div>
 
-
 <h3 id="sign-the-payloads">Sign the payloads</h3>
 <div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">sr25519</span>
-<span class="kn">from</span> <span class="nn">ksmutils.helper</span> <span class="kn">import</span> <span class="n">sign_payload</span>
-<span class="n">seller_key</span> <span class="o">=</span> <span class="s1">&#39;427a2c7cdff26fc2ab1dfda2ba991624cad12f8adc8b0851540db6efec2c7431&#39;</span>
+<span class="kn">from</span> <span class="nn">substrateutils.helper</span> <span class="kn">import</span> <span class="n">sign_payload</span>
+<span class="n">seller_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELLER_SEED&quot;</span><span class="p">)</span>
 <span class="n">keypair</span> <span class="o">=</span> <span class="n">sr25519</span><span class="o">.</span><span class="n">pair_from_seed</span><span class="p">(</span><span class="nb">bytes</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="n">seller_key</span><span class="p">))</span>
 
 <span class="n">escrow_signature</span> <span class="o">=</span> <span class="n">sign_payload</span><span class="p">(</span><span class="n">keypair</span><span class="p">,</span> <span class="n">escrow_payload</span><span class="p">)</span>
 <span class="n">fee_signature</span> <span class="o">=</span> <span class="n">sign_payload</span><span class="p">(</span><span class="n">keypair</span><span class="p">,</span> <span class="n">fee_payload</span><span class="p">)</span>
 </code></pre></div>
 
-
 <h3 id="construct-and-broadcast-the-transactions">Construct and broadcast the transactions</h3>
-<div class="codehilite"><pre><span></span><code><span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
+<div class="codehilite"><pre><span></span><code><span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
     <span class="s1">&#39;transfer&#39;</span><span class="p">,</span>
     <span class="p">[</span><span class="n">seller_address</span><span class="p">,</span>
     <span class="n">escrow_signature</span><span class="p">,</span>
     <span class="n">nonce</span><span class="p">,</span>
     <span class="n">escrow_address</span><span class="p">,</span>
     <span class="n">trade_value</span><span class="p">]</span>
-    <span class="p">)</span>
+<span class="p">)</span>
 <span class="k">assert</span> <span class="n">success</span>
-<span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
+<span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
     <span class="s1">&#39;fee_transfer&#39;</span><span class="p">,</span>
     <span class="p">[</span><span class="n">seller_address</span><span class="p">,</span>
     <span class="n">fee_signature</span><span class="p">,</span>
     <span class="n">nonce</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
     <span class="n">fee_value</span><span class="p">]</span>
-    <span class="p">)</span>
+<span class="p">)</span>
 <span class="k">assert</span> <span class="n">success</span>
 </code></pre></div>
 
-
-<h3 id="release-the-escrow-to-buyer">Release the escrow to buyer</h3>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Seller broadcasts approve_as_multi for escrow</span>
-<span class="n">approve_as_multi_payload</span><span class="p">,</span> <span class="n">nonce</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">approve_as_multi_payload</span><span class="p">(</span>
-    <span class="n">seller_address</span><span class="p">,</span>
-    <span class="n">buyer_address</span><span class="p">,</span>
+<h3 id="happy-case-regular-release">Happy case: regular release</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Arbitrater makes storage as_multi to buyer</span>
+<span class="n">transaction</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">as_multi_storage</span><span class="p">(</span>
+    <span class="n">buyer_address</span><span class="p">,</span> <span class="c1"># To address</span>
+    <span class="n">seller_address</span><span class="p">,</span> <span class="c1"># Other signatory</span>
     <span class="n">trade_value</span><span class="p">,</span>
-    <span class="p">[</span><span class="n">buyer_address</span><span class="p">,</span> <span class="n">kusama</span><span class="o">.</span><span class="n">arbitrator_address</span><span class="p">]</span>
-    <span class="p">)</span>
+<span class="p">)</span>
 
-<span class="c1"># Sign payload</span>
-<span class="n">approve_as_multi_signature</span> <span class="o">=</span> <span class="n">sign_payload</span><span class="p">(</span><span class="n">keypair</span><span class="p">,</span> <span class="n">approve_as_multi_payload</span><span class="p">)</span>
-
-<span class="c1"># Construct and broadcast seller approve_as_multi</span>
-<span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
-    <span class="s1">&#39;approve_as_multi&#39;</span><span class="p">,</span> <span class="p">[</span>
-        <span class="n">seller_address</span><span class="p">,</span>
-        <span class="n">approve_as_multi_signature</span><span class="p">,</span>
-        <span class="n">nonce</span><span class="p">,</span>
-        <span class="n">buyer_address</span><span class="p">,</span>
-        <span class="n">trade_value</span><span class="p">,</span>
-        <span class="p">[</span><span class="n">buyer_address</span><span class="p">,</span> <span class="n">kusama</span><span class="o">.</span><span class="n">arbitrator_address</span><span class="p">]</span>
-        <span class="p">]</span>
-        <span class="p">)</span>
-<span class="k">assert</span> <span class="n">success</span>
-
-<span class="c1"># If successful the response contains both the tx_hash and timepoint</span>
-<span class="n">tx_hash</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;tx_hash&#39;</span><span class="p">]</span>
+<span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span>
+    <span class="s1">&#39;as_multi&#39;</span><span class="p">,</span> <span class="n">transaction</span>
+<span class="p">)</span>
 <span class="n">timepoint</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;timepoint&#39;</span><span class="p">]</span>
 
-<span class="c1"># Get arbitrator release escrow transaction and broadcast it</span>
-<span class="n">as_multi</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">release_escrow</span><span class="p">(</span>
-    <span class="n">buyer_address</span><span class="p">,</span>
+<span class="c1"># Seller makes as_multi to release</span>
+<span class="n">as_multi_payload</span><span class="p">,</span> <span class="n">nonce</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">as_multi_payload</span><span class="p">(</span>
+    <span class="n">seller_address</span><span class="p">,</span> <span class="c1"># from</span>
+    <span class="n">buyer_address</span><span class="p">,</span> <span class="c1"># to</span>
     <span class="n">trade_value</span><span class="p">,</span>
-    <span class="n">timepoint</span><span class="p">,</span>
-    <span class="p">[</span><span class="n">seller_address</span><span class="p">,</span> <span class="n">buyer_address</span><span class="p">]</span>
-    <span class="p">)</span>
-<span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="s1">&#39;as_multi&#39;</span><span class="p">,</span> <span class="n">as_multi</span><span class="p">)</span>
-<span class="k">assert</span> <span class="n">success</span>
-</code></pre></div>
-
-
-<h3 id="trade-cancellation-return-funds-to-seller">Trade cancellation, return funds to seller</h3>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Seller broadcasts approve_as_multi for escrow return</span>
-<span class="n">approve_as_multi_payload</span><span class="p">,</span> <span class="n">nonce</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">approve_as_multi_payload</span><span class="p">(</span>
-    <span class="n">seller_address</span><span class="p">,</span>
-    <span class="n">seller_address</span><span class="p">,</span>
-    <span class="n">trade_value</span><span class="p">,</span>
-    <span class="p">[</span><span class="n">buyer_address</span><span class="p">,</span> <span class="n">kusama</span><span class="o">.</span><span class="n">arbitrator_address</span><span class="p">]</span>
-    <span class="p">)</span>
-<span class="n">approve_as_multi_signature</span> <span class="o">=</span> <span class="n">sign_payload</span><span class="p">(</span><span class="n">keypair</span><span class="p">,</span> <span class="n">approve_as_multi_payload</span><span class="p">)</span>
-<span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
-    <span class="s1">&#39;approve_as_multi&#39;</span><span class="p">,</span>
-    <span class="p">[</span>
-        <span class="n">seller_address</span><span class="p">,</span>
-        <span class="n">approve_as_multi_signature</span><span class="p">,</span>
-        <span class="n">nonce</span><span class="p">,</span>
-        <span class="n">seller_address</span><span class="p">,</span>
-        <span class="n">trade_value</span><span class="p">,</span>
-        <span class="p">[</span><span class="n">buyer_address</span><span class="p">,</span> <span class="n">kusama</span><span class="o">.</span><span class="n">arbitrator_address</span><span class="p">]</span>
-    <span class="p">]</span>
-    <span class="p">)</span>
-<span class="k">assert</span> <span class="n">success</span>
-
-<span class="c1"># Get arbitrator cancellation transactions and broadcast them</span>
-<span class="n">revert</span><span class="p">,</span> <span class="n">fee_revert</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">cancellation</span><span class="p">(</span>
-    <span class="n">seller_address</span><span class="p">,</span>
-    <span class="n">trade_value</span><span class="p">,</span>
-    <span class="n">fee_value</span><span class="p">,</span>
-    <span class="p">[</span><span class="n">seller_address</span><span class="p">,</span> <span class="n">buyer_address</span><span class="p">],</span>
-    <span class="n">response</span><span class="p">[</span><span class="s1">&#39;timepoint&#39;</span><span class="p">]</span>
-    <span class="p">)</span>
-
-<span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="s1">&#39;as_multi&#39;</span><span class="p">,</span> <span class="n">revert</span><span class="p">)</span>
-<span class="k">assert</span> <span class="n">success</span>
-<span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="s1">&#39;transfer&#39;</span><span class="p">,</span> <span class="n">fee_revert</span><span class="p">)</span>
-<span class="k">assert</span> <span class="n">success</span>
-</code></pre></div>
-
-
-<p>Note: in all dispute situations the arbitrator broadcasts first. For simplicity, we still broadcast as_multi if the seller wins, in order to reuse the business logic of cancellation.</p>
-<h3 id="buyer-wins-dispute">Buyer wins dispute</h3>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Get and broadcast the arbitrator transactions</span>
-<span class="n">victor</span> <span class="o">=</span> <span class="s2">&quot;buyer&quot;</span>
-<span class="n">release_transaction</span><span class="p">,</span> <span class="n">welfare_transaction</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">resolve_dispute</span><span class="p">(</span>
-    <span class="n">victor</span><span class="p">,</span>
-    <span class="n">seller_address</span><span class="p">,</span>
-    <span class="n">trade_value</span><span class="p">,</span>
-    <span class="n">fee_value</span><span class="p">,</span>
-    <span class="p">[</span><span class="n">buyer_address</span><span class="p">,</span> <span class="n">seller_address</span><span class="p">]</span>
-    <span class="p">)</span>
-
-<span class="n">success</span><span class="p">,</span> <span class="n">escrow_responce</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span>
-    <span class="s1">&#39;as_multi&#39;</span><span class="p">,</span> <span class="n">release_transaction</span><span class="p">)</span>
-<span class="k">assert</span> <span class="n">success</span>
-<span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span>
-    <span class="s1">&#39;transfer&#39;</span><span class="p">,</span> <span class="n">welfare_transaction</span><span class="p">)</span>
-<span class="k">assert</span> <span class="n">success</span>
-
-<span class="c1"># Construct and broadcast the final buyer as_multi, seller or buyer can do this</span>
-<span class="n">as_multi_payload</span><span class="p">,</span> <span class="n">nonce</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">approve_as_multi_payload</span><span class="p">(</span>
-    <span class="n">seller_address</span><span class="p">,</span>
-    <span class="n">seller_address</span><span class="p">,</span>
-    <span class="n">trade_value</span><span class="p">,</span>
-    <span class="p">[</span><span class="n">buyer_address</span><span class="p">,</span> <span class="n">kusama</span><span class="o">.</span><span class="n">arbitrator_address</span><span class="p">]</span>
-    <span class="p">)</span>
-<span class="n">as_multi_signature</span> <span class="o">=</span> <span class="n">sign_payload</span><span class="p">(</span><span class="n">keypair</span><span class="p">,</span> <span class="n">as_multi_payload</span><span class="p">)</span>
-<span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
+    <span class="p">[</span><span class="n">buyer_address</span><span class="p">,</span> <span class="n">chain</span><span class="o">.</span><span class="n">arbitrator_address</span><span class="p">],</span>
+    <span class="n">timepoint</span><span class="p">,</span> <span class="c1"># timepoint from storage</span>
+    <span class="kc">False</span><span class="p">,</span> <span class="c1"># don&#39;t store</span>
+<span class="p">)</span>
+<span class="n">as_multi_signature</span> <span class="o">=</span> <span class="n">sign_payload</span><span class="p">(</span><span class="n">seller_keypair</span><span class="p">,</span> <span class="n">as_multi_payload</span><span class="p">)</span>
+<span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
     <span class="s1">&#39;as_multi&#39;</span><span class="p">,</span>
     <span class="p">[</span>
-        <span class="n">seller_address</span><span class="p">,</span>
-        <span class="n">as_multi_signature</span><span class="p">,</span>
-        <span class="n">nonce</span><span class="p">,</span>
-        <span class="n">seller_address</span><span class="p">,</span>
+        <span class="n">seller_address</span><span class="p">,</span> <span class="c1"># from</span>
+        <span class="n">as_multi_signature</span><span class="p">,</span> <span class="c1"># sig</span>
+        <span class="n">nonce</span><span class="p">,</span> <span class="c1"># seller nonce</span>
+        <span class="n">buyer_address</span><span class="p">,</span> <span class="c1"># to</span>
         <span class="n">trade_value</span><span class="p">,</span>
-        <span class="p">[</span><span class="n">buyer_address</span><span class="p">,</span> <span class="n">kusama</span><span class="o">.</span><span class="n">arbitrator_address</span><span class="p">],</span>
-        <span class="n">escrow_responce</span><span class="p">[</span><span class="s1">&#39;timepoint&#39;</span><span class="p">]</span>
+        <span class="n">timepoint</span><span class="p">,</span> <span class="c1"># timepoint</span>
+        <span class="p">[</span><span class="n">buyer_address</span><span class="p">,</span> <span class="n">chain</span><span class="o">.</span><span class="n">arbitrator_address</span><span class="p">],</span> <span class="c1"># other sigs</span>
+        <span class="mi">0</span><span class="p">,</span>
     <span class="p">]</span>
-    <span class="p">)</span>
-<span class="k">assert</span> <span class="n">success</span>
+<span class="p">)</span>
 </code></pre></div>
 
+<h3 id="neutral-case-trade-cancellation-return-funds-to-seller">Neutral case: trade cancellation, return funds to seller</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Arbitrater makes storage as_multi back to seller</span>
+<span class="n">transaction</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">as_multi_storage</span><span class="p">(</span>
+    <span class="n">seller_address</span><span class="p">,</span> <span class="c1"># To address</span>
+    <span class="n">buyer_address</span><span class="p">,</span> <span class="c1"># Other signatory</span>
+    <span class="n">trade_value</span>
+<span class="p">)</span>
 
-<h2 id="end-to-end-standard-trade">End-to-end standard trade</h2>
-<p>The following example is designed to show the execution logic over an entire trade. This is purposely verbose to eliminate confusion.</p>
-<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">sr25519</span>
+<span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span>
+    <span class="s1">&#39;as_multi&#39;</span><span class="p">,</span> <span class="n">transaction</span>
+<span class="p">)</span>
+<span class="n">timepoint</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;timepoint&#39;</span><span class="p">]</span>
 
-<span class="kn">from</span> <span class="nn">ksmutils</span> <span class="kn">import</span> <span class="n">Kusama</span>
-<span class="kn">from</span> <span class="nn">ksmutils.helper</span> <span class="kn">import</span> <span class="n">sign_payload</span>
-<span class="n">kusama</span> <span class="o">=</span> <span class="n">Kusama</span><span class="p">()</span>
+<span class="c1"># Return the fee</span>
+<span class="n">transaction</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">fee_return_transaction</span><span class="p">(</span>
+    <span class="n">seller_address</span><span class="p">,</span>
+    <span class="n">trade_value</span><span class="p">,</span>
+    <span class="n">fee_value</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span>
+    <span class="s1">&#39;transfer&#39;</span><span class="p">,</span> <span class="n">transaction</span>
+<span class="p">)</span>
 
-<span class="n">arbitrator_key</span> <span class="o">=</span> <span class="s1">&#39;b5643fe4084cae15ffbbc5c1cbe734bec5da9c351f4aa4d44f2897efeb8375c8&#39;</span>
-<span class="n">kusama</span><span class="o">.</span><span class="n">setup_arbitrator</span><span class="p">(</span><span class="n">arbitrator_key</span><span class="p">)</span>
-<span class="n">kusama</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+<span class="c1"># Seller as_multi to return funds</span>
+<span class="n">as_multi_payload</span><span class="p">,</span> <span class="n">nonce</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">as_multi_payload</span><span class="p">(</span>
+    <span class="n">seller_address</span><span class="p">,</span> <span class="c1"># from</span>
+    <span class="n">seller_address</span><span class="p">,</span> <span class="c1"># to</span>
+    <span class="n">trade_value</span><span class="p">,</span>
+    <span class="p">[</span><span class="n">buyer_address</span><span class="p">,</span> <span class="n">chain</span><span class="o">.</span><span class="n">arbitrator_address</span><span class="p">],</span>
+    <span class="n">timepoint</span><span class="p">,</span> <span class="c1"># timepoint from storage</span>
+    <span class="kc">False</span><span class="p">,</span> <span class="c1"># don&#39;t store</span>
+<span class="p">)</span>
+<span class="n">as_multi_signature</span> <span class="o">=</span> <span class="n">sign_payload</span><span class="p">(</span><span class="n">seller_keypair</span><span class="p">,</span> <span class="n">as_multi_payload</span><span class="p">)</span>
+<span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
+    <span class="s1">&#39;as_multi&#39;</span><span class="p">,</span>
+    <span class="p">[</span>
+        <span class="n">seller_address</span><span class="p">,</span> <span class="c1"># from</span>
+        <span class="n">as_multi_signature</span><span class="p">,</span> <span class="c1"># sig</span>
+        <span class="n">nonce</span><span class="p">,</span> <span class="c1"># seller nonce</span>
+        <span class="n">seller_address</span><span class="p">,</span> <span class="c1"># to</span>
+        <span class="n">trade_value</span><span class="p">,</span>
+        <span class="n">timepoint</span><span class="p">,</span> <span class="c1"># timepoint</span>
+        <span class="p">[</span><span class="n">buyer_address</span><span class="p">,</span> <span class="n">chain</span><span class="o">.</span><span class="n">arbitrator_address</span><span class="p">],</span> <span class="c1"># other sigs</span>
+        <span class="mi">0</span><span class="p">,</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+</code></pre></div>
 
-<span class="n">buyer_address</span> <span class="o">=</span> <span class="s2">&quot;CofvaLbP3m8PLeNRQmLVPWmTT7jGgAXTwyT69k2wkfPxJ9V&quot;</span>
-<span class="n">seller_address</span> <span class="o">=</span> <span class="s2">&quot;D2bHQwFcQj11SvtkjULEdKhK4WAeP6MThXgosMHjW9DrmbE&quot;</span>
-<span class="n">escrow_address</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">get_escrow_address</span><span class="p">(</span><span class="n">buyer_address</span><span class="p">,</span> <span class="n">seller_address</span><span class="p">)</span>
+<h3 id="sad-case-dispute-buyer-wins">Sad case: dispute (buyer wins)</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Arbitrater makes storage as_multi to buyer</span>
+<span class="n">transaction</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">as_multi_storage</span><span class="p">(</span>
+    <span class="n">buyer_address</span><span class="p">,</span> <span class="c1"># To address</span>
+    <span class="n">seller_address</span><span class="p">,</span> <span class="c1"># Other signatory</span>
+    <span class="n">trade_value</span>
+<span class="p">)</span>
+
+<span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span>
+    <span class="s1">&#39;as_multi&#39;</span><span class="p">,</span> <span class="n">transaction</span>
+<span class="p">)</span>
+<span class="n">timepoint</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;timepoint&#39;</span><span class="p">]</span>
+
+<span class="c1"># Arbitrator makes welfare payment to buyer</span>
+<span class="n">transaction</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">welfare_transaction</span><span class="p">(</span>
+    <span class="n">buyer_address</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span>
+    <span class="s1">&#39;transfer&#39;</span><span class="p">,</span> <span class="n">transaction</span>
+<span class="p">)</span>
+
+<span class="c1"># Buyer as_multi to receive funds</span>
+<span class="n">as_multi_payload</span><span class="p">,</span> <span class="n">nonce</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">as_multi_payload</span><span class="p">(</span>
+    <span class="n">buyer_address</span><span class="p">,</span> <span class="c1"># from</span>
+    <span class="n">buyer_address</span><span class="p">,</span> <span class="c1"># to</span>
+    <span class="n">trade_value</span><span class="p">,</span>
+    <span class="p">[</span><span class="n">seller_address</span><span class="p">,</span> <span class="n">chain</span><span class="o">.</span><span class="n">arbitrator_address</span><span class="p">],</span>
+    <span class="n">timepoint</span><span class="p">,</span> <span class="c1"># timepoint from storage</span>
+    <span class="kc">False</span><span class="p">,</span> <span class="c1"># don&#39;t store,</span>
+<span class="p">)</span>
+<span class="n">as_multi_signature</span> <span class="o">=</span> <span class="n">sign_payload</span><span class="p">(</span><span class="n">buyer_keypair</span><span class="p">,</span> <span class="n">as_multi_payload</span><span class="p">)</span>
+<span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
+    <span class="s1">&#39;as_multi&#39;</span><span class="p">,</span>
+    <span class="p">[</span>
+        <span class="n">buyer_address</span><span class="p">,</span> <span class="c1"># from</span>
+        <span class="n">as_multi_signature</span><span class="p">,</span> <span class="c1"># sig</span>
+        <span class="n">nonce</span><span class="p">,</span> <span class="c1"># seller nonce</span>
+        <span class="n">buyer_address</span><span class="p">,</span> <span class="c1"># to</span>
+        <span class="n">trade_value</span><span class="p">,</span>
+        <span class="n">timepoint</span><span class="p">,</span> <span class="c1"># timepoint</span>
+        <span class="p">[</span><span class="n">seller_address</span><span class="p">,</span> <span class="n">chain</span><span class="o">.</span><span class="n">arbitrator_address</span><span class="p">],</span> <span class="c1"># other sigs</span>
+        <span class="mi">0</span><span class="p">,</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<h3 id="sad-case-dispute-seller-wins">Sad case: dispute (seller wins)</h3>
+<p>In this situation the flow is exactly the same as the cancellation flow</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Arbitrater makes storage as_multi back to seller</span>
+<span class="n">transaction</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">as_multi_storage</span><span class="p">(</span>
+    <span class="n">seller_address</span><span class="p">,</span> <span class="c1"># To address</span>
+    <span class="n">buyer_address</span><span class="p">,</span> <span class="c1"># Other signatory</span>
+    <span class="n">trade_value</span>
+<span class="p">)</span>
+
+<span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span>
+    <span class="s1">&#39;as_multi&#39;</span><span class="p">,</span> <span class="n">transaction</span>
+<span class="p">)</span>
+<span class="n">timepoint</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;timepoint&#39;</span><span class="p">]</span>
+
+<span class="c1"># Return the fee</span>
+<span class="n">transaction</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">fee_return_transaction</span><span class="p">(</span>
+    <span class="n">seller_address</span><span class="p">,</span>
+    <span class="n">trade_value</span><span class="p">,</span>
+    <span class="n">fee_value</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span>
+    <span class="s1">&#39;transfer&#39;</span><span class="p">,</span> <span class="n">transaction</span>
+<span class="p">)</span>
+
+<span class="c1"># Seller as_multi to return funds</span>
+<span class="n">as_multi_payload</span><span class="p">,</span> <span class="n">nonce</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">as_multi_payload</span><span class="p">(</span>
+    <span class="n">seller_address</span><span class="p">,</span> <span class="c1"># from</span>
+    <span class="n">seller_address</span><span class="p">,</span> <span class="c1"># to</span>
+    <span class="n">trade_value</span><span class="p">,</span>
+    <span class="p">[</span><span class="n">buyer_address</span><span class="p">,</span> <span class="n">chain</span><span class="o">.</span><span class="n">arbitrator_address</span><span class="p">],</span>
+    <span class="n">timepoint</span><span class="p">,</span> <span class="c1"># timepoint from storage</span>
+    <span class="kc">False</span><span class="p">,</span> <span class="c1"># don&#39;t store</span>
+<span class="p">)</span>
+<span class="n">as_multi_signature</span> <span class="o">=</span> <span class="n">sign_payload</span><span class="p">(</span><span class="n">seller_keypair</span><span class="p">,</span> <span class="n">as_multi_payload</span><span class="p">)</span>
+<span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
+    <span class="s1">&#39;as_multi&#39;</span><span class="p">,</span>
+    <span class="p">[</span>
+        <span class="n">seller_address</span><span class="p">,</span> <span class="c1"># from</span>
+        <span class="n">as_multi_signature</span><span class="p">,</span> <span class="c1"># sig</span>
+        <span class="n">nonce</span><span class="p">,</span> <span class="c1"># seller nonce</span>
+        <span class="n">seller_address</span><span class="p">,</span> <span class="c1"># to</span>
+        <span class="n">trade_value</span><span class="p">,</span>
+        <span class="n">timepoint</span><span class="p">,</span> <span class="c1"># timepoint</span>
+        <span class="p">[</span><span class="n">buyer_address</span><span class="p">,</span> <span class="n">chain</span><span class="o">.</span><span class="n">arbitrator_address</span><span class="p">],</span> <span class="c1"># other sigs</span>
+        <span class="mi">0</span><span class="p">,</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<h3 id="end-to-end-trade-flow-in-happy-case">End-to-end trade flow in happy case</h3>
+<p>This is a purposely verbose, line by line execution for an entire trade. This is useful for manual testing.</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sr25519</span>
+<span class="kn">from</span> <span class="nn">dotenv</span> <span class="kn">import</span> <span class="n">load_dotenv</span>
+<span class="kn">from</span> <span class="nn">scalecodec.utils.ss58</span> <span class="kn">import</span> <span class="n">ss58_encode</span>
+<span class="kn">from</span> <span class="nn">substrateutils.helper</span> <span class="kn">import</span> <span class="n">sign_payload</span>
+<span class="kn">from</span> <span class="nn">substrateutils</span> <span class="kn">import</span> <span class="n">Polkadot</span> <span class="k">as</span> <span class="n">Provider</span>
+<span class="n">load_dotenv</span><span class="p">()</span>
+
+<span class="n">chain</span> <span class="o">=</span> <span class="n">Provider</span><span class="p">()</span>
+<span class="n">arbitrator_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;ARBITRATOR_SEED&quot;</span><span class="p">)</span>
+<span class="n">chain</span><span class="o">.</span><span class="n">setup_arbitrator</span><span class="p">(</span><span class="n">arbitrator_key</span><span class="p">)</span>
+<span class="n">chain</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+
+<span class="c1"># Get seller and buyer addresses</span>
+<span class="n">seller_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SELLER_SEED&quot;</span><span class="p">)</span>
+<span class="n">buyer_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;BUYER_SEED&quot;</span><span class="p">)</span>
+<span class="n">seller_keypair</span> <span class="o">=</span> <span class="n">sr25519</span><span class="o">.</span><span class="n">pair_from_seed</span><span class="p">(</span><span class="nb">bytes</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="n">seller_key</span><span class="p">))</span>
+<span class="n">buyer_keypair</span> <span class="o">=</span> <span class="n">sr25519</span><span class="o">.</span><span class="n">pair_from_seed</span><span class="p">(</span><span class="nb">bytes</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="n">buyer_key</span><span class="p">))</span>
+<span class="n">seller_address</span> <span class="o">=</span> <span class="n">ss58_encode</span><span class="p">(</span><span class="n">seller_keypair</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">buyer_address</span> <span class="o">=</span> <span class="n">ss58_encode</span><span class="p">(</span><span class="n">buyer_keypair</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="n">escrow_address</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">get_escrow_address</span><span class="p">(</span><span class="n">buyer_address</span><span class="p">,</span> <span class="n">seller_address</span><span class="p">)</span>
 
 <span class="c1"># Value of the trade in Plancks</span>
 <span class="n">trade_value</span> <span class="o">=</span> <span class="mi">10000000000</span>
 <span class="c1"># Fee being paid in Plancks (trade_value is not inclusive of fee)</span>
 <span class="n">fee_value</span> <span class="o">=</span> <span class="mi">100000000</span>
-<span class="n">escrow_payload</span><span class="p">,</span> <span class="n">fee_payload</span><span class="p">,</span> <span class="n">nonce</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">escrow_payloads</span><span class="p">(</span>
+<span class="n">escrow_payload</span><span class="p">,</span> <span class="n">fee_payload</span><span class="p">,</span> <span class="n">nonce</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">escrow_payloads</span><span class="p">(</span>
     <span class="n">seller_address</span><span class="p">,</span> <span class="n">escrow_address</span><span class="p">,</span> <span class="n">trade_value</span><span class="p">,</span> <span class="n">fee_value</span><span class="p">)</span>
 
-<span class="n">seller_key</span> <span class="o">=</span> <span class="s1">&#39;427a2c7cdff26fc2ab1dfda2ba991624cad12f8adc8b0851540db6efec2c7431&#39;</span>
-<span class="n">keypair</span> <span class="o">=</span> <span class="n">sr25519</span><span class="o">.</span><span class="n">pair_from_seed</span><span class="p">(</span><span class="nb">bytes</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="n">seller_key</span><span class="p">))</span>
+<span class="n">escrow_signature</span> <span class="o">=</span> <span class="n">sign_payload</span><span class="p">(</span><span class="n">seller_keypair</span><span class="p">,</span> <span class="n">escrow_payload</span><span class="p">)</span>
+<span class="n">fee_signature</span> <span class="o">=</span> <span class="n">sign_payload</span><span class="p">(</span><span class="n">seller_keypair</span><span class="p">,</span> <span class="n">fee_payload</span><span class="p">)</span>
 
-<span class="n">escrow_signature</span> <span class="o">=</span> <span class="n">sign_payload</span><span class="p">(</span><span class="n">keypair</span><span class="p">,</span> <span class="n">escrow_payload</span><span class="p">)</span>
-<span class="n">fee_signature</span> <span class="o">=</span> <span class="n">sign_payload</span><span class="p">(</span><span class="n">keypair</span><span class="p">,</span> <span class="n">fee_payload</span><span class="p">)</span>
-
-<span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
+<span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
     <span class="s1">&#39;transfer&#39;</span><span class="p">,</span>
     <span class="p">[</span><span class="n">seller_address</span><span class="p">,</span> <span class="n">escrow_signature</span><span class="p">,</span> <span class="n">nonce</span><span class="p">,</span> <span class="n">escrow_address</span><span class="p">,</span> <span class="n">trade_value</span><span class="p">]</span>
-    <span class="p">)</span>
-<span class="k">assert</span> <span class="n">success</span>
-<span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
+<span class="p">)</span>
+<span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
     <span class="s1">&#39;fee_transfer&#39;</span><span class="p">,</span>
     <span class="p">[</span><span class="n">seller_address</span><span class="p">,</span> <span class="n">fee_signature</span><span class="p">,</span> <span class="n">nonce</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">fee_value</span><span class="p">]</span>
-    <span class="p">)</span>
-<span class="k">assert</span> <span class="n">success</span>
+<span class="p">)</span>
 
-<span class="c1"># Seller broadcasts approve_as_multi for escrow</span>
-<span class="n">approve_as_multi_payload</span><span class="p">,</span> <span class="n">nonce</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">approve_as_multi_payload</span><span class="p">(</span>
-    <span class="n">seller_address</span><span class="p">,</span>
-    <span class="n">buyer_address</span><span class="p">,</span>
+<span class="n">transaction</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">as_multi_storage</span><span class="p">(</span>
+    <span class="n">buyer_address</span><span class="p">,</span> <span class="c1"># To address</span>
+    <span class="n">seller_address</span><span class="p">,</span> <span class="c1"># Other signatory</span>
     <span class="n">trade_value</span><span class="p">,</span>
-    <span class="p">[</span><span class="n">buyer_address</span><span class="p">,</span> <span class="n">kusama</span><span class="o">.</span><span class="n">arbitrator_address</span><span class="p">]</span>
-    <span class="p">)</span>
+<span class="p">)</span>
 
-<span class="c1"># Sign payload</span>
-<span class="n">approve_as_multi_signature</span> <span class="o">=</span> <span class="n">sign_payload</span><span class="p">(</span>
-    <span class="n">keypair</span><span class="p">,</span> <span class="n">approve_as_multi_payload</span><span class="p">)</span>
+<span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span>
+    <span class="s1">&#39;as_multi&#39;</span><span class="p">,</span> <span class="n">transaction</span>
+<span class="p">)</span>
+<span class="n">timepoint</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;timepoint&#39;</span><span class="p">]</span>
 
-<span class="c1"># Construct and broadcast seller approve_as_multi</span>
-<span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
-    <span class="s1">&#39;approve_as_multi&#39;</span><span class="p">,</span>
+<span class="c1"># Seller makes as_multi to release</span>
+<span class="n">as_multi_payload</span><span class="p">,</span> <span class="n">nonce</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">as_multi_payload</span><span class="p">(</span>
+    <span class="n">seller_address</span><span class="p">,</span> <span class="c1"># from</span>
+    <span class="n">buyer_address</span><span class="p">,</span> <span class="c1"># to</span>
+    <span class="n">trade_value</span><span class="p">,</span>
+    <span class="p">[</span><span class="n">buyer_address</span><span class="p">,</span> <span class="n">chain</span><span class="o">.</span><span class="n">arbitrator_address</span><span class="p">],</span>
+    <span class="n">timepoint</span><span class="p">,</span> <span class="c1"># timepoint from storage</span>
+    <span class="kc">False</span><span class="p">,</span> <span class="c1"># don&#39;t store,</span>
+<span class="p">)</span>
+<span class="n">as_multi_signature</span> <span class="o">=</span> <span class="n">sign_payload</span><span class="p">(</span><span class="n">seller_keypair</span><span class="p">,</span> <span class="n">as_multi_payload</span><span class="p">)</span>
+<span class="n">success</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
+    <span class="s1">&#39;as_multi&#39;</span><span class="p">,</span>
     <span class="p">[</span>
-        <span class="n">seller_address</span><span class="p">,</span>
-        <span class="n">approve_as_multi_signature</span><span class="p">,</span>
-        <span class="n">nonce</span><span class="p">,</span>
-        <span class="n">buyer_address</span><span class="p">,</span>
+        <span class="n">seller_address</span><span class="p">,</span> <span class="c1"># from</span>
+        <span class="n">as_multi_signature</span><span class="p">,</span> <span class="c1"># sig</span>
+        <span class="n">nonce</span><span class="p">,</span> <span class="c1"># seller nonce</span>
+        <span class="n">buyer_address</span><span class="p">,</span> <span class="c1"># to</span>
         <span class="n">trade_value</span><span class="p">,</span>
-        <span class="p">[</span><span class="n">buyer_address</span><span class="p">,</span> <span class="n">kusama</span><span class="o">.</span><span class="n">arbitrator_address</span><span class="p">]</span>
+        <span class="n">timepoint</span><span class="p">,</span> <span class="c1"># timepoint</span>
+        <span class="p">[</span><span class="n">buyer_address</span><span class="p">,</span> <span class="n">chain</span><span class="o">.</span><span class="n">arbitrator_address</span><span class="p">],</span> <span class="c1"># other sigs</span>
+        <span class="mi">0</span><span class="p">,</span> <span class="c1"># reverts to chain default</span>
     <span class="p">]</span>
-    <span class="p">)</span>
-<span class="k">assert</span> <span class="n">success</span>
-
-<span class="c1"># Get arbitrator release escrow transaction and broadcast it</span>
-<span class="n">as_multi</span> <span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">release_escrow</span><span class="p">(</span>
-    <span class="n">buyer_address</span><span class="p">,</span>
-    <span class="n">trade_value</span><span class="p">,</span>
-    <span class="n">response</span><span class="p">[</span><span class="s1">&#39;timepoint&#39;</span><span class="p">],</span>
-    <span class="p">[</span><span class="n">seller_address</span><span class="p">,</span> <span class="n">buyer_address</span><span class="p">]</span>
-    <span class="p">)</span>
-<span class="n">success</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span> <span class="n">kusama</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="s1">&#39;as_multi&#39;</span><span class="p">,</span> <span class="n">as_multi</span><span class="p">)</span>
-<span class="k">assert</span> <span class="n">success</span>
+<span class="p">)</span>
 </code></pre></div>
                 
                   
@@ -905,13 +1025,13 @@
           </a>
         
         
-          <a href="../../../reference/ksmutils/core/" title="Core" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../trade-class-usage/" title="Trade Class Usage" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Core
+                Trade Class Usage
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
