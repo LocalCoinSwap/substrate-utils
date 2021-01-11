@@ -78,6 +78,30 @@ class SubstrateBase(NonceManager):
         metadata.decode()
         return metadata
 
+    def get_json_metadata(self) -> dict:
+        raw_metadata = self.network.node_rpc_call("state_getMetadata", [None])["result"]
+        return MetadataDecoder(ScaleBytes(raw_metadata)).decode()
+
+    def get_failure_reason(self, module: int, error: int) -> str:
+        """
+        Lookup an error from an explorer. This logic may easily break
+        with future MetaData updates
+        """
+        meta = self.get_json_metadata()["metadata"]
+        modules = meta[list(meta.keys())[0]]["modules"]
+
+        name = None
+        index = None
+        reason = None
+
+        for m in modules:
+            if m["index"] == module:
+                name = m["name"]
+                index = modules.index(m)
+                reason = m["errors"][error]
+
+        return name, index, reason
+
     def dump_metadata(self, filename: str = "metadata.txt") -> None:
         """
         Dump the raw metadata to a file in root directory
