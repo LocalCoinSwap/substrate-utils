@@ -122,7 +122,7 @@ def as_multi_signature_payload(
     )
     # Be aware that the public keys are compared byte-for-byte and
     # sorted ascending before being inserted in the payload that is hashed.
-    other_signatories = orderAddresses(other_signatories)
+    other_signatories = order_addresses(other_signatories)
     as_multi.encode(
         {
             "call_module": "Multisig",
@@ -254,7 +254,7 @@ def unsigned_as_multi_construction(
     )
     # Be aware that the public keys are compared byte-for-byte and
     # sorted ascending before being inserted in the payload that is hashed.
-    other_signatories = orderAddresses(other_signatories)
+    other_signatories = order_addresses(other_signatories)
     call_arguments = {
         "call": transfer.value,
         "maybe_timepoint": maybe_timepoint,
@@ -295,14 +295,12 @@ def hex_to_bytes(hex) -> bytes:
     return bytes.fromhex(hex)
 
 
-def orderAddresses(addresses, address_type=0):
-    public_keys = []
+def order_addresses(addresses, address_type=0):
     bytearray_public_keys = []
     ordered_addresses = []
     # Convert address to public keys and then to byte array
     for address in addresses:
         public_key = ss58_decode(address, address_type)
-        public_keys.append(public_key)
         public_key_bytearray = bytearray()
         public_key_bytearray.extend(map(ord, public_key))
         bytearray_public_keys.append(public_key_bytearray)
