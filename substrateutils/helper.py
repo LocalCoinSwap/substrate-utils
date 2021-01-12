@@ -11,6 +11,7 @@ from scalecodec.base import RuntimeConfigurationObject
 from scalecodec.base import ScaleDecoder
 from scalecodec.metadata import MetadataDecoder
 from scalecodec.utils.ss58 import ss58_decode
+from scalecodec.utils.ss58 import ss58_encode
 
 
 def xx128(word: str) -> str:
@@ -119,6 +120,9 @@ def as_multi_signature_payload(
     maybe_timepoint = (
         {"height": timepoint[0], "index": timepoint[1]} if timepoint else None
     )
+    # Be aware that the public keys are compared byte-for-byte and
+    # sorted ascending before being inserted in the payload that is hashed.
+    other_signatories = orderAddresses(other_signatories)
     as_multi.encode(
         {
             "call_module": "Multisig",
@@ -126,7 +130,7 @@ def as_multi_signature_payload(
             "call_args": {
                 "call": transfer.value,
                 "maybe_timepoint": maybe_timepoint,
-                "other_signatories": sorted(other_signatories),
+                "other_signatories": other_signatories,
                 "threshold": threshold,
                 "store_call": store_call,
                 "max_weight": max_weight,
@@ -248,10 +252,13 @@ def unsigned_as_multi_construction(
     maybe_timepoint = (
         {"height": timepoint[0], "index": timepoint[1]} if timepoint else None
     )
+    # Be aware that the public keys are compared byte-for-byte and
+    # sorted ascending before being inserted in the payload that is hashed.
+    other_signatories = orderAddresses(other_signatories)
     call_arguments = {
         "call": transfer.value,
         "maybe_timepoint": maybe_timepoint,
-        "other_signatories": sorted(other_signatories),
+        "other_signatories": other_signatories,
         "threshold": threshold,
         "store_call": store_call,
         "max_weight": max_weight,
@@ -286,3 +293,21 @@ def hex_to_bytes(hex) -> bytes:
     if hex[0:2] == "0x":
         hex = hex[2:]
     return bytes.fromhex(hex)
+
+
+def orderAddresses(addresses, address_type=0):
+    public_keys = []
+    bytearray_public_keys = []
+    ordered_addresses = []
+    # Convert address to public keys and then to byte array
+    for address in addresses:
+        public_key = ss58_decode(address, address_type)
+        public_keys.append(public_key)
+        public_key_bytearray = bytearray()
+        public_key_bytearray.extend(map(ord, public_key))
+        bytearray_public_keys.append(public_key_bytearray)
+    sorted_bytearray = sorted(bytearray_public_keys)
+    # Convert back to addresses
+    for byte_array in sorted_bytearray:
+        ordered_addresses.append(ss58_encode(byte_array.decode(), address_type))
+    return ordered_addresses
