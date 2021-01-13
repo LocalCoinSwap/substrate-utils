@@ -1,6 +1,7 @@
 import sr25519
 
 from substrateutils.helper import get_prefix
+from substrateutils.helper import order_addresses
 from substrateutils.helper import sign_payload
 from substrateutils.helper import transfer_signature_payload
 from substrateutils.helper import unsigned_as_multi_construction
@@ -128,3 +129,17 @@ class TestPayloadConstruction:
         keypair = sr25519.pair_from_seed(bytes.fromhex(signer_hex))
         result = sign_payload(keypair, payload)
         assert len(result) == 128
+
+    def test_order_addresses(self):
+        out_of_order_addresses = [
+            "126ehG4n9BkmV8HKtQUqBHoTCwv5ogPA7F8X7giJrXZqA6Hs",
+            "1HZVSdsyXmeR6E1RpcTPdGMkw4bi5J6pvVxbS9zPA4acvmN",
+        ]
+        ordered_addresses = [
+            "1HZVSdsyXmeR6E1RpcTPdGMkw4bi5J6pvVxbS9zPA4acvmN",
+            "126ehG4n9BkmV8HKtQUqBHoTCwv5ogPA7F8X7giJrXZqA6Hs",
+        ]
+
+        result = order_addresses(out_of_order_addresses)
+        assert result[0] == ordered_addresses[0]
+        assert result[1] == ordered_addresses[1]
