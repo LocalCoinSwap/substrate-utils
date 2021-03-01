@@ -122,7 +122,13 @@ def as_multi_signature_payload(
     )
     # Be aware that the public keys are compared byte-for-byte and
     # sorted ascending before being inserted in the payload that is hashed.
-    other_signatories = order_addresses(other_signatories)
+    if (
+        genesis_hash
+        == "0xb0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe"
+    ):
+        other_signatories = order_addresses(other_signatories, 2)
+    else:
+        other_signatories = order_addresses(other_signatories)
     as_multi.encode(
         {
             "call_module": "Multisig",
@@ -228,6 +234,7 @@ def unsigned_as_multi_construction(
     amount: int,
     timepoint: Union[tuple, bool],
     other_signatories: list,
+    genesis_hash: str,
     max_weight: int = 0,
     store_call: bool = False,
     threshold: int = 2,
@@ -254,7 +261,14 @@ def unsigned_as_multi_construction(
     )
     # Be aware that the public keys are compared byte-for-byte and
     # sorted ascending before being inserted in the payload that is hashed.
-    other_signatories = order_addresses(other_signatories)
+
+    if (
+        genesis_hash
+        == "0xb0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe"
+    ):
+        other_signatories = order_addresses(other_signatories, 2)
+    else:
+        other_signatories = order_addresses(other_signatories)
     call_arguments = {
         "call": transfer.value,
         "maybe_timepoint": maybe_timepoint,

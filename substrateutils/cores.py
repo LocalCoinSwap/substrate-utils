@@ -512,6 +512,7 @@ class SubstrateBase(NonceManager):
             amount,
             None,
             [other_signatory, to_address],
+            self.genesis_hash,
             store_call=store_call,
             max_weight=max_weight,
             runtime_config=self.runtime_config,
