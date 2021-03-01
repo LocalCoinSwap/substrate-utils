@@ -230,11 +230,11 @@ def unsigned_as_multi_construction(
     amount: int,
     timepoint: Union[tuple, bool],
     other_signatories: list,
-    adddress_type,
     max_weight: int = 0,
     store_call: bool = False,
     threshold: int = 2,
     tip: int = 0,
+    adddress_type: int = 0,
     runtime_config: "RuntimeConfigurationObject" = None,
 ) -> str:
     """

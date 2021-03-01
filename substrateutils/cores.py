@@ -429,7 +429,7 @@ class SubstrateBase(NonceManager):
             transaction = helper.unsigned_as_multi_construction(
                 self.metadata,
                 *params,
-                self.address_type,
+                adddress_type=self.address_type,
                 runtime_config=self.runtime_config,
             )
             return self.broadcast(type, transaction)
@@ -517,9 +517,9 @@ class SubstrateBase(NonceManager):
             amount,
             None,
             [other_signatory, to_address],
-            self.address_type,
             store_call=store_call,
             max_weight=max_weight,
+            adddress_type=self.address_type,
             runtime_config=self.runtime_config,
         )
         return transaction
