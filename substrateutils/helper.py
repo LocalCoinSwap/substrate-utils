@@ -93,6 +93,7 @@ def as_multi_signature_payload(
     to_address: str,
     amount: int,
     other_signatories: list,
+    address_type: int,
     timepoint: Union[tuple, bool],
     threshold: int = 2,
     tip: int = 0,
@@ -122,7 +123,8 @@ def as_multi_signature_payload(
     )
     # Be aware that the public keys are compared byte-for-byte and
     # sorted ascending before being inserted in the payload that is hashed.
-    other_signatories = order_addresses(other_signatories)
+
+    other_signatories = order_addresses(other_signatories, address_type)
     as_multi.encode(
         {
             "call_module": "Multisig",
@@ -228,6 +230,7 @@ def unsigned_as_multi_construction(
     amount: int,
     timepoint: Union[tuple, bool],
     other_signatories: list,
+    adddress_type,
     max_weight: int = 0,
     store_call: bool = False,
     threshold: int = 2,
@@ -238,6 +241,7 @@ def unsigned_as_multi_construction(
     Turn parameters gathered through side effects into an as_multi extrinsic object
     """
     call_function = "as_multi"
+
     call_module = "Multisig"
     transfer = ScaleDecoder.get_decoder_class(
         "OpaqueCall", metadata=metadata, runtime_config=runtime_config
@@ -254,7 +258,7 @@ def unsigned_as_multi_construction(
     )
     # Be aware that the public keys are compared byte-for-byte and
     # sorted ascending before being inserted in the payload that is hashed.
-    other_signatories = order_addresses(other_signatories)
+    other_signatories = order_addresses(other_signatories, adddress_type)
     call_arguments = {
         "call": transfer.value,
         "maybe_timepoint": maybe_timepoint,
@@ -295,7 +299,7 @@ def hex_to_bytes(hex) -> bytes:
     return bytes.fromhex(hex)
 
 
-def order_addresses(addresses, address_type=0):
+def order_addresses(addresses: list, address_type: int = 0):
     bytearray_public_keys = []
     ordered_addresses = []
     # Convert address to public keys and then to byte array

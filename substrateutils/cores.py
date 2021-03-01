@@ -330,6 +330,7 @@ class SubstrateBase(NonceManager):
             to_address,
             value,
             other_signatories,
+            self.address_type,
             timepoint,
             max_weight=max_weight,
             store_call=store_call,
@@ -426,7 +427,10 @@ class SubstrateBase(NonceManager):
             if params[7] == 0:
                 params[7] = self.max_weight
             transaction = helper.unsigned_as_multi_construction(
-                self.metadata, *params, runtime_config=self.runtime_config
+                self.metadata,
+                *params,
+                self.address_type,
+                runtime_config=self.runtime_config,
             )
             return self.broadcast(type, transaction)
 
@@ -496,6 +500,7 @@ class SubstrateBase(NonceManager):
             to_address,
             amount,
             [other_signatory, to_address],
+            self.address_type,
             None,
             store_call=store_call,
             max_weight=max_weight,
@@ -512,6 +517,7 @@ class SubstrateBase(NonceManager):
             amount,
             None,
             [other_signatory, to_address],
+            self.address_type,
             store_call=store_call,
             max_weight=max_weight,
             runtime_config=self.runtime_config,

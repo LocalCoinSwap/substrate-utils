@@ -100,6 +100,7 @@ class TestPayloadConstruction:
             amount,
             timepoint,
             other_signatories,
+            kusama.address_type,
             runtime_config=kusama.runtime_config,
         )
         assert len(result) == 464 and result[0:2] == "0x"
