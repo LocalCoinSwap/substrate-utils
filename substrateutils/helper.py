@@ -9,7 +9,6 @@ import sr25519
 import xxhash
 from scalecodec.base import RuntimeConfigurationObject
 from scalecodec.base import ScaleDecoder
-from scalecodec.metadata import MetadataDecoder
 from scalecodec.utils.ss58 import ss58_decode
 from scalecodec.utils.ss58 import ss58_encode
 
@@ -45,7 +44,7 @@ def hash_call(call: "scalecodec.types.Call") -> str:
 
 
 def transfer_signature_payload(
-    metadata: "MetadataDecoder",
+    metadata,
     address: str,
     value: int,
     nonce: int,
@@ -86,7 +85,7 @@ def transfer_signature_payload(
 
 
 def as_multi_signature_payload(
-    metadata: "MetadataDecoder",
+    metadata,
     spec_version: int,
     genesis_hash: str,
     nonce: int,
@@ -159,7 +158,7 @@ def as_multi_signature_payload(
 
 
 def _extrinsic_construction(
-    metadata: "MetadataDecoder",
+    metadata,
     account_id: str,
     signature: str,
     call_function: str,
@@ -193,7 +192,7 @@ def _extrinsic_construction(
 
 
 def unsigned_transfer_construction(
-    metadata: "MetadataDecoder",
+    metadata,
     account_id: str,
     signature: str,
     nonce: int,
@@ -222,7 +221,7 @@ def unsigned_transfer_construction(
 
 
 def unsigned_as_multi_construction(
-    metadata: "MetadataDecoder",
+    metadata,
     account_id: str,
     signature: str,
     nonce: int,

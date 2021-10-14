@@ -5,9 +5,8 @@ import sr25519
 from scalecodec import ScaleBytes
 from scalecodec.base import RuntimeConfigurationObject
 from scalecodec.base import ScaleDecoder
-from scalecodec.block import ExtrinsicsDecoder
-from scalecodec.metadata import MetadataDecoder
 from scalecodec.type_registry import load_type_registry_preset
+from scalecodec.types import Extrinsic
 from scalecodec.updater import update_type_registries
 from scalecodec.utils.ss58 import ss58_decode
 from scalecodec.utils.ss58 import ss58_encode
@@ -29,8 +28,10 @@ class SubstrateBase(NonceManager):
 
     def load_type_registry(self):
         runtime_config = RuntimeConfigurationObject()
+        runtime_config.update_type_registry(load_type_registry_preset("metadata_types"))
         runtime_config.update_type_registry(load_type_registry_preset("default"))
         runtime_config.update_type_registry(load_type_registry_preset(self.chain))
+        runtime_config.set_active_spec_version_id(self.spec_version)
         self.runtime_config = runtime_config
 
     def connect(self, *, node_url: str = "", network: "Network" = None):
@@ -64,23 +65,27 @@ class SubstrateBase(NonceManager):
         transaction version
         """
         result = self.network.node_rpc_call("state_getRuntimeVersion", [])
-        self.spec_version = result["result"]["specVersion"]
         self.transaction_version = result["result"]["transactionVersion"]
         return result["result"]
 
-    def get_metadata(self) -> "MetadataDecoder":
+    def get_metadata(self):
         """
         Returns decoded chain metadata
         """
         raw_metadata = self.network.node_rpc_call("state_getMetadata", [None])["result"]
         self.raw_metadata = raw_metadata
-        metadata = MetadataDecoder(ScaleBytes(raw_metadata))
+        metadata = self.runtime_config.create_scale_object(
+            "MetadataVersioned", data=ScaleBytes(raw_metadata)
+        )
         metadata.decode()
         return metadata
 
     def get_json_metadata(self) -> dict:
         raw_metadata = self.network.node_rpc_call("state_getMetadata", [None])["result"]
-        return MetadataDecoder(ScaleBytes(raw_metadata)).decode()
+        metadata = self.runtime_config.create_scale_object(
+            "MetadataVersioned", data=ScaleBytes(raw_metadata)
+        )
+        return metadata.decode()[1]
 
     def get_failure_reason(self, module: int, error: int) -> str:
         """
@@ -171,13 +176,14 @@ class SubstrateBase(NonceManager):
         )
 
         for idx, data in enumerate(response["block"]["extrinsics"]):
-            extrinsic_decoder = ExtrinsicsDecoder(
+            extrinsics_decoder = Extrinsic(
                 data=ScaleBytes(data),
                 metadata=self.metadata,
                 runtime_config=self.runtime_config,
             )
-            extrinsic_decoder.decode()
-            response["block"]["extrinsics"][idx] = extrinsic_decoder.value
+
+            extrinsic = extrinsics_decoder.decode()
+            response["block"]["extrinsics"][idx] = extrinsic.value
 
         return response
 
@@ -265,7 +271,7 @@ class SubstrateBase(NonceManager):
         ]
 
         for idx, extrinsic in enumerate(extrinsics):
-            extrinsic_decoder = ExtrinsicsDecoder(
+            extrinsic_decoder = Extrinsic(
                 data=ScaleBytes(extrinsic),
                 metadata=self.metadata,
                 runtime_config=self.runtime_config,
@@ -585,6 +591,7 @@ class Kusama(SubstrateBase):
         arbitrator_key: str = None,
     ):
         self.chain = "kusama"
+        self.spec_version = 9111
         self.address_type = 2
         self.max_weight = 190949000
         self.welfare_value = 4000000000  # 0.004 KSM
@@ -596,6 +603,7 @@ class Polkadot(SubstrateBase):
         self, *, node_url: str = "wss://rpc.polkadot.io/", arbitrator_key: str = None,
     ):
         self.chain = "polkadot"
+        self.spec_version = 9110
         self.address_type = 0
         self.max_weight = 648378000
         self.welfare_value = 400000000  # 0.04 DOT
