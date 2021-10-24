@@ -95,19 +95,14 @@ class TestGetMethods:
                 "method": "author_extrinsicUpdate",
                 "params": {
                     "result": {
-                        "finalized": "0xa8495cdf2eaf0025966e96b06fba92f647e1e316f2abc698186ecf67919dc52b"
+                        "finalized": "0x5c1b7adc431813938199d58a5e9cb23cb095085b8c0026277022624a7e98e248"
                     },
                     "subscription": 723219,
                 },
             },
         }
 
-        extrinsic_data = (
-            "0x35028444ac0e6cb2c7e9adfcc86919959ff044cd6f6aefcc99152592a4fe8e6d22ce7"
-            "701d86d7a5e2fdecb5a927a2e38beb91ec2d7ac97680d8271638676684c3d1f0e5fec54"
-            "215035204e2e0d6323e029cee37938c5984bdca37d1c1fa7890cdecd7a8200b0000400b"
-            "e51e7d8eb439683272967dfce076362514e8519a51164e73f21272d157b446e0700e40b5402"
-        )
+        extrinsic_data = "0x3d02840080289d77b2a4954ff288c7a320a02b63ddd3bdd29112c7b20ea63ea8fc3d503301580bdf739e89d540d99a67d04b868b20948d4c36e8d2790f7ae425a498ba2d5eb175108f0917888168e0871dcc229f51681036b23c69ae34d6edb04fde24928e008c000400008404ec9dd6e8bb88b32d59c0ac0e24eec6ba3ac5268bbbf4e218c746debf6a4f0700c817a804"
 
         get_block_return_value = copy.deepcopy(mocked_returns.get_block_mock_1)
 
@@ -115,7 +110,7 @@ class TestGetMethods:
             "substrateutils.cores.Kusama.get_block", return_value=get_block_return_value
         )
 
-        expected_result = (2493157, 3)
+        expected_result = (9792028, 2)
         result = kusama.get_extrinsic_timepoint(node_response, extrinsic_data)
         assert result == expected_result
 
@@ -313,3 +308,16 @@ class TestWrapperMethods:
         )
 
         assert kusama.as_multi_payload("", "", 0, []) == (None, 4)
+
+    # def test_oct24(self, kusama, mocker):
+    #     extrinsic_hash = kusama.get_extrinsic_hash("0x3d02840080289d77b2a4954ff288c7a320a02b63ddd3bdd29112c7b20ea63ea8fc3d503301580bdf739e89d540d99a67d04b868b20948d4c36e8d2790f7ae425a498ba2d5eb175108f0917888168e0871dcc229f51681036b23c69ae34d6edb04fde24928e008c000400008404ec9dd6e8bb88b32d59c0ac0e24eec6ba3ac5268bbbf4e218c746debf6a4f0700c817a804")
+    #     block = kusama.get_block("0x5c1b7adc431813938199d58a5e9cb23cb095085b8c0026277022624a7e98e248")
+    #     print("+++++++++++++++++++++++++++++++++++++++++++++++")
+    #     print(block)
+    #     block_number = block.get("block").get("header").get("number")
+    #     print(block_number)
+    #     print(extrinsic_hash)
+    #     extrinsic_index = kusama._get_extrinsic_index(
+    #         block.get("block").get("extrinsics"), extrinsic_hash
+    #     )
+    #     print(extrinsic_index)

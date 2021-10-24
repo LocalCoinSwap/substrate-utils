@@ -36,7 +36,7 @@ class TestSignaturePayloads:
             kusama.spec_version,
             runtime_config=kusama.runtime_config,
         )
-        assert len(result) == 232 and result[0:2] == "0x"
+        assert len(result) == 234 and result[0:2] == "0x"
 
 
 class TestPayloadConstruction:
@@ -54,12 +54,7 @@ class TestPayloadConstruction:
             "0x820a0bddcf9793603c6d5abf54bfad0053adaa4d4ac5147c81135f12a699c254ea82d4ce"
             "5829d7e39910f28b6198c89b8c172398ff6e1367fd90c710a3bc3e89"
         )
-        expected_final_extrinsic = (
-            "0x35028414097421065c7bb0efc6770ffc5d604654159d45910cc7a3cb602be16acc552801"
-            "820a0bddcf9793603c6d5abf54bfad0053adaa4d4ac5147c81135f12a699c254ea82d4ce58"
-            "29d7e39910f28b6198c89b8c172398ff6e1367fd90c710a3bc3e8900100004005a989f0526"
-            "b8a619b90205b6c3bef293f7b0c38fae7353afe10feae4c471255b0700e40b5402"
-        )
+        expected_final_extrinsic = "0x3d02840014097421065c7bb0efc6770ffc5d604654159d45910cc7a3cb602be16acc552801820a0bddcf9793603c6d5abf54bfad0053adaa4d4ac5147c81135f12a699c254ea82d4ce5829d7e39910f28b6198c89b8c172398ff6e1367fd90c710a3bc3e890010000400005a989f0526b8a619b90205b6c3bef293f7b0c38fae7353afe10feae4c471255b0700e40b5402"
         result = unsigned_transfer_construction(
             kusama.metadata,
             account_id,
@@ -69,7 +64,6 @@ class TestPayloadConstruction:
             amount,
             runtime_config=kusama.runtime_config,
         )
-        print(result)
         assert result == expected_final_extrinsic
 
     def test_as_multi_construction(self, kusama):

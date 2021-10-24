@@ -181,9 +181,7 @@ class SubstrateBase(NonceManager):
                 metadata=self.metadata,
                 runtime_config=self.runtime_config,
             )
-
-            extrinsics_decoder.decode()
-            # response["block"]["extrinsics"][idx] = extrinsic.value
+            response["block"]["extrinsics"][idx] = extrinsics_decoder.decode()
 
         return response
 
@@ -220,9 +218,7 @@ class SubstrateBase(NonceManager):
         """
         Returns the extrinsic hash for a provided complete extrinsic
         """
-        return (
-            blake2b(bytes.fromhex(final_transaction[2:]), digest_size=32).digest().hex()
-        )
+        return f"0x{blake2b(bytes.fromhex(final_transaction[2:]), digest_size=32).digest().hex()}"
 
     def get_extrinsic_timepoint(
         self, node_response: dict, final_transaction: str
