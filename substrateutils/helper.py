@@ -72,10 +72,10 @@ def transfer_signature_payload(
             "era": "00",
             "nonce": nonce,
             "tip": 0,
-            "specVersion": spec_version,
-            "transactionVersion": transaction_version,
-            "genesisHash": genesis_hash,
-            "blockHash": genesis_hash,
+            "spec_version": spec_version,
+            "transaction_version": transaction_version,
+            "genesis_hash": genesis_hash,
+            "block_hash": genesis_hash,
         }
     )
     return str(signature_payload.data)
@@ -140,10 +140,10 @@ def as_multi_signature_payload(
             "era": "00",
             "nonce": nonce,
             "tip": tip,
-            "specVersion": spec_version,
-            "transactionVersion": transaction_version,
-            "genesisHash": genesis_hash,
-            "blockHash": genesis_hash,
+            "spec_version": spec_version,
+            "transaction_version": transaction_version,
+            "genesis_hash": genesis_hash,
+            "block_hash": genesis_hash,
         }
     )
 
