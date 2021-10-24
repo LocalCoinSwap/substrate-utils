@@ -69,6 +69,7 @@ class TestPayloadConstruction:
             amount,
             runtime_config=kusama.runtime_config,
         )
+        print(result)
         assert result == expected_final_extrinsic
 
     def test_as_multi_construction(self, kusama):

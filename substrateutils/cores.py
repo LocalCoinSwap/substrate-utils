@@ -31,7 +31,6 @@ class SubstrateBase(NonceManager):
         runtime_config.update_type_registry(load_type_registry_preset("metadata_types"))
         runtime_config.update_type_registry(load_type_registry_preset("default"))
         runtime_config.update_type_registry(load_type_registry_preset(self.chain))
-        runtime_config.set_active_spec_version_id(self.spec_version)
         self.runtime_config = runtime_config
 
     def connect(self, *, node_url: str = "", network: "Network" = None):
@@ -78,6 +77,7 @@ class SubstrateBase(NonceManager):
             "MetadataVersioned", data=ScaleBytes(raw_metadata)
         )
         metadata.decode()
+        self.runtime_config.add_portable_registry(metadata)
         return metadata
 
     def get_json_metadata(self) -> dict:
@@ -182,8 +182,8 @@ class SubstrateBase(NonceManager):
                 runtime_config=self.runtime_config,
             )
 
-            extrinsic = extrinsics_decoder.decode()
-            response["block"]["extrinsics"][idx] = extrinsic.value
+            extrinsics_decoder.decode()
+            # response["block"]["extrinsics"][idx] = extrinsic.value
 
         return response
 
@@ -201,11 +201,8 @@ class SubstrateBase(NonceManager):
             "state_getStorageAt", [storage_hash, block_hash]
         )["result"]
 
-        return_decoder = ScaleDecoder.get_decoder_class(
-            "Vec<EventRecord<Event, Hash>>",
-            ScaleBytes(result),
-            metadata=self.metadata,
-            runtime_config=self.runtime_config,
+        return_decoder = self.runtime_config.create_scale_object(
+            "Vec<EventRecord<Event, Hash>>", ScaleBytes(result), metadata=self.metadata,
         )
         return return_decoder.decode()
 

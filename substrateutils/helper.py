@@ -8,7 +8,6 @@ import scalecodec
 import sr25519
 import xxhash
 from scalecodec.base import RuntimeConfigurationObject
-from scalecodec.base import ScaleDecoder
 from scalecodec.utils.ss58 import ss58_decode
 from scalecodec.utils.ss58 import ss58_encode
 
@@ -56,9 +55,7 @@ def transfer_signature_payload(
     """
     Turn parameters gathered through side effects into unsigned transfer string
     """
-    call = ScaleDecoder.get_decoder_class(
-        "Call", metadata=metadata, runtime_config=runtime_config
-    )
+    call = runtime_config.create_scale_object("Call", metadata=metadata)
     call.encode(
         {
             "call_module": "Balances",
@@ -66,8 +63,8 @@ def transfer_signature_payload(
             "call_args": {"dest": address, "value": value},
         }
     )
-    signature_payload = ScaleDecoder.get_decoder_class(
-        "ExtrinsicPayloadValue", runtime_config=runtime_config
+    signature_payload = runtime_config.create_scale_object(
+        "ExtrinsicPayloadValue", metadata=metadata
     )
     signature_payload.encode(
         {
@@ -104,12 +101,8 @@ def as_multi_signature_payload(
     """
     Turn parameters gathered through side effects into unsigned as_multi string
     """
-    as_multi = ScaleDecoder.get_decoder_class(
-        "Call", metadata=metadata, runtime_config=runtime_config
-    )
-    transfer = ScaleDecoder.get_decoder_class(
-        "OpaqueCall", metadata=metadata, runtime_config=runtime_config
-    )
+    as_multi = runtime_config.create_scale_object("Call", metadata=metadata)
+    transfer = runtime_config.create_scale_object("OpaqueCall", metadata=metadata)
     transfer.encode(
         {
             "call_module": "Balances",
@@ -138,8 +131,8 @@ def as_multi_signature_payload(
             },
         }
     )
-    signature_payload = ScaleDecoder.get_decoder_class(
-        "ExtrinsicPayloadValue", runtime_config=runtime_config
+    signature_payload = runtime_config.create_scale_object(
+        "ExtrinsicPayloadValue", metadata=metadata
     )
     signature_payload.encode(
         {
@@ -171,9 +164,7 @@ def _extrinsic_construction(
     """
     Turn parameters gathered through side effects into extrinsic object
     """
-    extrinsic = ScaleDecoder.get_decoder_class(
-        "Extrinsic", metadata=metadata, runtime_config=runtime_config
-    )
+    extrinsic = runtime_config.create_scale_object("Extrinsic", metadata=metadata)
     extrinsic.encode(
         {
             "account_id": account_id,
@@ -242,9 +233,7 @@ def unsigned_as_multi_construction(
     call_function = "as_multi"
 
     call_module = "Multisig"
-    transfer = ScaleDecoder.get_decoder_class(
-        "OpaqueCall", metadata=metadata, runtime_config=runtime_config
-    )
+    transfer = runtime_config.create_scale_object("OpaqueCall", metadata=metadata)
     transfer.encode(
         {
             "call_module": "Balances",
