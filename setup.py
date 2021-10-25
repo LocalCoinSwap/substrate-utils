@@ -20,7 +20,7 @@ URL = "https://github.com/LocalCoinSwap/substrate-utils/"
 EMAIL = "nathan@localcoinswap.com"
 AUTHOR = "Nathan Worsley"
 REQUIRES_PYTHON = ">=3.7.0"
-VERSION = "1.0.16"
+VERSION = "1.0.17"
 
 REQUIRED = [
     "websockets==8.1",

@@ -63,7 +63,7 @@ class TestGetMethods:
 
     def test_get_events(self, kusama, mocker):
         block_hash = (
-            "0xbc0e05e6d9130f2d4ab765a19a9b6a937c54536bb8de407acf1051e14d1f23c5"
+            "0xedcdb24058b10903807e87b6b1108440cc99583f1780f6b6044ceba3d4ff6924"
         )
 
         result = kusama.get_events(block_hash)

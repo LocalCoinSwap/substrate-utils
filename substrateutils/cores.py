@@ -195,12 +195,18 @@ class SubstrateBase(NonceManager):
             "0x26aa394eea5630e07c48ae0c9558cef780d41e5e16056765bc8461851072c9d7"
         )
 
+        system_pallet = [p for p in self.metadata.pallets if p["name"] == "System"][0]
+        event_storage_function = [
+            s for s in system_pallet["storage"]["entries"] if s["name"] == "Events"
+        ][0]
+
         result = self.network.node_rpc_call(
             "state_getStorageAt", [storage_hash, block_hash]
         )["result"]
-
         return_decoder = self.runtime_config.create_scale_object(
-            "Vec<EventRecord<Event, Hash>>", ScaleBytes(result), metadata=self.metadata,
+            event_storage_function.get_value_type_string(),
+            ScaleBytes(result),
+            metadata=self.metadata,
         )
         return return_decoder.decode()
 
@@ -263,13 +269,13 @@ class SubstrateBase(NonceManager):
             "result"
         ]
 
-        for idx, extrinsic in enumerate(extrinsics):
-            extrinsic_decoder = Extrinsic(
-                data=ScaleBytes(extrinsic),
+        for idx, data in enumerate(extrinsics):
+            extrinsic = Extrinsic(
+                data=ScaleBytes(data),
                 metadata=self.metadata,
                 runtime_config=self.runtime_config,
             )
-            decoded_extrinsics.append(extrinsic_decoder.decode())
+            decoded_extrinsics.append(extrinsic.decode())
 
         return decoded_extrinsics
 
