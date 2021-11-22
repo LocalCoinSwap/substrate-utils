@@ -274,8 +274,8 @@ seller_key = os.getenv("SELLER_SEED")
 buyer_key = os.getenv("BUYER_SEED")
 seller_keypair = sr25519.pair_from_seed(bytes.fromhex(seller_key))
 buyer_keypair = sr25519.pair_from_seed(bytes.fromhex(buyer_key))
-seller_address = ss58_encode(seller_keypair[0], 0)
-buyer_address = ss58_encode(buyer_keypair[0], 0)
+seller_address = ss58_encode(seller_keypair[0], ss58_format=0)
+buyer_address = ss58_encode(buyer_keypair[0], ss58_format=0)
 
 escrow_address = chain.get_escrow_address(buyer_address, seller_address)
 

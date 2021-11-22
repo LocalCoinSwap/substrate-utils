@@ -28,7 +28,7 @@ def get_prefix(escrow_address: str, address_type: int = 2) -> str:
     Returns prefix containing the account ID of the address provided
     """
     module_prefix = xx128("Multisig") + xx128("Multisigs")
-    account_id = ss58_decode(escrow_address, address_type)
+    account_id = ss58_decode(escrow_address, valid_ss58_format=address_type)
     storage_key = bytearray(xxhash.xxh64(bytes.fromhex(account_id), seed=0).digest())
     storage_key.reverse()
     return f"{module_prefix}{storage_key.hex()}{account_id}"
@@ -292,12 +292,14 @@ def order_addresses(addresses: list, address_type: int = 0):
     ordered_addresses = []
     # Convert address to public keys and then to byte array
     for address in addresses:
-        public_key = ss58_decode(address, address_type)
+        public_key = ss58_decode(address, valid_ss58_format=address_type)
         public_key_bytearray = bytearray()
         public_key_bytearray.extend(map(ord, public_key))
         bytearray_public_keys.append(public_key_bytearray)
     sorted_bytearray = sorted(bytearray_public_keys)
     # Convert back to addresses
     for byte_array in sorted_bytearray:
-        ordered_addresses.append(ss58_encode(byte_array.decode(), address_type))
+        ordered_addresses.append(
+            ss58_encode(byte_array.decode(), ss58_format=address_type)
+        )
     return ordered_addresses

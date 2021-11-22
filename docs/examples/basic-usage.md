@@ -59,7 +59,7 @@ value = 10000000000 # 1 DOT
 
 # Prepare key
 keypair = sr25519.pair_from_seed(hex_to_bytes(sender_seed_hex))
-sender_address = ss58_encode(keypair[0], 0)
+sender_address = ss58_encode(keypair[0], ss58_format=0)
 
 # Get transaction payload to sign and nonce
 payload = chain.transfer_payload(sender_address, to_address, value)

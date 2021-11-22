@@ -19,7 +19,7 @@ class User:
         self.keypair = sr25519.pair_from_seed(bytes.fromhex(self.hex))
         self.public_key = self.keypair[0].hex()
         self.private_key = self.keypair[1].hex()
-        self.address = ss58_encode(self.keypair[0], address_type)
+        self.address = ss58_encode(self.keypair[0], ss58_format=address_type)
 
 
 class TradeManager:

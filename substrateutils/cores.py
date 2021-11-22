@@ -56,7 +56,9 @@ class SubstrateBase(NonceManager):
         """
         self.keypair = sr25519.pair_from_seed(bytes.fromhex(arbitrator_key))
         self.arbitrator_account_id = self.keypair[0].hex()
-        self.arbitrator_address = ss58_encode(self.keypair[0], self.address_type)
+        self.arbitrator_address = ss58_encode(
+            self.keypair[0], ss58_format=self.address_type
+        )
 
     def runtime_info(self) -> int:
         """
@@ -130,7 +132,7 @@ class SubstrateBase(NonceManager):
             "0x26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da9"
         )
 
-        account_id = ss58_decode(address, self.address_type)
+        account_id = ss58_decode(address, valid_ss58_format=self.address_type)
         hashed_address = f"{blake2b(bytes.fromhex(account_id), digest_size=16).digest().hex()}{account_id}"
         storage_hash = storage_key + hashed_address
         result = self.network.node_rpc_call("state_getStorageAt", [storage_hash, None])[
@@ -291,7 +293,7 @@ class SubstrateBase(NonceManager):
         )
 
         multi_sig_address = ss58_encode(
-            multi_sig_account_id.value.replace("0x", ""), self.address_type
+            multi_sig_account_id.value.replace("0x", ""), ss58_format=self.address_type
         )
         return multi_sig_address
 
