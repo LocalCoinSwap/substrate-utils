@@ -66,6 +66,7 @@ class SubstrateBase(NonceManager):
         transaction version
         """
         result = self.network.node_rpc_call("state_getRuntimeVersion", [])
+        self.spec_version = result["result"]["specVersion"]
         self.transaction_version = result["result"]["transactionVersion"]
         return result["result"]
 
@@ -592,7 +593,6 @@ class Kusama(SubstrateBase):
         arbitrator_key: str = None,
     ):
         self.chain = "kusama"
-        self.spec_version = 9111
         self.address_type = 2
         self.max_weight = 190949000
         self.welfare_value = 4000000000  # 0.004 KSM
@@ -604,7 +604,6 @@ class Polkadot(SubstrateBase):
         self, *, node_url: str = "wss://rpc.polkadot.io/", arbitrator_key: str = None,
     ):
         self.chain = "polkadot"
-        self.spec_version = 9110
         self.address_type = 0
         self.max_weight = 648378000
         self.welfare_value = 400000000  # 0.04 DOT
