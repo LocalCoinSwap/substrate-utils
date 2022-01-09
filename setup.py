@@ -24,7 +24,7 @@ VERSION = "1.0.20"
 
 REQUIRED = [
     "websockets==8.1",
-    "scalecodec==1.0.19",
+    "scalecodec==1.0.28",
     "base58==2.0.1",
     "py-bip39-bindings==0.1.6",
     "py-sr25519-bindings==0.1.1",
