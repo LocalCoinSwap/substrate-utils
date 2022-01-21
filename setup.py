@@ -35,7 +35,7 @@ REQUIRED = [
 EXTRAS = {
     "dev": [
         "coverage==5.1",
-        "ipython==7.14.0",
+        "ipython==7.16.3",
         "portray==1.3.1",
         "pre-commit==2.3.0",
         "pytest==5.4.1",
