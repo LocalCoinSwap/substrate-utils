@@ -549,8 +549,8 @@ class SubstrateBase(NonceManager):
         fee_revert_signature = helper.sign_payload(self.keypair, fee_revert_payload)
         fee_revert_transaction = helper.unsigned_transfer_construction(
             self.metadata,
-            self.arbitrator_address,
-            fee_revert_signature,
+            f"0x{self.arbitrator_account_id}",
+            f"0x{fee_revert_signature}",
             nonce,
             seller_address,
             fee_value,
@@ -575,8 +575,8 @@ class SubstrateBase(NonceManager):
         welfare_signature = helper.sign_payload(self.keypair, welfare_payload)
         welfare_transaction = helper.unsigned_transfer_construction(
             self.metadata,
-            self.arbitrator_address,
-            welfare_signature,
+            f"0x{self.arbitrator_account_id}",
+            f"0x{welfare_signature}",
             nonce,
             buyer_address,
             welfare_value,
