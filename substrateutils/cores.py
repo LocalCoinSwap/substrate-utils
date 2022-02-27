@@ -518,8 +518,8 @@ class SubstrateBase(NonceManager):
         signature = helper.sign_payload(self.keypair, payload)
         transaction = helper.unsigned_as_multi_construction(
             self.metadata,
-            self.arbitrator_address,
-            signature,
+            f"0x{self.arbitrator_account_id}",
+            f"0x{signature}",
             nonce,
             to_address,
             amount,
