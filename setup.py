@@ -23,7 +23,7 @@ REQUIRES_PYTHON = ">=3.7.0"
 VERSION = "1.0.24"
 
 REQUIRED = [
-    "websockets==8.1",
+    "websockets==9.1",
     "scalecodec==1.0.34",
     "base58==2.0.1",
     "py-bip39-bindings==0.1.6",
